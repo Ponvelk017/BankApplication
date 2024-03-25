@@ -1,0 +1,64 @@
+.headeradd {
+    display: flex;
+    align-items: baseline;
+}
+
+.newcustomer {
+    margin-right: auto;
+    padding-left: 1%;
+    padding-bottom: 2%;
+}
+
+.newemployee {
+    margin-left: auto;
+    padding-right: 1%;
+}
+
+.transaction {
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.modal-dialog-custom {
+    width: 50%;
+}
+
+.account-profile-picture {
+    width: 50%;
+    height: 50%;
+}
+
+.conditionData {
+    background-color: white;
+    border-radius: 2%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.inputtag {
+    width: 12%;
+}
+
+.conditionform {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1%;
+    padding: 1%;
+    align-items: baseline;
+}
+
+.inputtextbox {
+    width: 180px;
+    height: 35px;
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.inputbut {
+    padding-left: 45%;
+}
+
+.labletext {
+    font-size: 16px;
+    font-weight: bold;
+}

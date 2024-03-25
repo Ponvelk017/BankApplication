@@ -1,0 +1,83 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 8%;
+    flex-wrap: wrap;
+    align-items: baseline;
+    z-index: 10;
+}
+
+.navbar-brand {
+    padding-left: 3%;
+}
+
+.nav-item {
+    padding-left: 20%;
+    text-align: center;
+    font-size: large;
+}
+
+.profile {
+    padding-left: 53%;
+    text-align: center;
+    font-size: large;
+}
+
+.account {
+    padding-top: 45px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar {
+    position: fixed;
+    top: 8%;
+    right: 93%;
+    height: 100%;
+    width: 170px;
+    padding-top: 25px;
+}
+
+.transaction {
+    display: flex;
+    justify-content: center;
+    gap: 5%;
+    padding-bottom: 5%;
+    padding-top: 4%;
+}
+
+.transactionbox {
+    background-size: cover;
+    background-position: center;
+    padding-top: 2%;
+}
+
+.textbox {
+    width: 250px;
+    height: 40px;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+select.textbox {
+    width: 250px;
+}
+
+button {
+    margin-top: 10px;
+}
+
+.add {
+    background-color: white;
+    justify-content: center;
+}
+
+.tempp {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+}
