@@ -4,6 +4,7 @@
 <%@ page import="java.util.Map"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map.Entry"%>
+<%@ page import="org.json.JSONObject"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -97,21 +98,17 @@
 					<div class="d-flex  transactionbox row">
 						<div class="headeradd">
 							<div class="newcustomer">
-								<h3 id="textnewcustomer">Add a New Customer</h3>
-							</div>
-							<div class="newemployee" class="newemployee">
-								<button id="newemploee" type="submit">Add New Employee
-								</button>
+								<h3 id="textnewcustomer">Add New User</h3>
 							</div>
 						</div>
 						<div id="customer" class="col-5 align-items-center">
-							<form id="customer" class="text-center forms" method="post"
+							<form id="customerForm" class="text-center forms"
 								style="padding-top: 5%;">
 								<label for="accountno">Name:</label> <input class="textbox"
 									type="text" id="name" name="name" placeholder="Enter Name">
 								<label for="accountno">Date Of Birth:</label> <input
-									class="textbox" type="text" id="dob" name="dob"
-									placeholder="1Enter DOB"><br> <label
+									class="textbox" type="date" id="dob" name="dob"
+									placeholder="Enter DOB"><br> <label
 									for="accountno">Mobile:</label> <input class="textbox"
 									type="text" id="mobile" name="mobile"
 									placeholder="Enter  Mobile Number"><br> <label
@@ -120,60 +117,55 @@
 								<label for="accountno">Gender:</label> <input class="textbox"
 									type="text" id="gender" name="gender"
 									placeholder="Enter Gender"><br> <label
-									for="accountno">Address:</label> <input class="textbox"
-									type="text" id="address" name="address"
-									placeholder="Enter Address"><br> <label
-									for="accountno">Aadhar Number:</label> <input class="textbox"
-									type="text" id="aadhar" name="aadhar"
-									placeholder="1234567890123456"><br> <label
-									for="accountno">Pan Number:</label> <input class="textbox"
-									type="text" id="pan" name="pan" placeholder="ASDFG12345"><br>
-								<button type="submit">Add</button>
-							</form>
-						</div>
-						<div id="employee" class="col-5 align-items-center"
-							style="display: none;">
-							<form id="employee" class="text-center forms" method="post"
-								style="padding-top: 5%;">
-								<label for="accountno">Name:</label> <input class="textbox"
-									type="text" id="name" name="name" placeholder="Enter Name">
-								<label for="accountno">Date Of Birth:</label> <input
-									class="textbox" type="text" id="dob" name="dob"
-									placeholder="1Enter DOB"><br> <label
-									for="accountno">Mobile:</label> <input class="textbox"
-									type="text" id="mobile" name="mobile"
-									placeholder="Enter  Mobile Number"><br> <label
-									for="accountno">Email:</label> <input class="textbox"
-									type="email" id="email" name="email" placeholder="Enter Email"><br>
-								<label for="accountno">Gender:</label> <input class="textbox"
-									type="text" id="gender" name="gender"
-									placeholder="Enter Gender"><br> <label
-									for="accountno">Address:</label> <input class="textbox"
-									type="text" id="address" name="address"
-									placeholder="Enter Address"><br> <label
-									for="accountno">Working Branch:</label> <input class="textbox"
-									type="text" id="branch" name="branch" placeholder="ASDFG12345"><br>
-								<label for="accountno">Designation:</label> <select
-									id="accountno" name="accountno" class="textbox">
-									<option value="0">Employee</option>
-									<option value="1">Manager</option>
+									for="accountno">User Type:</label> <select id="usertype"
+									name="type" class="textbox" onchange="changeUser()">
+									<option value="" disabled selected hidden>--Select--</option>
+									<option>User</option>
+									<option>Employee</option>
 								</select><br>
+								<div id="user-details" style="display: none;">
+									<input name="formType" value="newCustomer" type="hidden">
+									<label for="accountno">Address:</label> <input class="textbox"
+										type="text" id="address" name="address"
+										placeholder="Enter Address"><br> <label
+										for="accountno">Aadhar Number:</label> <input class="textbox"
+										type="text" id="aadhar" name="aadhar"
+										placeholder="123456789012"><br> <label
+										for="accountno">Pan Number:</label> <input class="textbox"
+										type="text" id="pan" name="pan" placeholder="ASDFG12345"><br>
+								</div>
+
+								<div id="employee-detail" style="display: none;">
+									<input name="formType" value="newEmployee" type="hidden">
+									<label for="accountno">Working Branch:</label> <input
+										class="textbox" type="text" id="branch" name="branch"
+										placeholder="ASDFG12345"><br> <label
+										for="accountno">Designation:</label> <select id="admin"
+										name="admin" class="textbox">
+										<option value="0">Employee</option>
+										<option value="1">Manager</option>
+									</select><br>
+								</div>
 								<button type="submit">Add</button>
 							</form>
+							<p id="customermessage"
+								style="font-size: 17px; padding-left: 10%"></p>
 						</div>
 						<div class="col-6"
 							style="background-image: url(Images/newCustomer.png); background-size: cover; background-position: center;">
 						</div>
 					</div>
 				</div>
-				<div id="view" style="display: block;">
+				<div id="view" style="display: none;">
 					<div id="statement">
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>User Profiles</h3>
 							<div class="duration">
-								<form id="duration" class="durationform"
-									style="justify-content: end; gap: 3%;">
-									Customer Id <input style="width: 30%;" name="id" type="number">
+								<form action="home" method="post" id="customerId"
+									class="durationform" style="justify-content: end; gap: 3%;">
+									<input name="formType" value="searchUser" type="hidden">
+									Customer Id <input style="width: 30%;" name="id" type="number"
+										required>
 									<button class="link-button" type="submit">
 										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
 											fill="currentColor" class="bi bi-arrow-down-square-fill"
@@ -204,6 +196,18 @@
 										Map<Integer, CustomerDetails> users = (Map<Integer, CustomerDetails>) request.getAttribute("user");
 										for (Entry individualUser : users.entrySet()) {
 											CustomerDetails customer = (CustomerDetails) individualUser.getValue();
+
+											JSONObject userJson = new JSONObject();
+											userJson.put("Id", customer.getId());
+											userJson.put("Name", customer.getName());
+											userJson.put("Dob", customer.getDOB());
+											userJson.put("Mobile", customer.getMobile());
+											userJson.put("Email", customer.getEmail());
+											userJson.put("Gender", customer.getGender());
+											userJson.put("Address", customer.getAddress());
+											userJson.put("Aadhar", customer.getAadhar());
+											userJson.put("Pan", customer.getPan());
+											userJson.put("Status", customer.getStatus());
 										%>
 										<tr>
 											<td><%=sno++%></td>
@@ -214,16 +218,14 @@
 											<td><%=customer.getAddress()%></td>
 											<td>
 												<button type="button" class="btn link-button view-details"
-													data-user-id="<%=customer%>
-													data-bs-toggle="
-													modal" data-bs-target="#staticBackdrop">
+													data-user-id='<%=userJson.toString()%>'
+													data-bs-toggle="modal" data-bs-target="#staticBackdrop">
 													<svg xmlns="http://www.w3.org/2000/svg" width="30"
 														height="30" fill="currentColor" class="bi bi-eye-fill"
 														viewBox="0 0 16 16">
 														<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-														
 														<path fill-rule="evenodd"
-															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" /> </svg>
+															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" /></svg>
 												</button>
 											</td>
 										</tr>
@@ -259,9 +261,11 @@
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>Edit Profiles</h3>
 							<div class="duration">
-								<form id="duration" class="durationform"
-									style="justify-content: end; gap: 3%;">
-									Customer Id <input style="width: 30%;" name="id" type="number">
+								<form action="home" method="post" id="customerId"
+									class="durationform" style="justify-content: end; gap: 3%;">
+									<input name="formType" value="CustomerDetailsEditForm"
+										type="hidden"> Customer Id <input style="width: 30%;"
+										name="id" type="number">
 									<button class="link-button" type="submit">
 										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
 											fill="currentColor" class="bi bi-arrow-down-square-fill"
@@ -289,28 +293,46 @@
 										</tr>
 									</thead>
 									<tbody>
+										<%
+										sno = 1;
+										Map<Integer, CustomerDetails> userEditDetails = (Map<Integer, CustomerDetails>) request.getAttribute("editUser");
+										for (Entry individualUser : userEditDetails.entrySet()) {
+											CustomerDetails customer = (CustomerDetails) individualUser.getValue();
+											JSONObject userJson = new JSONObject();
+											userJson.put("Id", customer.getId());
+											userJson.put("Name", customer.getName());
+											userJson.put("Dob", customer.getDOB());
+											userJson.put("Mobile", customer.getMobile());
+											userJson.put("Email", customer.getEmail());
+											userJson.put("Gender", customer.getGender());
+											userJson.put("Address", customer.getAddress());
+											userJson.put("Aadhar", customer.getAadhar());
+											userJson.put("Pan", customer.getPan());
+											userJson.put("Status", customer.getStatus());
+										%>
 										<tr>
-											<td>1</td>
-											<td>1</td>
-											<td>P.Ramanujam</td>
-											<td>9090909090</td>
-											<td>rama@gmail.com</td>
-											<td>123,Vadapalani,chennai-678901</td>
+											<td><%=sno++%></td>
+											<td><%=customer.getId()%></td>
+											<td><%=customer.getName()%></td>
+											<td><%=customer.getMobile()%></td>
+											<td><%=customer.getEmail()%></td>
+											<td><%=customer.getAddress()%></td>
 											<td>
-												<button type="button" class="btn link-button"
+												<button type="button" class="btn link-button view-details"
+													data-user-id='<%=userJson.toString()%>'
 													data-bs-toggle="modal" data-bs-target="#staticBackdrop">
 													<svg xmlns="http://www.w3.org/2000/svg" width="30"
 														height="30" fill="currentColor" class="bi bi-eye-fill"
 														viewBox="0 0 16 16">
-                                                        <path
-															d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                                                        <path
-															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                                                    </svg>
+														<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+														<path fill-rule="evenodd"
+															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" /></svg>
 												</button>
+
 											</td>
 											<td>
-												<button type="button" class="btn link-button"
+												<button type="button" class="btn link-button edit-details"
+													data-userEdit-id='<%=userJson.toString()%>'
 													data-bs-toggle="modal" data-bs-target="#staticBackdropedit">
 													<svg xmlns="http://www.w3.org/2000/svg" width="30"
 														height="30" fill="currentColor"
@@ -323,58 +345,26 @@
                                                     </svg>
 												</button>
 											</td>
-											<td><button class="link-button">
-													<svg xmlns="http://www.w3.org/2000/svg" width="30"
-														height="30" fill="currentColor" class="bi bi-trash3-fill"
-														viewBox="0 0 16 16">
-                                                        <path
-															d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
-                                                    </svg>
-												</button></td>
-										</tr>
-										<tr>
-											<td>1</td>
-											<td>1</td>
-											<td>P.Ramanujam</td>
-											<td>9090909090</td>
-											<td>rama@gmail.com</td>
-											<td>123,Vadapalani,chennai-678901</td>
 											<td>
-												<button type="button" class="btn link-button"
-													data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-													<svg xmlns="http://www.w3.org/2000/svg" width="30"
-														height="30" fill="currentColor" class="bi bi-eye-fill"
-														viewBox="0 0 16 16">
-                                                        <path
-															d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                                                        <path
-															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                                                    </svg>
-												</button>
+												<form class="blockForm">
+													<input name="id" value="<%=customer.getId()%>"
+														type="hidden"> <input name="status" value="0"
+														type="hidden"> <input name="formType"
+														value="blockUser" type="hidden">
+													<button class="link-button block-button">
+														<svg xmlns="http://www.w3.org/2000/svg" width="30"
+															height="30" fill="currentColor" class="bi bi-ban"
+															viewBox="0 0 16 16">
+															<path
+																d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" /></svg>
+													</button>
+												</form>
 											</td>
-											<td>
-												<button type="button" class="btn link-button"
-													data-bs-toggle="modal" data-bs-target="#staticBackdropedit">
-													<svg xmlns="http://www.w3.org/2000/svg" width="30"
-														height="30" fill="currentColor"
-														class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                                        <path
-															d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                                        <path
-															fill-rule="evenodd"
-															d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                                    </svg>
-												</button>
-											</td>
-											<td><button class="link-button">
-													<svg xmlns="http://www.w3.org/2000/svg" width="30"
-														height="30" fill="currentColor" class="bi bi-trash3-fill"
-														viewBox="0 0 16 16">
-                                                        <path
-															d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
-                                                    </svg>
-												</button></td>
+
 										</tr>
+										<%
+										}
+										%>
 									</tbody>
 								</table>
 								<div class="pagination">
@@ -433,51 +423,103 @@
 											<th scope="col">Email</th>
 											<th scope="col">Address</th>
 											<th scope="col">View</th>
+											<th scope="col">Unblock</th>
+											<th scope="col">Delete</th>
 										</tr>
 									</thead>
 									<tbody>
 										<tr>
-											<td>1</td>
-											<td>1</td>
-											<td>P.Ramanujam</td>
-											<td>9090909090</td>
-											<td>rama@gmail.com</td>
-											<td>123,Vadapalani,chennai-678901</td>
-											<td>
-												<button type="button" class="btn link-button"
-													data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-													<svg xmlns="http://www.w3.org/2000/svg" width="30"
-														height="30" fill="currentColor" class="bi bi-eye-fill"
-														viewBox="0 0 16 16">
-                                                        <path
-															d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                                                        <path
-															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                                                    </svg>
-												</button>
-											</td>
-										</tr>
+											<%
+											sno = 1;
+											Map<Integer, CustomerDetails> inactiveUsers = (Map<Integer, CustomerDetails>) request.getAttribute("Inactiveuser");
+											for (Entry individualUser : inactiveUsers.entrySet()) {
+												CustomerDetails customer = (CustomerDetails) individualUser.getValue();
+
+												JSONObject userJson = new JSONObject();
+												userJson.put("Id", customer.getId());
+												userJson.put("Name", customer.getName());
+												userJson.put("Dob", customer.getDOB());
+												userJson.put("Mobile", customer.getMobile());
+												userJson.put("Email", customer.getEmail());
+												userJson.put("Gender", customer.getGender());
+												userJson.put("Address", customer.getAddress());
+												userJson.put("Aadhar", customer.getAadhar());
+												userJson.put("Pan", customer.getPan());
+												userJson.put("Status", customer.getStatus());
+												userJson.put("DeletedAt", customer.getDeleteAt());
+											%>
+										
 										<tr>
-											<td>1</td>
-											<td>1</td>
-											<td>P.Ramanujam</td>
-											<td>9090909090</td>
-											<td>rama@gmail.com</td>
-											<td>123,Vadapalani,chennai-678901</td>
+											<td><%=sno++%></td>
+											<td><%=customer.getId()%></td>
+											<td><%=customer.getName()%></td>
+											<td><%=customer.getMobile()%></td>
+											<td><%=customer.getEmail()%></td>
+											<td><%=customer.getAddress()%></td>
 											<td>
-												<button type="button" class="btn link-button"
+												<button type="button" class="btn link-button view-details"
+													data-user-id='<%=userJson.toString()%>'
 													data-bs-toggle="modal" data-bs-target="#staticBackdrop">
 													<svg xmlns="http://www.w3.org/2000/svg" width="30"
 														height="30" fill="currentColor" class="bi bi-eye-fill"
 														viewBox="0 0 16 16">
-                                                        <path
-															d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                                                        <path
-															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-                                                    </svg>
+														<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+														<path fill-rule="evenodd"
+															d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" /></svg>
 												</button>
 											</td>
+											<td>
+												<%
+												if (customer.getDeleteAt().equals("0")) {
+												%>
+												<form class="blockForm">
+													<input name="id" value="<%=customer.getId()%>"
+														type="hidden"> <input name="status" value="1"
+														type="hidden"> <input name="formType"
+														value="blockUser" type="hidden">
+													<button class="link-button block-button">
+														<svg xmlns="http://www.w3.org/2000/svg" width="30"
+															height="30" fill="currentColor" class="bi bi-ban"
+															viewBox="0 0 16 16">
+															<path
+																d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" /></svg>
+													</button>
+													<%
+													} else {
+													%>
+													<button class="link-button block-button">nil</button>
+													<%
+													}
+													%>
+												
+											</td>
+											<td>
+												<%
+												if (customer.getDeleteAt().equals("0")) {
+												%>
+												<form class="deleteForm">
+													<input name="id" value="<%=customer.getId()%>"
+														type="hidden"> <input name="formType"
+														value="deleteUser" type="hidden">
+													<button class="link-button block-button">
+														<svg xmlns="http://www.w3.org/2000/svg" width="30"
+															height="30" fill="currentColor" class="bi bi-trash3-fill"
+															viewBox="0 0 16 16">
+															<path
+																d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" /></svg>
+													</button>
+												</form> <%
+ } else {
+ %>
+												<button class="link-button block-button">nil</button> <%
+ }
+ %>
+											</td>
+
 										</tr>
+										<%
+										}
+										%>
 									</tbody>
 								</table>
 							</div>
@@ -502,33 +544,8 @@
 						</div>
 					</div>
 				</div>
-				<div id="delete" style="display: none;">
-					<div class="d-flex  transactionbox row">
-						<h3>You are one step ahead to take Statement</h3>
-						<div class="col-5 align-items-center" style="padding-top: 4%;">
-							<form id="deposit" class="text-center forms" method="post"
-								style="padding-top: 5%;">
-								<label for="accountno">Account Number:</label> <select
-									id="accountno" name="accountno" class="textbox">
-									<option value="1000000000000012">1000000000000012</option>
-									<option value="1000000000000016">1000000000000016</option>
-								</select> <label style="padding-top: 2%;" for="duration">Duration:</label>
-								<select id="duration" name="duration" class="textbox">
-									<option value="1">1 Month</option>
-									<option value="2">2 Months</option>
-									<option value="3">3 Months</option>
-								</select><br>
-								<button type="submit">Take Statement</button>
-							</form>
-						</div>
-						<div class="col-6"
-							style="background-image: url(Images/statement.png); background-size: cover; background-position: center;">
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
-	</div>
 	</div>
 
 	<!-- Details of the user for view in view profile and edit options -->
@@ -595,7 +612,7 @@
 										</th>
 										<td>:</td>
 										<td>
-											<p id="customerAddres"></p>
+											<p id="customerAddress"></p>
 										</td>
 									</tr>
 									<tr>
@@ -623,6 +640,15 @@
 										<td>:</td>
 										<td>
 											<p id="customerStatus"></p>
+										</td>
+									</tr>
+									<tr>
+										<th scope="col">
+											<p>Deleted At</p>
+										</th>
+										<td>:</td>
+										<td>
+											<p id="customerDeletion"></p>
 										</td>
 									</tr>
 								</tbody>
@@ -656,25 +682,29 @@
 						<div class="d-flex  transactionbox row">
 							<h3>Edit Customer Details</h3>
 							<div class="col-5 align-items-center" style="padding-top: 4%;">
-								<form id="deposit" class="text-center forms" method="post"
-									style="padding-top: 5%;">
-									<label for="accountno">Name:</label> <input class="textbox"
-										type="text" id="name" name="name" placeholder="Ram"> <label
+								<form id="editUserDetails" class="text-center forms"
+									method="post" style="padding-top: 5%;">
+									<input name="formType" value="editUser" type="hidden">
+									<input id="editid" name="userid" type="hidden"> <label
+										for="accountno">Name:</label> <input class="textbox"
+										type="text" id="editname" name="name"> <label
 										for="accountno">Mobile:</label> <input class="textbox"
-										type="text" id="mobile" name="mobile"
-										placeholder="909090909090"><br> <label
+										type="text" id="editmobile" name="mobile"><br> <label
 										for="accountno">Email:</label> <input class="textbox"
-										type="email" id="email" name="email"
-										placeholder="Ram@gmail.com"><br> <label
+										type="email" id="editemail" name="email"><br> <label
 										for="accountno">Date Of Birth:</label> <input class="textbox"
-										type="text" id="dob" name="dob" placeholder="13-09-1999"><br>
+										type="text" id="editdob" name="dob"><br> <label
+										for="accountno">Gender:</label> <input class="textbox"
+										type="text" id="editgender" name="gender"><br> <label
+										for="accountno">Address:</label> <input class="textbox"
+										type="text" id="editaddress" name="address"><br>
 									<label for="accountno">Aadhar Number:</label> <input
-										class="textbox" type="text" id="aadhar" name="aadhar"
-										placeholder="1234567890123456"><br> <label
-										for="accountno">Pan Number:</label> <input class="textbox"
-										type="text" id="pan" name="pan" placeholder="ASDFG12345"><br>
+										class="textbox" type="text" id="editaadhar" name="aadhar"><br>
+									<label for="accountno">Pan Number:</label> <input
+										class="textbox" type="text" id="editpan" name="pan"><br>
 									<button type="submit">Submit</button>
 								</form>
+								<p id="editmessage"></p>
 							</div>
 							<div class="col-6"
 								style="background-image: url(Images/edit.png); background-size: cover; background-position: center;">
@@ -694,15 +724,29 @@
 		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 	<script
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 </body>
 <script>
+
     var buttonContentPairs = [
         { buttonId: "add-button", contentId: "addcustomer" },
         { buttonId: "view-button", contentId: "view" },
         { buttonId: "edit-button", contentId: "edit" },
         { buttonId: "status-button", contentId: "status" }
     ];
+  
+    var openedDivId = localStorage.getItem('openedDiv');
+
+    if (openedDivId) {
+        document.getElementById(openedDivId).style.display = 'block';
+    } else {
+        document.getElementById('view').style.display = 'block';
+    }
+
 
     buttonContentPairs.forEach(pair => {
         var button = document.getElementById(pair.buttonId);
@@ -716,37 +760,164 @@
                     }
                 });
                 content.style.display = 'block';
+                localStorage.setItem('openedDiv', pair.contentId);
             }
         });
     });
 
     // switch between employee and customer account creation
-
-    document.getElementById("newemploee").addEventListener('click', function () {
-        document.getElementById("customer").style.display = (document.getElementById("customer").style.display === 'none') ? 'block'
-            : 'none';
-        document.getElementById("employee").style.display = (document.getElementById("customer").style.display === 'none') ? 'block'
-            : 'none';
-        if (document.getElementById("customer").style.display === 'none') {
-            document.getElementById("newemploee").innerHTML = 'Add new Customer';
-            document.getElementById("textnewcustomer").innerHTML = 'Add a new Employee'
-        }
-        else {
-            document.getElementById("newemploee").innerHTML = 'Add new Employee';
-            document.getElementById("textnewcustomer").innerHTML = 'Add a new Customer'
-        }
-    });
+    function changeUser(){
+    	var selectedUser = document.getElementById("usertype").value;
+    	 if(selectedUser === "User"){
+    		document.getElementById("user-details").style.display='block';
+    		document.getElementById("employee-detail").style.display='none';
+    	}
+		if(selectedUser === "Employee"){
+			document.getElementById("user-details").style.display='none';
+    		document.getElementById("employee-detail").style.display='block';	
+		 }
+    }
     
-    
-    
+    // displaying the customer record when the view button is clicked
     document.querySelectorAll('.view-details').forEach(button => {
         button.addEventListener('click', function () {
-        	console.log("hi  "+customerDetails.name);
-        	 var customerDetails = this.getAttribute('data-user-id');
-        	 document.getElementById('customerName').innerHTML = customerDetails.name;
+        	 const customerDetails = JSON.parse(this.getAttribute('data-user-id'));
+        	 document.getElementById('customerName').innerHTML = customerDetails.Name;
+        	 document.getElementById('customerMobile').innerHTML = customerDetails.Mobile;
+        	 document.getElementById('customerEmail').innerHTML = customerDetails.Email;
+        	 var date =new Date(customerDetails.Dob);
+  			 var year = date.getFullYear();
+  			 var month = ('0' + (date.getMonth() + 1)).slice(-2); 
+  			 var day = ('0' + date.getDate()).slice(-2);
+  			 var formattedDate = year + '-' + month + '-' + day;
+             document.getElementById('customerDob').innerHTML = formattedDate;	 
+        	 document.getElementById('customerAddress').innerHTML = customerDetails.Address;
+        	 document.getElementById('CustomerAadhar').innerHTML = '********'+(customerDetails.Aadhar).substring(8);
+        	 document.getElementById('customerPan').innerHTML = '********'+(customerDetails.Pan).substring(6);
+        	 document.getElementById('customerStatus').innerHTML =((customerDetails.Status)=='1')?'Active':'InActive';
+        	 var deleteddate =new Date(customerDetails.DeleteAt);
+  			 var deletedyear = date.getFullYear();
+  			 var deletedmonth = ('0' + (date.getMonth() + 1)).slice(-2); 
+  			 var deletedday = ('0' + date.getDate()).slice(-2);
+  			 var deletedformattedDate = year + '-' + month + '-' + day;
+  			 console.log(deleteddate+" "+deletedyear+" "+customerDetails.DeleteAt);
+        	 document.getElementById('customerDeletion').innerHTML =((customerDetails.DeleteAt)=='0')?deletedformattedDate:'Nil';
         });
     });
-</script>
+    
+    
+    // displaing customer details in edit button
+      document.querySelectorAll('.edit-details').forEach(button => {
+        button.addEventListener('click', function () {
+        	 const customerEditDetails = JSON.parse(this.getAttribute('data-userEdit-id'));
+        	 document.getElementById('editid').value = customerEditDetails.Id;
+        	 document.getElementById('editname').value = customerEditDetails.Name;
+        	 document.getElementById('editmobile').value = customerEditDetails.Mobile;
+        	 document.getElementById('editemail').value = customerEditDetails.Email;
+        		var date =new Date(customerEditDetails.Dob);
+     			var year = date.getFullYear();
+     			var month = ('0' + (date.getMonth() + 1)).slice(-2); 
+     			var day = ('0' + date.getDate()).slice(-2);
+     			var formattedDate = year + '-' + month + '-' + day;
+             document.getElementById('editdob').value = formattedDate;	 
+        	 document.getElementById('editgender').value = customerEditDetails.Gender;
+        	 document.getElementById('editaddress').value = customerEditDetails.Address;
+        	 document.getElementById('editaadhar').value = customerEditDetails.Aadhar;
+        	 document.getElementById('editpan').value = customerEditDetails.Pan;
+        	 /* document.getElementById('editstatus').value =((customerEditDetails.Status)=='1')?'Active':'InActive'; */
+         });
+    });
+    
+      //submiting form for new customer and employee
+      $(document).ready(function(){
+          var forms = [
+              { formId: 'customerForm', messageId: 'customermessage' },
+              { formId: 'employeeForm', messageId: 'employeemessage' }
+          ];
+          forms.forEach(function(form) {
+              $('#' + form.formId).submit(function(event) {
+                  event.preventDefault();
+                  var formData = $(this).serialize();
+                  $.ajax({
+                      type: 'POST',
+                      url: 'home',
+                      data: formData,
+                      success: function(response) {
+                          if (response.error) {
+                          	(document).getElementById(form.messageId).innerHTML = 'Something went wrong, Try Again';
+                          	(document).getElementById(form.messageId).style.color = 'red';
+                          } else {
+                          	document.getElementById(form.formId).reset();
+                          	(document).getElementById(form.messageId).innerHTML = 'successful';
+                          	(document).getElementById(form.messageId).style.color = 'green';
+                          }
+                      },
+                      error: function(xhr, status, error) {
+                      	window.alert("Something Went Wrong, Try after sometime....");
+                      }
+                  });
+              });
+          });
+      });
+      
+      //submitin the editing form
+      $(document).ready(function(){
+      	$("#editUserDetails").submit(function(event){
+      		event.preventDefault();
+      		var formdata = $(this).serialize();
+      		$.ajax({
+      			type:'POST',
+      			url:'home',
+      			data:formdata,
+      			success:function(response){
+      				if (response.error) {
+                      	(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
+                      	(document).getElementById("editmessage").style.color = 'red';
+                      	 setTimeout(function() {
+                      	        document.getElementById("editmessage").innerHTML = '';
+                      	    }, 2000);
+                      } else {
+                      	document.getElementById("editUserDetails").reset();
+                      	(document).getElementById("editmessage").innerHTML = 'successful';
+                      	(document).getElementById("editmessage").style.color = 'green';
+                      	 setTimeout(function() {
+                      	        document.getElementById("editmessage").innerHTML = '';
+                      	    }, 2000);
+                      }
+      			},
+                  error: function(xhr, status, error) {
+                  	window.alert("Something Went Wrong, Try after sometime....");
+                  }
+      		});
+      	});
+      }); 
+      
+      // block,unblock,delete user details
+		$(document).ready(function(){
+		    $(".blockForm, .deleteForm").each(function() {
+		        $(this).submit(function(event){
+		            event.preventDefault();
+		            var formdata = $(this).serialize();
+		            var formType = $(this).find('input[name="formType"]').val(); 
+		            $.ajax({
+		                type:'POST',
+		                url:'home',
+		                data:formdata,
+		                success:function(response){
+		                    if (response.error) {
+		                        window.alert("Unsuccessful");
+		                    } else {
+		                        window.alert("Successful"); 
+		                    }
+		                },
+		                error: function(xhr, status, error) {
+		                    window.alert("Something Went Wrong, Try after sometime....");
+		                }
+		            });
+		        });
+		    });
+		});
+
 
 </script>
 

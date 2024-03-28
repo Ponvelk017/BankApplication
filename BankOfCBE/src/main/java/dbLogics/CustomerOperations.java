@@ -91,16 +91,36 @@ public class CustomerOperations implements Customer {
 	}
 
 	@Override
-	public int updateDetails(int Id, String column, Object value) throws InvalidInputException {
-		InputCheck.checkNegativeInteger(Id);
-		InputCheck.checkNull(column);
-		InputCheck.checkNull(value);
+	public int updateDetails(int id, CustomerDetails customerDeatails) throws InvalidInputException {
+		InputCheck.checkNegativeInteger(id);
 
+		String query = "update User join Customer on User.Id = Customer.Id set Name = ?,DOB =?,Mobile=?,Email=?,Gender=?,Aadhar=?,Pan=?,Address=? where User.Id = ?";
+		int affectedRows = 0;
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setObject(1, customerDeatails.getName());
+			statement.setObject(2, customerDeatails.getDOB());
+			statement.setObject(3, customerDeatails.getMobile());
+			statement.setObject(4, customerDeatails.getEmail());
+			statement.setObject(5, customerDeatails.getGender());
+			statement.setObject(6, customerDeatails.getAadhar());
+			statement.setObject(7, customerDeatails.getPan());
+			statement.setObject(8, customerDeatails.getAddress());
+			statement.setObject(9, id);
+			affectedRows = statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
+		return affectedRows;
+	}
+
+	@Override
+	public int updateRecord(int id, String column, Object value) throws InvalidInputException {
+		InputCheck.checkNegativeInteger(id);
 		String query = "update User join Customer on User.Id = Customer.Id set " + column + " = ? where User.Id = ?";
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, value);
-			statement.setInt(2, Id);
+			statement.setObject(2, id);
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
@@ -130,11 +150,11 @@ public class CustomerOperations implements Customer {
 				count++;
 			}
 			if (customerDetails.getStatus() != null) {
-					if (count > 1) {
-						query.append("AND ");
-					}
-					query.append(" User.Status = ? ");
-					count++;
+				if (count > 1) {
+					query.append("AND ");
+				}
+				query.append(" User.Status = ? ");
+				count++;
 			}
 			statement = connection.prepareStatement((query.toString()));
 			count = 1;

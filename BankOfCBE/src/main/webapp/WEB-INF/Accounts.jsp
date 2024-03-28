@@ -226,8 +226,8 @@
 							<form id="duration" action="<%=request.getContextPath()%>/home"
 								class="durationform" method="post">
 								<input name="formType" value="transactionDuration" type="hidden">
-								From <input style="width: 35%;" name="from" type="date">
-								To <input style="width: 35%;" name="to" type="date">
+								From <input style="width: 35%;" name="from" type="date" required>
+								To <input style="width: 35%;" name="to" type="date" required>
 								<button class="link-button" type="submit">
 									<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
 										fill="currentColor" class="bi bi-arrow-down-square-fill"

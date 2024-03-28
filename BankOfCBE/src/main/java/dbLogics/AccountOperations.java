@@ -169,6 +169,21 @@ public class AccountOperations implements Account {
 	}
 
 	@Override
+	public Map<Long, AccountDetails> getAccounts(int limit, int offset, String status) throws InvalidInputException {
+		Map<Long, AccountDetails> userAccount = new HashMap<Long, AccountDetails>();
+		String query = "select * from Account where Status = ?  limit " + limit + " offset " + offset;
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setObject(1, status);
+			try (ResultSet record = statement.executeQuery()) {
+				userAccount = setDetails(record);
+			}
+		} catch (SQLException e) {
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
+		return userAccount;
+	}
+
+	@Override
 	public int updateColumn(String column, Object DepositeAmount, long accountNumber) throws InvalidInputException {
 		InputCheck.checkNull(column);
 		InputCheck.checkNull(DepositeAmount);

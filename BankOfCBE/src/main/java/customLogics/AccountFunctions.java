@@ -21,6 +21,7 @@ public class AccountFunctions {
 		InputCheck.checkNull(account);
 		AccountDetails tempAccountDetails = new AccountDetails();
 		tempAccountDetails.setUserId(account.getUserId());
+		System.out.println(account.getAccountType()+" "+account.getUserId()+" "+account.getBalance()+" "+account.getBranchId());
 		Map<Long, AccountDetails> records = accountOperation.getCustomAccountDetails(tempAccountDetails);
 		for (Entry<?, ?> individualAccount : records.entrySet()) {
 			tempAccountDetails = (AccountDetails) individualAccount.getValue();
@@ -76,5 +77,9 @@ public class AccountFunctions {
 			}
 		}
 		return affectedRows;
+	}
+	
+	public Map<Long, AccountDetails> getAccounts(int limit , int offset , String status) throws InvalidInputException{
+		return accountOperation.getAccounts(limit, offset,status);
 	}
 }

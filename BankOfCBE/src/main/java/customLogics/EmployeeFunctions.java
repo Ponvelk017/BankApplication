@@ -1,6 +1,6 @@
 package customLogics;
 
-import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -18,11 +18,11 @@ public class EmployeeFunctions {
 
 	public static int validateDetails(EmployeeDetails employee) throws InvalidInputException {
 		InputCheck.checkNull(employee);
-		if (employee.getName().matches("^[A-Za-z.]+") && (employee.getMobile()+"").matches("^[0-9]{10}$")
+		if (employee.getName().matches("^[A-Za-z.]+") && (employee.getMobile() + "").matches("^[0-9]{10}$")
 				&& employee.getEmail().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 						+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
 			LocalDate currentDate = LocalDate.now();
-			LocalDate dob = (new Date(employee.getDOB())).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate dob = LocalDate.ofInstant(Instant.ofEpochMilli(employee.getDOB()), ZoneId.systemDefault());
 			Period period = Period.between(dob, currentDate);
 			if (period.getYears() >= 18 && "MaleFemale".contains(employee.getGender()) && employee.getPassword()
 					.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[a-zA-Z0-9@#$%^&+=!]).{8,}$")) {
@@ -60,4 +60,8 @@ public class EmployeeFunctions {
 		return employeeOperations.updateDetails(Id, column, value);
 	}
 
+	public int getAdmin(int id) throws InvalidInputException {
+		Integer customerId = id;
+		return (int) employeeOperations.getSingleRecord("Admin", "Id", customerId);
+	}
 }

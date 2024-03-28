@@ -41,11 +41,19 @@ public class UserOperations implements User {
 	}
 
 	@Override
-	public Map<Integer, CustomerDetails> getUsers(int limit, int offset) throws InvalidInputException {
+	public Map<Integer, CustomerDetails> getUsers(String status, boolean isdeleted, int limit, int offset)
+			throws InvalidInputException {
 		connection = DBConnection.getConnection();
 		Map<Integer, CustomerDetails> users = new HashMap<Integer, CustomerDetails>();
-		String query = "select * from User join Customer on User.Id = Customer.Id limit " + limit + " offset " + offset;
+		String query = "select * from User join Customer on User.Id = Customer.Id where Status = ? or DeleteAt ";
+		if (isdeleted) {
+			query += "is not null ";
+		} else {
+			query += "is null ";
+		}
+		query += "limit " + limit + " offset " + offset;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setObject(1, status);
 			try (ResultSet record = statement.executeQuery()) {
 				while (record.next()) {
 					CustomerDetails customerDetails = new CustomerDetails();
@@ -59,6 +67,7 @@ public class UserOperations implements User {
 					customerDetails.setAadhar(record.getString("Aadhar"));
 					customerDetails.setPan(record.getString("Pan"));
 					customerDetails.setAddress(record.getString("Address"));
+					customerDetails.setDeleteAt(record.getLong("DeleteAt")+"");
 					users.put(customerDetails.getId(), customerDetails);
 				}
 			}

@@ -26,8 +26,9 @@ public class UserFunctions {
 		return result;
 	}
 
-	public Map<Integer, CustomerDetails> getUsers(int limit, int offset) throws InvalidInputException {
-		return userOpertaion.getUsers(limit, offset);
+	public Map<Integer, CustomerDetails> getUsers(String status, boolean isDeleted, int limit, int offset)
+			throws InvalidInputException {
+		return userOpertaion.getUsers(status, isDeleted, limit, offset);
 	}
 
 	public String getSinglRecord(String column, int userId) throws InvalidInputException {

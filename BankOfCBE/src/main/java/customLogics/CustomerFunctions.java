@@ -1,5 +1,6 @@
 package customLogics;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -56,20 +57,43 @@ public class CustomerFunctions {
 		return 1;
 	}
 
-	public int updateCustomer(int Id, String column, Object value) throws InvalidInputException {
+	public int updateCustomer(int Id, CustomerDetails customerDetails) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(Id);
-		InputCheck.checkNull(column);
-		InputCheck.checkNull(value);
 		int affectedColumns = 0;
-		CustomerDetails customerDetails = customerCache.getCustomer(Id);
 		synchronized (customerDetails) {
-			if (column.equals("DOB")) {
-				value = Common.dateToMilli(value.toString());
-			}
-			affectedColumns = customerOpertaion.updateDetails(Id, column, value);
+			affectedColumns = customerOpertaion.updateDetails(Id, customerDetails);
 			if (affectedColumns > 0) {
 				customerCache.deleteCustomer(Id);
 			}
+			System.out.println(affectedColumns);
+			return affectedColumns;
+		}
+	}
+
+	public int updateStatus(int Id,Object value) throws InvalidInputException {
+		InputCheck.checkNegativeInteger(Id);
+		int affectedColumns = 0;
+		CustomerDetails customerDetails = customerCache.getCustomer(Id);
+		synchronized (customerDetails) {
+			affectedColumns = customerOpertaion.updateRecord(Id, "Status" , value);
+			if (affectedColumns > 0) {
+				customerCache.deleteCustomer(Id);
+			}
+			System.out.println(affectedColumns);
+			return affectedColumns;
+		}
+	}
+	
+	public int deleteUser(int Id) throws InvalidInputException {
+		InputCheck.checkNegativeInteger(Id);
+		int affectedColumns = 0;
+		CustomerDetails customerDetails = customerCache.getCustomer(Id);
+		synchronized (customerDetails) {
+			affectedColumns = customerOpertaion.updateRecord(Id, "DeleteAt" , System.currentTimeMillis());
+			if (affectedColumns > 0) {
+				customerCache.deleteCustomer(Id);
+			}
+			System.out.println(affectedColumns);
 			return affectedColumns;
 		}
 	}

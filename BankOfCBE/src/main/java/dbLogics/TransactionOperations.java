@@ -159,6 +159,10 @@ public class TransactionOperations implements Transaction {
 		InputCheck.checkNull(condition);
 		List<TransactionDetails> result = new ArrayList<TransactionDetails>();
 		StringBuilder query = new StringBuilder("select ");
+		int offsetValue = 0;
+		if (condition.get("offset") != null) {
+			offsetValue = (int) condition.get("offset");
+		}
 		for (String columns : columnToGet) {
 			query.append(columns + " ,");
 		}
@@ -190,6 +194,7 @@ public class TransactionOperations implements Transaction {
 					query.append("AND ");
 				}
 				query.append("TransactionType = ?");
+				count++;
 			}
 			if ((long) condition.get("From") != 0) {
 				if (count > 1) {
@@ -205,15 +210,16 @@ public class TransactionOperations implements Transaction {
 				query.append("TransactionTime <= ?");
 				count++;
 			}
-			if(count ==1) {
-				query.delete(query.length()-6, query.length());
+			if (count == 1) {
+				query.delete(query.length() - 6, query.length());
 			}
 			if (condition.get("Sort") != null) {
-				query.append(" order by "+condition.get("SortColumn")+" " + condition.get("Sort"));
+				query.append(" order by " + condition.get("SortColumn") + " " + condition.get("Sort"));
 			}
 			query.append(" limit " + condition.get("limit"));
+			query.append(" offset " + offsetValue);
 			statement = connection.prepareStatement(query.toString());
-
+			System.out.println(query.toString());
 			count = 1;
 			if (transactionDetails.getUserId() != 0) {
 				statement.setLong(count++, transactionDetails.getUserId());
@@ -227,7 +233,7 @@ public class TransactionOperations implements Transaction {
 			if (transactionDetails.getTransactionType() != null) {
 				statement.setString(count++, transactionDetails.getTransactionType());
 			}
-			if ((long) condition.get("From") != 0 ) {
+			if ((long) condition.get("From") != 0) {
 				statement.setLong(count++, (long) condition.get("From"));
 			}
 			if ((long) condition.get("To") != 0) {

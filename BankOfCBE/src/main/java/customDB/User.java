@@ -9,7 +9,8 @@ public interface User {
 
 	public Object getSingleRecord(String columnToGet, String column, Object value) throws InvalidInputException;
 
-	public Map<Integer, CustomerDetails> getUsers(int limit, int offset) throws InvalidInputException;
+	public Map<Integer, CustomerDetails> getUsers(String status, boolean isdeleted, int limit, int offset)
+			throws InvalidInputException;
 
 	public int deleteUser(int userId) throws InvalidInputException;
 

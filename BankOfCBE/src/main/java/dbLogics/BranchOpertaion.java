@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import customDB.Branch;
 import details.BranchDetails;
@@ -33,14 +35,14 @@ public class BranchOpertaion implements Branch {
 	}
 
 	@Override
-	public int updateBranch(String column, Object value, int id) throws InvalidInputException {
-		InputCheck.checkNull(value);
-		InputCheck.checkNull(column);
-		String query = "update Branch set " + column + " = ? where Id =?";
+	public int updateBranch(BranchDetails branchDetails, int id) throws InvalidInputException {
+		String query = "update Branch set Address = ?,ManagerId = ? ,Contact = ? where Id =?";
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
-			statement.setObject(1, value);
-			statement.setInt(2, id);
+			statement.setObject(1, branchDetails.getAddress());
+			statement.setObject(2, branchDetails.getManagerId());
+			statement.setObject(3, branchDetails.getPhoneNumber());
+			statement.setInt(4, id);
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
@@ -70,4 +72,27 @@ public class BranchOpertaion implements Branch {
 		}
 		return branchDetails;
 	}
+
+	@Override
+	public List<BranchDetails> getBranches(int limit, int offset) throws InvalidInputException {
+		List<BranchDetails> results = new ArrayList<BranchDetails>();
+		String query = "select * from Branch limit " + limit + " offset " + offset;
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			try (ResultSet record = statement.executeQuery()) {
+				while (record.next()) {
+					BranchDetails branchDetails = new BranchDetails();
+					branchDetails.setId(record.getInt("Id"));
+					branchDetails.setIfscCode(record.getString("IFSCCode"));
+					branchDetails.setAddress(record.getString("Address"));
+					branchDetails.setManagerId(record.getInt("ManagerId"));
+					branchDetails.setPhoneNumber(record.getLong("Contact"));
+					results.add(branchDetails);
+				}
+			}
+		} catch (SQLException e) {
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
+		return results;
+	}
+
 }

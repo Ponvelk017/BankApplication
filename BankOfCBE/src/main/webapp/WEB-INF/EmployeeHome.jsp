@@ -25,8 +25,38 @@
 </head>
 
 <body>
-<jsp:include page="EmployeeNavbar.jsp"></jsp:include>
-
+	<jsp:include page="EmployeeNavbar.jsp"></jsp:include>
+	<nav class="col-md-2  bg-light sidebar">
+		<ul class="nav flex-column">
+			<li class="nav-item">
+				<div class="nav-link nav-linka text-center">
+					<button type="submit" id="view-button" class="link-button">
+						<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+							fill="currentColor" class="bi bi-person-badge-fill"
+							viewBox="0 0 16 16">
+                            <path
+								d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm4.5 0a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6m5 2.755C12.146 12.825 10.623 12 8 12s-4.146.826-5 1.755V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1z" />
+                        </svg>
+						<br> Complaints
+					</button>
+			</li>
+			<li class="nav-item">
+				<div class="nav-link nav-linka text-center">
+					<button type="submit" id="add-button" class="link-button">
+						<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+							fill="currentColor" class="bi bi-person-fill-add"
+							viewBox="0 0 16 16">
+                            <path
+								d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                            <path
+								d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4" />
+                        </svg>
+						<br> Resolved Complaints
+					</button>
+				</div>
+			</li>
+		</ul>
+	</nav>
 	<div class="container account">
 		<div class="tempp" style="padding-bottom: 1%;">
 			<h2>Complaints</h2>
