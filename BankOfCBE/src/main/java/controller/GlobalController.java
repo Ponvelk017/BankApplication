@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
+
+import com.google.gson.JsonObject;
 
 import cacheLogics.RedisCache;
 import customLogics.AccountFunctions;
@@ -72,10 +76,11 @@ public class GlobalController extends HttpServlet {
 				AccountDetails accountDetails = new AccountDetails();
 				String customerName = "";
 				accountDetails.setUserId(loggedUserId);
+				accountDetails.setStatus("1");
 				Map<Long, AccountDetails> accountRecords = accountFunctions.accountDetails(accountDetails);
 				if (!accountRecords.isEmpty()) {
 					customerName = userFunctions.getSinglRecord("Name", loggedUserId);
-					List<TransactionDetails> latestTransaction = transactionFunctions.getLatestDetails(10, 0,
+					List<TransactionDetails> latestTransaction = transactionFunctions.getLatestDetails(11, 0,
 							loggedUserId, "Id");
 					request.setAttribute("accounts", accountRecords);
 					request.setAttribute("customerName", customerName);
@@ -174,7 +179,7 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "EmployeeBranch": {
-				List<BranchDetails> branches = branchFunctions.getBranchDetails(10, 0);
+				List<BranchDetails> branches = branchFunctions.getBranchDetails(11, 0);
 				String isAdmin = currentUser.getAttribute("isAdmin") + "";
 				request.setAttribute("isAdmin", isAdmin);
 				request.setAttribute("branches", branches);
@@ -207,12 +212,36 @@ public class GlobalController extends HttpServlet {
 			case "login": {
 				String userId = request.getParameter("id");
 				String password = request.getParameter("password");
+				String isActive = userFunctions.getSinglRecord("Status", Integer.parseInt(userId));
+				if (isActive.equals("0")) {
+					request.setAttribute("message", "This account is Blocked");
+					RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
+					loginDispatcher.forward(request, response);
+				}
+				Map<String, Object> invalidAttempts = userFunctions.blockedDetails(Integer.parseInt(userId));
+
+				if ((int) invalidAttempts.get("InvalidAttempts") > 2) {
+					Instant currentTime = Instant.now();
+					Instant blockedTime = Instant.ofEpochMilli((long) invalidAttempts.get("BlockedTime"));
+					long timeDifference = Duration.between(currentTime, blockedTime).toMillis();
+					System.out.println("lkjhgf" +timeDifference);
+					if (timeDifference >= (24 * 60 * 60 * 1000L)) {
+						System.out.println("kjhgfd");
+						userFunctions.deleteBlockedUser(Integer.parseInt(userId));
+					}
+				}
+
+				if ((int) invalidAttempts.get("InvalidAttempts") > 2) {
+					request.setAttribute("message", "Login Attempts Exceeds! Your Account is Temporarily Closed !");
+					RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
+					loginDispatcher.forward(request, response);
+				}
 				if (userId.matches("^\\d+$")) {
 					if (password != null) {
 						boolean isAuth = userFunctions.login(Integer.parseInt(userId), password);
 						if (isAuth) {
-							userSession = request.getSession(true);
 							String userType = userFunctions.getSinglRecord("Type", Integer.parseInt(userId));
+							userSession = request.getSession(true);
 							userSession.setAttribute("UserId", Integer.parseInt(userId));
 							userSession.setAttribute("UserType", userType);
 							if (userType != null) {
@@ -240,7 +269,18 @@ public class GlobalController extends HttpServlet {
 								}
 							}
 						} else {
-							request.setAttribute("message", "Invalid UserId or Password");
+							if ((int) invalidAttempts.get("InvalidAttempts") >= 2) {
+								request.setAttribute("message",
+										"Login Attempts Exceeds! Your Account is Temporarily Closed !");
+								RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
+								loginDispatcher.forward(request, response);
+							}
+
+							userFunctions.addBlockedUser(Integer.parseInt(userId),
+									(int) invalidAttempts.get("InvalidAttempts") + 1, System.currentTimeMillis());
+							String errorMessage = " Invalid UserId or Password .You have only "
+									+ (2 - (int) invalidAttempts.get("InvalidAttempts")) + " Attempts Remaining";
+							request.setAttribute("message", errorMessage);
 							RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
 							loginDispatcher.forward(request, response);
 						}
@@ -279,22 +319,34 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "transactionUserPagination": {
-				List<TransactionDetails> latestTransaction = transactionFunctions.getLatestDetails(11,
-						Integer.parseInt(request.getParameter("offset")), 0, "TransactionTime");
-				request.setAttribute("latestTransactions", latestTransaction);
-				request.setAttribute("pageno", Integer.parseInt(request.getParameter("pageno")));
-				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/TransactionManagement.jsp");
-				homeDispatcher.forward(request, response);
+				AccountDetails accountDetails = new AccountDetails();
+				String customerName = "";
+				accountDetails.setUserId(loggedUserId);
+				Map<Long, AccountDetails> accountRecords = accountFunctions.accountDetails(accountDetails);
+				if (!accountRecords.isEmpty()) {
+					customerName = userFunctions.getSinglRecord("Name", loggedUserId);
+					List<TransactionDetails> latestTransaction = transactionFunctions.getLatestDetails(11,
+							Integer.parseInt(request.getParameter("offset")), loggedUserId, "Id");
+					request.setAttribute("accounts", accountRecords);
+					request.setAttribute("customerName", customerName);
+					request.setAttribute("latestTransaction", latestTransaction);
+					request.setAttribute("pageno", 1);
+					RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/Accounts.jsp");
+					homeDispatcher.forward(request, response);
+				}
 			}
 				break;
 			case "deposit": {
 				long accountNumber = Long.parseLong(request.getParameter("accountno"));
 				long amount = Long.parseLong(request.getParameter("amount"));
 				long transactionId = transactionFunctions.newDeposite(accountNumber, amount);
-				if (transactionId <= 0) {
-					request.setAttribute("message", "Something went wrong ,Deposite was not successful.Try Again");
+				JSONObject responseData = new JSONObject();
+				if (transactionId > 0) {
+					responseData.put("status", true);
+					responseData.put("message", "Updates Successfully");
 				} else {
-					request.setAttribute("message", "Deposit  was Successfull");
+					responseData.put("status", false);
+					responseData.put("message", "Failed");
 				}
 				AccountDetails accountDetails = new AccountDetails();
 				String customerName = "";
@@ -306,12 +358,12 @@ public class GlobalController extends HttpServlet {
 					request.setAttribute("latestTransaction", latestTransaction);
 					request.setAttribute("accounts", accountRecords);
 					request.setAttribute("customerName", customerName);
+					request.setAttribute("pageno", 1);
 					customerName = userFunctions.getSinglRecord("Name", loggedUserId);
 				}
 				request.setAttribute("pageno", 1);
-				RequestDispatcher depositeDispatcher = request.getRequestDispatcher("/WEB-INF/Accounts.jsp");
-				depositeDispatcher.forward(request, response);
-
+				response.setContentType("application/json");
+				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "withdraw": {
@@ -319,10 +371,13 @@ public class GlobalController extends HttpServlet {
 				long amount = Long.parseLong(request.getParameter("amount"));
 				String description = request.getParameter("remark");
 				long transactionId = transactionFunctions.newWithdraw(accountNumber, amount, description);
-				if (transactionId <= 0) {
-					request.setAttribute("message", "Something went wrong ,Withdraw was not successful.Try Again");
+				JSONObject responseData = new JSONObject();
+				if (transactionId > 0) {
+					responseData.put("status", true);
+					responseData.put("message", "Updates Successfully");
 				} else {
-					request.setAttribute("message", "Withdraw was Successfull");
+					responseData.put("status", false);
+					responseData.put("message", "Failed");
 				}
 				AccountDetails accountDetails = new AccountDetails();
 				String customerName = "";
@@ -335,9 +390,10 @@ public class GlobalController extends HttpServlet {
 					request.setAttribute("latestTransaction", latestTransaction);
 					request.setAttribute("accounts", accountRecords);
 					request.setAttribute("customerName", customerName);
+					request.setAttribute("pageno", 1);
 				}
-				RequestDispatcher depositeDispatcher = request.getRequestDispatcher("/WEB-INF/Accounts.jsp");
-				depositeDispatcher.forward(request, response);
+				response.setContentType("application/json");
+				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "interTransfer": {
@@ -347,10 +403,13 @@ public class GlobalController extends HttpServlet {
 				String description = request.getParameter("remark");
 				Map<String, Integer> records = transactionFunctions.newTransferWithinBank(accountNumber,
 						recAccountNumber, amount, description);
-				if (records.size() >= 0) {
-					request.setAttribute("message", "Something went wrong ,Withdraw was not successful.Try Again");
+				JSONObject responseData = new JSONObject();
+				if (records.size() > 0) {
+					responseData.put("status", true);
+					responseData.put("message", "Updates Successfully");
 				} else {
-					request.setAttribute("message", "Withdraw was Successfull");
+					responseData.put("status", false);
+					responseData.put("message", "Failed");
 				}
 				AccountDetails accountDetails = new AccountDetails();
 				String customerName = "";
@@ -363,9 +422,10 @@ public class GlobalController extends HttpServlet {
 					request.setAttribute("latestTransaction", latestTransaction);
 					request.setAttribute("accounts", accountRecords);
 					request.setAttribute("customerName", customerName);
+					request.setAttribute("pageno", 1);
 				}
-				RequestDispatcher depositeDispatcher = request.getRequestDispatcher("/WEB-INF/Accounts.jsp");
-				depositeDispatcher.forward(request, response);
+				response.setContentType("application/json");
+				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "intraTransfer": {
@@ -376,10 +436,13 @@ public class GlobalController extends HttpServlet {
 				String description = request.getParameter("remark");
 				long transactionId = transactionFunctions.newTransferOtherBank(accountNumber, recAccountNumber, amount,
 						description, ifsc);
-				if (transactionId <= 0) {
-					request.setAttribute("message", "Something went wrong ,Withdraw was not successful.Try Again");
+				JSONObject responseData = new JSONObject();
+				if (transactionId > 0) {
+					responseData.put("status", true);
+					responseData.put("message", "Updates Successfully");
 				} else {
-					request.setAttribute("message", "Withdraw was Successfull");
+					responseData.put("status", false);
+					responseData.put("message", "Failed");
 				}
 				AccountDetails accountDetails = new AccountDetails();
 				String customerName = "";
@@ -392,9 +455,10 @@ public class GlobalController extends HttpServlet {
 					request.setAttribute("latestTransaction", latestTransaction);
 					request.setAttribute("accounts", accountRecords);
 					request.setAttribute("customerName", customerName);
+					request.setAttribute("pageno", 1);
 				}
-				RequestDispatcher depositeDispatcher = request.getRequestDispatcher("/WEB-INF/Accounts.jsp");
-				depositeDispatcher.forward(request, response);
+				response.setContentType("application/json");
+				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "BranchForm": {
@@ -431,7 +495,6 @@ public class GlobalController extends HttpServlet {
 				request.setAttribute("user", searchedUser);
 				request.setAttribute("editUser", activeUsers);
 				request.setAttribute("Inactiveuser", inactiveUsers);
-				request.setAttribute("Inactiveuser", inactiveUsers);
 
 				request.setAttribute("pageno", 1);
 				request.setAttribute("editPageno", 1);
@@ -451,7 +514,6 @@ public class GlobalController extends HttpServlet {
 				Map<Integer, CustomerDetails> inactiveUsers = userFunctions.getUsers(statusInactive, true, 10, 0);
 				request.setAttribute("user", activeUsers);
 				request.setAttribute("editUser", searchedUser);
-				request.setAttribute("Inactiveuser", inactiveUsers);
 				request.setAttribute("Inactiveuser", inactiveUsers);
 
 				request.setAttribute("pageno", 1);
@@ -603,6 +665,7 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "searchTransactionForm": {
+				System.out.println(request.getParameter("pageno"));
 				long fromdate = 0l, todate = 0l;
 				int userId = 0;
 				if (!request.getParameter("customerId").equals("")) {
@@ -624,12 +687,13 @@ public class GlobalController extends HttpServlet {
 				duration.put("To", todate);
 				duration.put("SortColumn", "TransactionTime");
 				duration.put("Sort", request.getParameter("sortBy"));
-				duration.put("limit", 10);
-				duration.put("offset", 0);
+				duration.put("limit", 11);
+				duration.put("offset", (Integer.parseInt(request.getParameter("pageno")) * 10));
 				List<TransactionDetails> record = transactionFunctions.getCustomDetails(transactioDetails,
 						new ArrayList<String>(Arrays.asList("*")), duration);
+				System.out.println("length " + record.size() + " " + duration.get("offset"));
 				request.setAttribute("latestTransactions", record);
-				request.setAttribute("pageno", 1);
+				request.setAttribute("pageno", (Integer.parseInt(request.getParameter("pageno")) + 1));
 				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/TransactionManagement.jsp");
 				homeDispatcher.forward(request, response);
 			}
@@ -764,6 +828,7 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "changePassword": {
+				System.out.println("controller");
 				String originalPassword = userFunctions.getSinglRecord("Password", loggedUserId);
 				String oldpassword = Common.encryptPassword(request.getParameter("oldPassword"));
 				int result = 0;
@@ -784,6 +849,9 @@ public class GlobalController extends HttpServlet {
 				}
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
+			}
+				break;
+			case "blockedFilter": {
 
 			}
 				break;

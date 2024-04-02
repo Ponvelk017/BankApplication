@@ -457,13 +457,10 @@
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>Blocked and Deleted Users</h3>
 							<div class="duration">
-								<form id="duration" class="durationform"
-									style="justify-content: end; gap: 3%;">
-									SearchBy <select id="accountno" name="accountno"
-										class="textbox">
-										<option value="Deleted">Deleted</option>
-										<option value="Blocked">Blocked</option>
-									</select>
+								<form id="blockedFilter" class="durationform" action="home"
+									method="post" style="justify-content: end; gap: 3%;">
+									<input name="formType" value="blockedFilter" type="hidden">
+									Customer Id <input style="width: 30%;" name="id" type="number">
 									<button class="link-button" type="submit">
 										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
 											fill="currentColor" class="bi bi-arrow-down-square-fill"
@@ -780,17 +777,15 @@
 										for="accountno">Name:</label> <input class="textbox"
 										type="text" id="editname" name="name"> <label
 										for="accountno">Mobile:</label> <input class="textbox"
-										type="text" id="editmobile" name="mobile"><br> <label
+										type="number" id="editmobile" name="mobile"><br> <label
 										for="accountno">Email:</label> <input class="textbox"
 										type="email" id="editemail" name="email"><br> <label
 										for="accountno">Date Of Birth:</label> <input class="textbox"
-										type="text" id="editdob" name="dob"><br> <label
-										for="accountno">Gender:</label> <input class="textbox"
-										type="text" id="editgender" name="gender"><br> <label
+										type="date" id="editdob" name="dob"><br> <label
 										for="accountno">Address:</label> <input class="textbox"
 										type="text" id="editaddress" name="address"><br>
 									<label for="accountno">Aadhar Number:</label> <input
-										class="textbox" type="text" id="editaadhar" name="aadhar"><br>
+										class="textbox" type="number" id="editaadhar" name="aadhar"><br>
 									<label for="accountno">Pan Number:</label> <input
 										class="textbox" type="text" id="editpan" name="pan"><br>
 									<button type="submit">Submit</button>
@@ -918,7 +913,6 @@ buttonContentPairs.forEach(pair => {
      			var day = ('0' + date.getDate()).slice(-2);
      			var formattedDate = year + '-' + month + '-' + day;
              document.getElementById('editdob').value = formattedDate;	 
-        	 document.getElementById('editgender').value = customerEditDetails.Gender;
         	 document.getElementById('editaddress').value = customerEditDetails.Address;
         	 document.getElementById('editaadhar').value = customerEditDetails.Aadhar;
         	 document.getElementById('editpan').value = customerEditDetails.Pan;
@@ -938,7 +932,7 @@ buttonContentPairs.forEach(pair => {
                   var formData = $(this).serialize();
                   $.ajax({
                       type: 'POST',
-                      url: 'FormValidation',
+                      url: 'SessionFilter',
                       data: formData,
                       success: function(response) {
                           if (response.error) {
@@ -971,22 +965,16 @@ buttonContentPairs.forEach(pair => {
       		var formdata = $(this).serialize();
       		$.ajax({
       			type:'POST',
-      			url:'home',
+      			url:'SessionFilter',
       			data:formdata,
       			success:function(response){
       				if (response.error) {
                       	(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
                       	(document).getElementById("editmessage").style.color = 'red';
-                      	 /* setTimeout(function() {
-                      	        document.getElementById("editmessage").innerHTML = '';
-                      	    }, 5000); */
                       } else {
                       	document.getElementById("editUserDetails").reset();
                       	(document).getElementById("editmessage").innerHTML = 'successful';
                       	(document).getElementById("editmessage").style.color = 'green';
-                      	/*  setTimeout(function() {
-                      	        document.getElementById("editmessage").innerHTML = '';
-                      	    }, 5000); */
                       }
       			},
                   error: function(xhr, status, error) {

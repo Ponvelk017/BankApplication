@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import customDB.User;
 import details.CustomerDetails;
+import details.TransactionDetails;
 import utility.DBConnection;
 import utility.InputCheck;
 import utility.InvalidInputException;
@@ -53,7 +56,6 @@ public class UserOperations implements User {
 			query += "is null ";
 		}
 		query += " order by Customer.Id  desc limit " + limit + " offset " + offset;
-//		System.out.println(query);
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, status);
 			try (ResultSet record = statement.executeQuery()) {
@@ -69,7 +71,7 @@ public class UserOperations implements User {
 					customerDetails.setAadhar(record.getString("Aadhar"));
 					customerDetails.setPan(record.getString("Pan"));
 					customerDetails.setAddress(record.getString("Address"));
-					customerDetails.setDeleteAt(record.getLong("DeleteAt")+"");
+					customerDetails.setDeleteAt(record.getLong("DeleteAt") + "");
 					users.put(customerDetails.getId(), customerDetails);
 				}
 			}
@@ -108,6 +110,98 @@ public class UserOperations implements User {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 		}
 		return affectedRows;
+	}
+
+	@Override
+	public Map<Integer, CustomerDetails> getCustomData(CustomerDetails customerDetails, String branchId,
+			Map<String, Object> condition) throws InvalidInputException {
+		InputCheck.checkNull(customerDetails);
+		InputCheck.checkNull(condition);
+		Map<Integer, CustomerDetails> users = new LinkedHashMap<Integer, CustomerDetails>();
+		int offsetValue = 0;
+		if (condition.get("offset") != null) {
+			offsetValue = (int) condition.get("offset");
+		}
+		StringBuilder query = new StringBuilder("select distinct User.*,Customer.* from User,Customer");
+		if (branchId != null) {
+			query.append(",Account ");
+		}
+		query.append("where ");
+		try {
+			PreparedStatement statement = connection.prepareStatement(query.toString());
+			query = new StringBuilder(query.subSequence(0, query.length() - 1));
+			query.append("from User join Customer on User.Id = Customer.Id where ");
+			int count = 1;
+			if (customerDetails.getId() != 0) {
+				query.append("Customer.Id = ? ");
+				count++;
+			}
+			if (customerDetails.getName() != null) {
+				if (count > 1) {
+					query.append("AND ");
+				}
+				query.append("Customer.Name = ? ");
+				count++;
+			}
+			if (customerDetails.getMobile() != null) {
+				if (count > 1) {
+					query.append("AND ");
+				}
+				query.append("Customer.Mobile = ? ");
+				count++;
+			}
+			if (branchId != null) {
+				if (count > 1) {
+					query.append("AND ");
+				}
+				query.append("Account.BranchId = ? and Customer.Id = Account.UserId and User.Id = Customer.Id");
+				count++;
+			}
+
+			if (count == 1) {
+				query.delete(query.length() - 6, query.length());
+			}
+			if (condition.get("Sort") != null) {
+				query.append(" order by " + condition.get("SortColumn") + " " + condition.get("Sort"));
+			}
+			query.append(" limit " + condition.get("limit"));
+			query.append(" offset " + offsetValue);
+			statement = connection.prepareStatement(query.toString());
+			count = 1;
+			if (customerDetails.getId() != 0) {
+				statement.setObject(count++, customerDetails.getId());
+			}
+			if (customerDetails.getName() != null) {
+				statement.setObject(count++, customerDetails.getName());
+			}
+			if (customerDetails.getMobile() != null) {
+				statement.setObject(count++, customerDetails.getMobile());
+			}
+			if (branchId != null) {
+				statement.setString(count++, branchId);
+			}
+			try (ResultSet record = statement.executeQuery()) {
+				while (record.next()) {
+					CustomerDetails sortedCustomer = new CustomerDetails();
+					sortedCustomer.setId(record.getInt("Id"));
+					sortedCustomer.setName(record.getString("Name"));
+					sortedCustomer.setDOB(record.getLong("DOB"));
+					sortedCustomer.setMobile(record.getString("Mobile"));
+					sortedCustomer.setEmail(record.getString("Email"));
+					sortedCustomer.setGender(record.getString("Gender"));
+					sortedCustomer.setStatus(record.getString("Status"));
+					sortedCustomer.setAadhar(record.getString("Aadhar"));
+					sortedCustomer.setPan(record.getString("Pan"));
+					sortedCustomer.setAddress(record.getString("Address"));
+					sortedCustomer.setDeleteAt(record.getLong("DeleteAt") + "");
+					users.put(sortedCustomer.getId(), sortedCustomer);
+				}
+			}
+
+		} catch (SQLException e) {
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
+		return users;
 	}
 
 	// BlockedUser Table

@@ -31,6 +31,7 @@
 	crossorigin="anonymous"></script>
 <link rel="stylesheet" href="include/StyleSheet.css" />
 <link rel="stylesheet" href="include/HomeStyle.css" />
+<link rel="stylesheet" href="include/UserManagement.css" />
 <title>Account</title>
 </head>
 
@@ -169,7 +170,7 @@
                             <path fill-rule="evenodd"
 								d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5" />
                         </svg>
-						Intra-Bank Transfer
+						IntraBank Transfer
 					</button>
 				</div>
 			</li>
@@ -184,7 +185,7 @@
                             <path fill-rule="evenodd"
 								d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
                         </svg>
-						Inter-Bank Transfer
+						InterBank Transfer
 					</button>
 				</div>
 			</li>
@@ -273,18 +274,17 @@
 						<div class=" latesttransaction ">
 							<table class="table table-striped"
 								style="padding-top: 5px; font-size: large;">
-								<thead>
+								<thead style="padding-bottom: 2px">
 									<tr>
-										<td>S.No</td>
+										<th scope="col">S.No</th>
 										<th scope="col">Transaction Id</th>
 										<th scope="col">Sender Account</th>
 										<th scope="col">Receiver Account</th>
-										<th scope="col">User Id</th>
 										<th scope="col">Transaction Type</th>
 										<th scope="col">Remarks</th>
 										<th scope="col">Amount</th>
 										<th scope="col">Closing Balance</th>
-										<th scope="col">Time and Date</th>
+										<th scope="col">Date</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -299,7 +299,6 @@
 										<td><%=individualTransaction.getId()%></td>
 										<td><%=individualTransaction.getAccountId()%></td>
 										<td><%=individualTransaction.getTransactionAccountId()%></td>
-										<td><%=individualTransaction.getUserId()%></td>
 										<td><%=individualTransaction.getTransactionType()%></td>
 										<td><%=individualTransaction.getDescription()%></td>
 										<td><%=individualTransaction.getAmount()%></td>
@@ -317,9 +316,6 @@
 								</tbody>
 							</table>
 							<div class="pagination">
-								<%
-								if ((int) (request.getAttribute("pageno")) > 1) {
-								%>
 								<div class="left">
 									<form action="home" method="post">
 										<input name="formType" value="transactionUserPagination"
@@ -328,7 +324,9 @@
 											name="pageno"
 											value="<%=(int) (request.getAttribute("pageno")) - 1%>"
 											type="hidden">
-										<button type="submit" class="btn link-button">
+										<button type="submit" class="btn link-button"
+											<%if ((int) (request.getAttribute("pageno")) <= 1) {%>
+											disabled <%}%>>
 											<svg xmlns="http://www.w3.org/2000/svg" width="40"
 												height="40" fill="currentColor"
 												class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
@@ -338,10 +336,7 @@
 										</button>
 									</form>
 								</div>
-								<%
-								}
-								if (((List<TransactionDetails>) request.getAttribute("latestTransaction")).size() > 10) {
-								%>
+
 								<div class="right">
 									<form action="home" method="post">
 										<input name="formType" value="transactionUserPagination"
@@ -350,7 +345,9 @@
 											name="pageno"
 											value="<%=(int) (request.getAttribute("pageno")) + 1%>"
 											type="hidden">
-										<button type="submit" class="btn link-button">
+										<button type="submit" class="btn link-button"
+											<%if (((List<TransactionDetails>) request.getAttribute("latestTransaction")).size() < 10) {%>
+											disabled <%}%>>
 											<svg xmlns="http://www.w3.org/2000/svg" width="40"
 												height="40" fill="currentColor"
 												class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
@@ -360,9 +357,6 @@
 										</button>
 									</form>
 								</div>
-								<%
-								}
-								%>
 							</div>
 						</div>
 					</div>
@@ -584,9 +578,15 @@ buttonContentPairs.forEach(pair => {
                         	(document).getElementById(form.messageId).innerHTML = 'Something went wrong, Try Again';
                         	(document).getElementById(form.messageId).style.color = 'red';
                         } else {
-                        	document.getElementById(form.formId).reset();
-                        	(document).getElementById(form.messageId).innerHTML = 'successful';
-                        	(document).getElementById(form.messageId).style.color = 'green';
+                          	  if (response.status){
+                          		  document.getElementById(form.formId).reset();
+                                	(document).getElementById(form.messageId).innerHTML = 'Successful';
+                                	(document).getElementById(form.messageId).style.color = 'green';
+                            	  }
+                            	  else{
+                            		(document).getElementById(form.messageId).innerHTML = 'Unsuccessful , Invalid Input';
+                              	(document).getElementById(form.messageId).style.color = 'red'; 
+                            	  }
                         }
                     },
                     error: function(xhr, status, error) {

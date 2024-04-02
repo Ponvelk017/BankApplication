@@ -45,8 +45,6 @@ public class FormValidation implements Filter {
 	 */
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
-
-		System.out.println("form filter");
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 
@@ -60,6 +58,7 @@ public class FormValidation implements Filter {
 				JSONObject responseData = new JSONObject();
 				if (request.getParameter("name").matches("^[A-Za-z.]+")) {
 					if (request.getParameter("mobile").matches("^[0-9]{10}$")) {
+						System.out.println("sadfg");
 						if (request.getParameter("email").matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 								+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
 							LocalDate currentDate = LocalDate.now();
@@ -72,8 +71,8 @@ public class FormValidation implements Filter {
 									if (request.getParameter("pan").matches("^[A-Z0-9]{10}$")) {
 										responseData.put("status", true);
 										responseData.put("message", "Success");
-										HttpServletResponse httpResponse = (HttpServletResponse) response;
-										httpResponse.sendRedirect("/home");
+										RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");
+										homeDispatcher.forward(request, response);
 									} else {
 										responseData.put("status", false);
 										responseData.put("message",
@@ -119,8 +118,8 @@ public class FormValidation implements Filter {
 								if (request.getParameter("branch").matches("^[A-Z0-9]{10}$")) {
 									responseData.put("status", true);
 									responseData.put("message", "Success");
-									HttpServletResponse httpResponse = (HttpServletResponse) response;
-									httpResponse.sendRedirect("/home");
+									RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");
+									homeDispatcher.forward(request, response);
 								} else {
 									responseData.put("status", false);
 									responseData.put("message",
@@ -153,8 +152,8 @@ public class FormValidation implements Filter {
 					if (request.getParameter("ifsc").matches("^[A-Z0-9]{10}$")) {
 						responseData.put("status", true);
 						responseData.put("message", "Success");
-						HttpServletResponse httpResponse = (HttpServletResponse) response;
-						httpResponse.sendRedirect("/home");
+						RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");
+						homeDispatcher.forward(request, response);
 					} else {
 						responseData.put("status", false);
 						responseData.put("message",
@@ -171,16 +170,63 @@ public class FormValidation implements Filter {
 			case "changePassword": {
 				JSONObject responseData = new JSONObject();
 				if (request.getParameter("newPassword").matches(
-						"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+\\\\|[\\]{};:'\",.<>/?]).{8,}$\n"
-								+ "")) {
+						"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-=+\\\\|\\[\\]{};:'\",.<>/?]).{8,}$")) {
 					responseData.put("status", true);
 					responseData.put("message", "Success");
-					HttpServletResponse httpResponse = (HttpServletResponse) response;
-					httpResponse.sendRedirect("/home");
+					RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");
+					homeDispatcher.forward(request, response);
 				} else {
 					responseData.put("status", false);
 					responseData.put("message",
-							"New Password should contains atleast one Uppercase, Lowercase, Number, pecial character");
+							"New Password should contain at least one Uppercase, Lowercase, Number, and Special character and 8 Character long");
+				}
+				response.setContentType("application/json");
+				response.getWriter().write(responseData.toString());
+			}
+				break;
+			case "editUser": {
+				JSONObject responseData = new JSONObject();
+				if (request.getParameter("name").matches("^[A-Za-z.]+")) {
+					if (request.getParameter("mobile").matches("^[0-9]{10}$")) {
+						if (request.getParameter("email").matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+								+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
+							LocalDate currentDate = LocalDate.now();
+							LocalDate dob = LocalDate.ofInstant(
+									Instant.ofEpochMilli(Common.dateToMilli(request.getParameter("dob"))),
+									ZoneId.systemDefault());
+							Period period = Period.between(dob, currentDate);
+							if (period.getYears() >= 18) {
+								if (request.getParameter("aadhar").length() == 12) {
+									if (request.getParameter("pan").matches("^[A-Z0-9]{10}$")) {
+										responseData.put("status", true);
+										responseData.put("message", "Success");
+										RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");
+										homeDispatcher.forward(request, response);
+									} else {
+										responseData.put("status", false);
+										responseData.put("message",
+												"Pan should be 10 digit long and contain only Alphabets and numbers");
+									}
+								} else {
+									responseData.put("status", false);
+									responseData.put("message", "Aadhar should be 12 digit long");
+								}
+							} else {
+								responseData.put("status", false);
+								responseData.put("message", "Age should be more than 18");
+							}
+
+						} else {
+							responseData.put("status", false);
+							responseData.put("message", "Invalid Email");
+						}
+					} else {
+						responseData.put("status", false);
+						responseData.put("message", "Mobile number should contain only 10 numbers");
+					}
+				} else {
+					responseData.put("status", false);
+					responseData.put("message", "Name should only contain Alphabets");
 				}
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());

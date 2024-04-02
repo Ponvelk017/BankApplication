@@ -78,7 +78,7 @@ public class TransactionFunctions {
 		return record;
 	}
 
-	public List<TransactionDetails> getLatestDetails(int limit, int offset,int userId, String sortColumn)
+	public List<TransactionDetails> getLatestDetails(int limit, int offset, int userId, String sortColumn)
 			throws InvalidInputException {
 		TransactionDetails transactioDetails = new TransactionDetails();
 		transactioDetails.setUserId(userId);
@@ -91,7 +91,7 @@ public class TransactionFunctions {
 		duration.put("offset", offset);
 		List<TransactionDetails> record = transactionOpertaion.getCustomData(transactioDetails,
 				new ArrayList<String>(Arrays.asList("*")), duration);
-		
+
 		return record;
 	}
 

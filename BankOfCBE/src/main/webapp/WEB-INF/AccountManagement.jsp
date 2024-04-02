@@ -204,7 +204,7 @@
 							<div class="left">
 								<form action="home" method="post">
 									<input name="formType" value="accountPagination" type="hidden">
-									<input name="offset" value="<%=sno - 12%>" type="hidden">
+									<input name="offset" value="<%=sno - 11%>" type="hidden">
 									<input name="pageno"
 										value="<%=(int) (request.getAttribute("pageno")) - 1%>"
 										type="hidden">
@@ -228,7 +228,7 @@
 										value="<%=(int) (request.getAttribute("pageno")) + 1%>"
 										type="hidden">
 									<button type="submit" class="btn link-button"
-										<%if (((Map<Long, AccountDetails>) request.getAttribute("accounts")).size() < 10) {%>
+										<%if (((Map<Long, AccountDetails>) request.getAttribute("accounts")).size() <= 10) {%>
 										disabled <%}%>>
 										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
 											fill="currentColor" class="bi bi-arrow-right-circle-fill"
@@ -392,7 +392,7 @@
 										<form action="home" method="post">
 											<input name="formType" value="accountEditPagination"
 												type="hidden"> <input name="offset"
-												value="<%=editSno - 12%>" type="hidden"> <input
+												value="<%=editSno - 11%>" type="hidden"> <input
 												name="pageno"
 												value="<%=(int) (request.getAttribute("editPageno")) - 1%>"
 												type="hidden">
@@ -418,7 +418,7 @@
 												value="<%=(int) (request.getAttribute("editPageno")) + 1%>"
 												type="hidden">
 											<button type="submit" class="btn link-button"
-												<%if (((Map<Long, AccountDetails>) request.getAttribute("editAccounts")).size() < 10) {%>
+												<%if (((Map<Long, AccountDetails>) request.getAttribute("editAccounts")).size() <= 10) {%>
 												disabled <%}%>>
 												<svg xmlns="http://www.w3.org/2000/svg" width="40"
 													height="40" fill="currentColor"
@@ -532,7 +532,7 @@
 								<form action="home" method="post">
 									<input name="formType" value="accountDeletePagination"
 										type="hidden"> <input name="offset"
-										value="<%=deleteLoop - 12%>" type="hidden"> <input
+										value="<%=deleteLoop - 11%>" type="hidden"> <input
 										name="pageno"
 										value="<%=(int) (request.getAttribute("deletePageno")) - 1%>"
 										type="hidden">
@@ -557,7 +557,7 @@
 										value="<%=(int) (request.getAttribute("deletePageno")) + 1%>"
 										type="hidden">
 									<button type="submit" class="btn link-button"
-										<%if (((Map<Long, AccountDetails>) request.getAttribute("inactiveAccounts")).size() < 10) {%>
+										<%if (((Map<Long, AccountDetails>) request.getAttribute("inactiveAccounts")).size() <= 10) {%>
 										disabled <%}%>>
 										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
 											fill="currentColor" class="bi bi-arrow-right-circle-fill"

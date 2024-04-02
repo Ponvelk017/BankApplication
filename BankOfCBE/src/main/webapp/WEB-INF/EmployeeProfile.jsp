@@ -176,7 +176,7 @@
 	      		console.log(formdata);
 	      		$.ajax({
 	      			type:'POST',
-	      			url:'home',
+	      			url:'SessionFilter',
 	      			data:formdata,
 	      			success:function(response){
 	      				if (response.error) {

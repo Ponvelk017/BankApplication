@@ -47,7 +47,7 @@
 							for="amount">Customer Id:</label> <input class="textbox"
 							type="text" id="id" name="id" placeholder="Enter Customer Id"
 							required><br> <label for="type">Issues Type:</label>
-						<select id="type" name="type" class="textbox">
+						<select id="type" name="type" class="textbox" required>
 							<option value="Account">Accounts</option>
 							<option value="Profile">Profile</option>
 							<option value="Transaction">Transaction</option>
@@ -55,7 +55,7 @@
 						</select> <label style="padding-top: 2%;" for="amount">Issue:</label> <input
 							class="textbox" type="text" id="issue" name="issue"
 							placeholder="Enter Issue" required><br>
-						<button type="submit">Submit</button>
+						<button type="button" onclick="message()">Submit</button>
 					</form>
 				</div>
 				<div class="col-6"
@@ -69,5 +69,9 @@
 <script>
 	(document).getElementsByClassName("complaint-sel")[0].classList
 			.add("selected-link");
+	
+	function message(){
+		window.alert("We Will look into the Problem and contact you !")
+	}
 </script>
 </html>

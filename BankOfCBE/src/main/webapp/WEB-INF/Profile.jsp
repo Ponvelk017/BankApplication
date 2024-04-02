@@ -31,7 +31,7 @@
 </head>
 
 <body>
-	<%
+<%
 	response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
 	response.setHeader("paragma", "no-cache");
 	response.setHeader("Expires", "0");
@@ -201,9 +201,10 @@
 											<h3>Update Your Password</h3>
 											<div class="col-5 align-items-center"
 												style="padding-top: 4%;">
-												<form id="chang-password" class="text-center forms"
-													method="post" style="padding-top: 5%;">
-													<input name="formType" value="changePassword" type="hidden">
+												<form id="chang-password" class="text-center forms" method="post"
+													style="padding-top: 5%;">
+													<input name="formType" value="changePassword"
+														type="hidden"> 
 													<label for="accountno">Old Password:</label> <input
 														class="textbox" type="password" id="name"
 														name="oldPassword"> <label for="accountno">New
@@ -243,56 +244,37 @@
 	(document).getElementsByClassName("profile-sel")[0].classList
 			.add("selected-link");
 
-	$(document)
-			.ready(
-					function() {
-						$("#chang-password")
-								.submit(
-										function(event) {
-											event.preventDefault();
-											var formdata = $(this).serialize();
-											console.log(formdata);
-											$
-													.ajax({
-														type : 'POST',
-														url : 'FormValidation',
-														data : formdata,
-														success : function(
-																response) {
-															if (response.error) {
-																(document)
-																		.getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
-																(document)
-																		.getElementById("editmessage").style.color = 'red';
-															} else {
-																if (response.status) {
-																	document
-																			.getElementById(
-																					"chang-password")
-																			.reset();
-																	(document)
-																			.getElementById("editmessage").innerHTML = 'successful';
-																	(document)
-																			.getElementById("editmessage").style.color = 'green';
-																} else {
-																	document
-																			.getElementById(
-																					"chang-password")
-																			.reset();
-																	(document)
-																			.getElementById("editmessage").innerHTML = response.message;
-																	(document)
-																			.getElementById("editmessage").style.color = 'red';
-																}
-															}
-														},
-														error : function(xhr,
-																status, error) {
-															window
-																	.alert("Something Went Wrong, Try after sometime....");
-														}
-													});
-										});
-					});
+	 $(document).ready(function(){
+	      	$("#chang-password").submit(function(event){
+	      		event.preventDefault();
+	      		var formdata = $(this).serialize();
+	      		console.log(formdata);
+	      		$.ajax({
+	      			type:'POST',
+	      			url:'SessionFilter',
+	      			data:formdata,
+	      			success:function(response){
+	      				if (response.error) {
+	                      	(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
+	                      	(document).getElementById("editmessage").style.color = 'red';
+	                      } else {
+	                    	  if (response.status){
+		                      	document.getElementById("chang-password").reset();
+		                      	(document).getElementById("editmessage").innerHTML = 'successful';
+		                      	(document).getElementById("editmessage").style.color = 'green';
+	                    	  }
+	                    	  else{
+	                    			document.getElementById("chang-password").reset();
+			                      	(document).getElementById("editmessage").innerHTML = response.message;
+			                      	(document).getElementById("editmessage").style.color = 'red';
+	                    	  }
+	                      }
+	      			},
+	                  error: function(xhr, status, error) {
+	                  	window.alert("Something Went Wrong, Try after sometime....");
+	                  }
+	      		});
+	      	});
+	      }); 
 </script>
 </html>
