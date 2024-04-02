@@ -21,7 +21,7 @@ public class BranchFunction {
 		return branchOperation.updateBranch(branchDetails, id);
 	}
 
-	public BranchDetails getBranchDetails(Object value) throws InvalidInputException {
+	public List<BranchDetails> getBranchDetails(Object value) throws InvalidInputException {
 		InputCheck.checkNull(value);
 		return branchOperation.getDetails(value);
 	}

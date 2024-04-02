@@ -1,6 +1,5 @@
 package customLogics;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -14,7 +13,6 @@ import cacheLogics.RedisCache;
 import customDB.Cache;
 import dbLogics.CustomerOperations;
 import details.CustomerDetails;
-import utility.Common;
 import utility.InputCheck;
 import utility.InvalidInputException;
 
@@ -23,28 +21,55 @@ public class CustomerFunctions {
 	private Cache customerCache = RedisCache.getInstance();
 	private CustomerOperations customerOpertaion = new CustomerOperations();
 
-	public static int validateDetails(CustomerDetails customer) throws InvalidInputException {
+	public static String validateDetails(CustomerDetails customer) throws InvalidInputException {
 		InputCheck.checkNull(customer);
-		if (customer.getName().matches("^[A-Za-z.]+") && (customer.getMobile() + "").matches("^[0-9]{10}$")
-				&& customer.getEmail().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+		if (customer.getName().matches("^[A-Za-z.]+")) {
+			if ((customer.getMobile() + "").matches("^[0-9]{10}$")) {
+				if (customer.getEmail().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 						+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
-			LocalDate currentDate = LocalDate.now();
-			LocalDate dob = LocalDate.ofInstant(Instant.ofEpochMilli(customer.getDOB()), ZoneId.systemDefault());
-			Period period = Period.between(dob, currentDate);
-			if (period.getYears() >= 18 && "MaleFemale".contains(customer.getGender()) && customer.getPassword()
-					.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[a-zA-Z0-9@#$%^&+=!]).{8,}$")) {
-				if (customer.getAadhar().length() == 12 && customer.getPan().length() == 10) {
-					return 1;
+					LocalDate currentDate = LocalDate.now();
+					LocalDate dob = LocalDate.ofInstant(Instant.ofEpochMilli(customer.getDOB()),
+							ZoneId.systemDefault());
+					Period period = Period.between(dob, currentDate);
+					if (period.getYears() >= 18) {
+						return "success";
+					} else {
+						return "Age should be more than 18";
+					}
+				} else {
+					return "Invalid Email";
 				}
+			} else {
+				return "Mobile number should contain only 10 numbers";
 			}
+		} else {
+			return "Name should only contain Alphabets";
 		}
-		return -1;
+//		if (customer.getName().matches("^[A-Za-z.]+") && (customer.getMobile() + "").matches("^[0-9]{10}$")
+//				&& customer.getEmail().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+//						+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
+//			LocalDate currentDate = LocalDate.now();
+//			LocalDate dob = LocalDate.ofInstant(Instant.ofEpochMilli(customer.getDOB()), ZoneId.systemDefault());
+//			Period period = Period.between(dob, currentDate);
+//			if (period.getYears() >= 18 && "MaleFemale".contains(customer.getGender()) && customer.getPassword()
+//					.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[a-zA-Z0-9@#$%^&+=!]).{8,}$")) {
+//				if (customer.getAadhar().length() == 12 && customer.getPan().length() == 10) {
+//					return 1;
+//				}
+//			}
+//		}
+//		return -1;
 	}
 
 	public int addCustomer(List<CustomerDetails> customers) throws InvalidInputException {
 		InputCheck.checkNull(customers);
 		for (CustomerDetails customer : customers) {
-			if (CustomerFunctions.validateDetails(customer) == -1) {
+			String validation = CustomerFunctions.validateDetails(customer);
+			if (!validation.equals("success")) {
+				return 0;
+			}
+			int pan = customerOpertaion.panAadharCheck(customer.getPan(), customer.getAadhar());
+			if(pan >= 1) {
 				return 0;
 			}
 		}
@@ -70,12 +95,12 @@ public class CustomerFunctions {
 		}
 	}
 
-	public int updateStatus(int Id,Object value) throws InvalidInputException {
+	public int updateStatus(int Id, Object value) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(Id);
 		int affectedColumns = 0;
 		CustomerDetails customerDetails = customerCache.getCustomer(Id);
 		synchronized (customerDetails) {
-			affectedColumns = customerOpertaion.updateRecord(Id, "Status" , value);
+			affectedColumns = customerOpertaion.updateRecord(Id, "Status", value);
 			if (affectedColumns > 0) {
 				customerCache.deleteCustomer(Id);
 			}
@@ -83,13 +108,13 @@ public class CustomerFunctions {
 			return affectedColumns;
 		}
 	}
-	
+
 	public int deleteUser(int Id) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(Id);
 		int affectedColumns = 0;
 		CustomerDetails customerDetails = customerCache.getCustomer(Id);
 		synchronized (customerDetails) {
-			affectedColumns = customerOpertaion.updateRecord(Id, "DeleteAt" , System.currentTimeMillis());
+			affectedColumns = customerOpertaion.updateRecord(Id, "DeleteAt", System.currentTimeMillis());
 			if (affectedColumns > 0) {
 				customerCache.deleteCustomer(Id);
 			}

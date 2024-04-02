@@ -43,7 +43,7 @@
                             <path
 								d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm4.5 0a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6m5 2.755C12.146 12.825 10.623 12 8 12s-4.146.826-5 1.755V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1z" />
                         </svg>
-						<br> view Profile
+						<br> View Profile
 					</button>
 			</li>
 			<li class="nav-item">
@@ -57,7 +57,7 @@
                             <path
 								d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4" />
                         </svg>
-						<br> Add new user
+						<br> Add New User
 					</button>
 				</div>
 			</li>
@@ -105,20 +105,24 @@
 							<form id="customerForm" class="text-center forms"
 								style="padding-top: 5%;">
 								<label for="accountno">Name:</label> <input class="textbox"
-									type="text" id="name" name="name" placeholder="Enter Name">
-								<label for="accountno">Date Of Birth:</label> <input
-									class="textbox" type="date" id="dob" name="dob"
-									placeholder="Enter DOB"><br> <label
+									type="text" id="name" name="name" placeholder="Enter Name"
+									required> <label for="accountno">Date Of Birth:</label>
+								<input class="textbox" type="date" id="dob" name="dob"
+									placeholder="Enter DOB" required><br> <label
 									for="accountno">Mobile:</label> <input class="textbox"
-									type="text" id="mobile" name="mobile"
-									placeholder="Enter  Mobile Number"><br> <label
+									type="number" id="mobile" name="mobile"
+									placeholder="Enter  Mobile Number" required><br> <label
 									for="accountno">Email:</label> <input class="textbox"
-									type="email" id="email" name="email" placeholder="Enter Email"><br>
-								<label for="accountno">Gender:</label> <input class="textbox"
-									type="text" id="gender" name="gender"
-									placeholder="Enter Gender"><br> <label
-									for="accountno">User Type:</label> <select id="usertype"
-									name="type" class="textbox" onchange="changeUser()">
+									type="email" id="email" name="email" placeholder="Enter Email"
+									required><br> <label for="accountno">Gender:</label>
+								<select id="gender" name="gender" class="textbox" name="gender"
+									required>
+									<option value="" disabled selected hidden>--Select--</option>
+									<option value="Male">Male</option>
+									<option value="Female">Female</option>
+								</select><br> <label for="accountno">User Type:</label> <select
+									id="usertype" name="type" class="textbox"
+									onchange="changeUser()" required>
 									<option value="" disabled selected hidden>--Select--</option>
 									<option>User</option>
 									<option>Employee</option>
@@ -129,12 +133,11 @@
 										type="text" id="address" name="address"
 										placeholder="Enter Address"><br> <label
 										for="accountno">Aadhar Number:</label> <input class="textbox"
-										type="text" id="aadhar" name="aadhar"
+										type="number" id="aadhar" name="aadhar"
 										placeholder="123456789012"><br> <label
 										for="accountno">Pan Number:</label> <input class="textbox"
 										type="text" id="pan" name="pan" placeholder="ASDFG12345"><br>
 								</div>
-
 								<div id="employee-detail" style="display: none;">
 									<input name="formType" value="newEmployee" type="hidden">
 									<label for="accountno">Working Branch:</label> <input
@@ -142,8 +145,15 @@
 										placeholder="ASDFG12345"><br> <label
 										for="accountno">Designation:</label> <select id="admin"
 										name="admin" class="textbox">
+										<option value="" disabled selected hidden>--Select--</option>
 										<option value="0">Employee</option>
+										<%
+										if (request.getAttribute("isAdmin").equals("1")) {
+										%>
 										<option value="1">Manager</option>
+										<%
+										}
+										%>
 									</select><br>
 								</div>
 								<button type="submit">Add</button>
@@ -192,11 +202,14 @@
 									</thead>
 									<tbody>
 										<%
-										int sno = 1;
+										int sno = (((int) (request.getAttribute("pageno")) - 1) * 10) + 1;
 										Map<Integer, CustomerDetails> users = (Map<Integer, CustomerDetails>) request.getAttribute("user");
+										int loop = 1;
 										for (Entry individualUser : users.entrySet()) {
+											if (loop++ == 11) {
+												break;
+											}
 											CustomerDetails customer = (CustomerDetails) individualUser.getValue();
-
 											JSONObject userJson = new JSONObject();
 											userJson.put("Id", customer.getId());
 											userJson.put("Name", customer.getName());
@@ -238,20 +251,42 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-left-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="userPagination" type="hidden">
+									<input name="offset" value="<%=sno - 13%>" type="hidden">
+									<input name="pageno"
+										value="<%=(int) (request.getAttribute("pageno")) - 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if ((int) (request.getAttribute("pageno")) <= 1) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-left-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                                 </svg>
+									</button>
+								</form>
 							</div>
 							<div class="right">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-right-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="userPagination" type="hidden">
+									<input name="offset" value="<%=sno - 1%>" type="hidden">
+									<input name="pageno"
+										value="<%=(int) (request.getAttribute("pageno")) + 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if (((Map<Integer, CustomerDetails>) request.getAttribute("user")).size() < 10) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-right-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                                 </svg>
+									</button>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -294,9 +329,13 @@
 									</thead>
 									<tbody>
 										<%
-										sno = 1;
+										int editSno = (((int) (request.getAttribute("editPageno")) - 1) * 10) + 1;
 										Map<Integer, CustomerDetails> userEditDetails = (Map<Integer, CustomerDetails>) request.getAttribute("editUser");
+										int editLoop = 1;
 										for (Entry individualUser : userEditDetails.entrySet()) {
+											if (editLoop++ == 11) {
+												break;
+											}
 											CustomerDetails customer = (CustomerDetails) individualUser.getValue();
 											JSONObject userJson = new JSONObject();
 											userJson.put("Id", customer.getId());
@@ -311,7 +350,7 @@
 											userJson.put("Status", customer.getStatus());
 										%>
 										<tr>
-											<td><%=sno++%></td>
+											<td><%=editSno++%></td>
 											<td><%=customer.getId()%></td>
 											<td><%=customer.getName()%></td>
 											<td><%=customer.getMobile()%></td>
@@ -369,20 +408,44 @@
 								</table>
 								<div class="pagination">
 									<div class="left">
-										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-											fill="currentColor" class="bi bi-arrow-left-circle-fill"
-											viewBox="0 0 16 16">
+										<form action="home" method="post">
+											<input name="formType" value="userEditPagination"
+												type="hidden"> <input name="offset"
+												value="<%=editSno - 13%>" type="hidden"> <input
+												name="pageno"
+												value="<%=(int) (request.getAttribute("editPageno")) - 1%>"
+												type="hidden">
+											<button type="submit" class="btn link-button"
+												<%if ((int) (request.getAttribute("editPageno")) <= 1) {%>
+												disabled <%}%>>
+												<svg xmlns="http://www.w3.org/2000/svg" width="40"
+													height="40" fill="currentColor"
+													class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
                                             <path
-												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+														d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                                         </svg>
+											</button>
+										</form>
 									</div>
 									<div class="right">
-										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-											fill="currentColor" class="bi bi-arrow-right-circle-fill"
-											viewBox="0 0 16 16">
+										<form action="home" method="post">
+											<input name="formType" value="userEditPagination"
+												type="hidden"> <input name="offset"
+												value="<%=editSno - 1%>" type="hidden"> <input
+												name="pageno"
+												value="<%=(int) (request.getAttribute("editPageno")) + 1%>"
+												type="hidden">
+											<button type="submit" class="btn link-button"
+												<%if (((Map<Integer, CustomerDetails>) request.getAttribute("editUser")).size() < 10) {%>
+												disabled <%}%>>
+												<svg xmlns="http://www.w3.org/2000/svg" width="40"
+													height="40" fill="currentColor"
+													class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                                             <path
-												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+														d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                                         </svg>
+											</button>
+										</form>
 									</div>
 								</div>
 							</div>
@@ -430,11 +493,14 @@
 									<tbody>
 										<tr>
 											<%
-											sno = 1;
+											int deletedSno = (((int) (request.getAttribute("deletePageno")) - 1) * 10) + 1;
 											Map<Integer, CustomerDetails> inactiveUsers = (Map<Integer, CustomerDetails>) request.getAttribute("Inactiveuser");
+											int deleteLoop = 0;
 											for (Entry individualUser : inactiveUsers.entrySet()) {
+												if (deleteLoop++ == 11) {
+													break;
+												}
 												CustomerDetails customer = (CustomerDetails) individualUser.getValue();
-
 												JSONObject userJson = new JSONObject();
 												userJson.put("Id", customer.getId());
 												userJson.put("Name", customer.getName());
@@ -450,7 +516,7 @@
 											%>
 										
 										<tr>
-											<td><%=sno++%></td>
+											<td><%=deletedSno++%></td>
 											<td><%=customer.getId()%></td>
 											<td><%=customer.getName()%></td>
 											<td><%=customer.getMobile()%></td>
@@ -487,7 +553,7 @@
 													<%
 													} else {
 													%>
-													<button class="link-button block-button">nil</button>
+													<button class="link-button block-button">-----</button>
 													<%
 													}
 													%>
@@ -511,7 +577,7 @@
 												</form> <%
  } else {
  %>
-												<button class="link-button block-button">nil</button> <%
+												<button class="link-button block-button">-----</button> <%
  }
  %>
 											</td>
@@ -526,20 +592,45 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-left-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="userDeletePagination"
+										type="hidden"> <input name="offset"
+										value="<%=deletedSno - 13%>" type="hidden"> <input
+										name="pageno"
+										value="<%=(int) (request.getAttribute("deletePageno")) - 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if ((int) (request.getAttribute("deletePageno")) <= 1) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-left-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                                 </svg>
+										</svg>
+									</button>
+								</form>
 							</div>
 							<div class="right">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-right-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="userDeletePagination"
+										type="hidden"> <input name="offset"
+										value="<%=deletedSno - 1%>" type="hidden"> <input
+										name="pageno"
+										value="<%=(int) (request.getAttribute("deletePageno")) + 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if (((Map<Integer, CustomerDetails>) request.getAttribute("Inactiveuser")).size() < 10) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-right-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                                 </svg>
+									</button>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -732,38 +823,45 @@
 </body>
 <script>
 
-    var buttonContentPairs = [
-        { buttonId: "add-button", contentId: "addcustomer" },
-        { buttonId: "view-button", contentId: "view" },
-        { buttonId: "edit-button", contentId: "edit" },
-        { buttonId: "status-button", contentId: "status" }
-    ];
-  
-    var openedDivId = localStorage.getItem('openedDiv');
-
-    if (openedDivId) {
-        document.getElementById(openedDivId).style.display = 'block';
-    } else {
-        document.getElementById('view').style.display = 'block';
-    }
+(document).getElementsByClassName("user-nav")[0].classList
+.add("selected-link");
 
 
-    buttonContentPairs.forEach(pair => {
-        var button = document.getElementById(pair.buttonId);
-        var content = document.getElementById(pair.contentId);
+var buttonContentPairs = [
+    { buttonId: "add-button", contentId: "addcustomer" },
+    { buttonId: "view-button", contentId: "view" },
+    { buttonId: "edit-button", contentId: "edit" },
+    { buttonId: "status-button", contentId: "status" }
+];
 
-        button.addEventListener('click', function () {
-            if (content.style.display !== 'block') {
-                buttonContentPairs.forEach(otherPair => {
-                    if (otherPair.contentId !== pair.contentId) {
-                        document.getElementById(otherPair.contentId).style.display = 'none';
-                    }
-                });
-                content.style.display = 'block';
-                localStorage.setItem('openedDiv', pair.contentId);
-            }
-        });
+var openedDivId = localStorage.getItem('openedDiv');
+
+if (openedDivId) {
+    document.getElementById(openedDivId).style.display = 'block';
+    var correspondingButtonId = buttonContentPairs.find(pair => pair.contentId === openedDivId).buttonId;
+    document.getElementById(correspondingButtonId).classList.add('selected-siderbar');
+} else {
+    document.getElementById('view').style.display = 'block';
+    document.getElementById('view-button').classList.add('selected-siderbar');
+}
+buttonContentPairs.forEach(pair => {
+    var button = document.getElementById(pair.buttonId);
+    var content = document.getElementById(pair.contentId);
+
+    button.addEventListener('click', function () {
+        if (content.style.display !== 'block') {
+            buttonContentPairs.forEach(otherPair => {
+                if (otherPair.contentId !== pair.contentId) {
+                    document.getElementById(otherPair.contentId).style.display = 'none';
+                    document.getElementById(otherPair.buttonId).classList.remove('selected-siderbar');
+                }
+            });
+            content.style.display = 'block';
+            button.classList.add('selected-siderbar');
+            localStorage.setItem('openedDiv', pair.contentId);
+        }
     });
+});
 
     // switch between employee and customer account creation
     function changeUser(){
@@ -840,16 +938,22 @@
                   var formData = $(this).serialize();
                   $.ajax({
                       type: 'POST',
-                      url: 'home',
+                      url: 'FormValidation',
                       data: formData,
                       success: function(response) {
                           if (response.error) {
                           	(document).getElementById(form.messageId).innerHTML = 'Something went wrong, Try Again';
                           	(document).getElementById(form.messageId).style.color = 'red';
                           } else {
-                          	document.getElementById(form.formId).reset();
-                          	(document).getElementById(form.messageId).innerHTML = 'successful';
-                          	(document).getElementById(form.messageId).style.color = 'green';
+                        	  if (response.status){
+	                          	document.getElementById(form.formId).reset();
+	                          	(document).getElementById(form.messageId).innerHTML = 'successful';
+	                          	(document).getElementById(form.messageId).style.color = 'green';
+                        	  }
+                        	  else{
+                        		  (document).getElementById(form.messageId).innerHTML = response.message;
+                                  (document).getElementById(form.messageId).style.color = 'red';  
+                        	  }
                           }
                       },
                       error: function(xhr, status, error) {
@@ -873,16 +977,16 @@
       				if (response.error) {
                       	(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
                       	(document).getElementById("editmessage").style.color = 'red';
-                      	 setTimeout(function() {
+                      	 /* setTimeout(function() {
                       	        document.getElementById("editmessage").innerHTML = '';
-                      	    }, 2000);
+                      	    }, 5000); */
                       } else {
                       	document.getElementById("editUserDetails").reset();
                       	(document).getElementById("editmessage").innerHTML = 'successful';
                       	(document).getElementById("editmessage").style.color = 'green';
-                      	 setTimeout(function() {
+                      	/*  setTimeout(function() {
                       	        document.getElementById("editmessage").innerHTML = '';
-                      	    }, 2000);
+                      	    }, 5000); */
                       }
       			},
                   error: function(xhr, status, error) {

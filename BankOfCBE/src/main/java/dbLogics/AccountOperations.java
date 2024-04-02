@@ -9,6 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class AccountOperations implements Account {
 
 	private Map<Long, AccountDetails> setDetails(ResultSet record) throws InvalidInputException {
 		getMappingDetails();
-		Map<Long, AccountDetails> records = new HashMap<Long, AccountDetails>();
+		Map<Long, AccountDetails> records = new LinkedHashMap<Long, AccountDetails>();
 		ResultSetMetaData metadata;
 		try {
 			metadata = record.getMetaData();
@@ -170,8 +171,8 @@ public class AccountOperations implements Account {
 
 	@Override
 	public Map<Long, AccountDetails> getAccounts(int limit, int offset, String status) throws InvalidInputException {
-		Map<Long, AccountDetails> userAccount = new HashMap<Long, AccountDetails>();
-		String query = "select * from Account where Status = ?  limit " + limit + " offset " + offset;
+		Map<Long, AccountDetails> userAccount = new LinkedHashMap<Long, AccountDetails>();
+		String query = "select * from Account where Status = ? order by AccountNumber desc limit " + limit + " offset " + offset;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, status);
 			try (ResultSet record = statement.executeQuery()) {

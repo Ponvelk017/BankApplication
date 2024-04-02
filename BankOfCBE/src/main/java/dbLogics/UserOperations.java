@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import customDB.User;
@@ -44,14 +45,15 @@ public class UserOperations implements User {
 	public Map<Integer, CustomerDetails> getUsers(String status, boolean isdeleted, int limit, int offset)
 			throws InvalidInputException {
 		connection = DBConnection.getConnection();
-		Map<Integer, CustomerDetails> users = new HashMap<Integer, CustomerDetails>();
+		Map<Integer, CustomerDetails> users = new LinkedHashMap<Integer, CustomerDetails>();
 		String query = "select * from User join Customer on User.Id = Customer.Id where Status = ? or DeleteAt ";
 		if (isdeleted) {
 			query += "is not null ";
 		} else {
 			query += "is null ";
 		}
-		query += "limit " + limit + " offset " + offset;
+		query += " order by Customer.Id  desc limit " + limit + " offset " + offset;
+//		System.out.println(query);
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, status);
 			try (ResultSet record = statement.executeQuery()) {

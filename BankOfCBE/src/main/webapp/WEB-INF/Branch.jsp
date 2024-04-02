@@ -29,7 +29,11 @@
 </head>
 
 <body>
-
+	<%
+	response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
+	response.setHeader("paragma", "no-cache");
+	response.setHeader("Expires", "0");
+	%>
 	<jsp:include page="Navbar.jsp"></jsp:include>
 	<%
 	Map<Long, AccountDetails> accounts = new HashMap<Long, AccountDetails>();
@@ -38,14 +42,14 @@
 	}
 	%>
 	<div class="container">
-		<h1 class="branchDet" style="padding-bottom:0"	>Branch Details</h1>
+		<h1 class="branchDet" style="padding-bottom: 0">Branch Details</h1>
 		<div class="account-branch"
 			style="display: flex; flex-direction: column; align-items: end;">
 			<h4>Account's Branch Details</h4>
-			<form id="BranchForm" action="home" method="post" >
+			<form id="BranchForm" action="home" method="post">
 				<input name="formType" value="BranchForm" type="hidden"> <select
 					id="accountno" name="accountno" class="textbox">
-					 <option value="" disabled selected hidden>--Select--</option>
+					<option value="" disabled selected hidden>--Select--</option>
 					<%
 					for (Entry individualAccounts : accounts.entrySet()) {
 					%>
@@ -93,7 +97,7 @@
 							<td>:</td>
 							<td>
 								<p><%=request.getAttribute("selectedAccountNumber")%></p>
-								</td>
+							</td>
 						</tr>
 						<tr>
 							<th scope="col">
@@ -168,4 +172,8 @@
 	</div>
 	</div>
 </body>
+<script>
+	(document).getElementsByClassName("branch-sel")[0].classList
+			.add("selected-link");
+</script>
 </html>

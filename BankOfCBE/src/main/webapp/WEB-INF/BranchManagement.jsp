@@ -67,14 +67,13 @@
 									method="post" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="branchSearch" type="hidden">
 									Branch Id <input style="width: 30%;" name="branchid"
-										type="number">
+										type="text">
 									<button class="link-button" type="submit">
-										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
-											fill="currentColor" class="bi bi-arrow-down-square-fill"
+										<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+											fill="currentColor" class="bi bi-caret-down-square-fill"
 											viewBox="0 0 16 16">
-                                            <path
-												d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0" />
-                                        </svg>
+											<path
+												d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4 4a.5.5 0 0 0-.374.832l4 4.5a.5.5 0 0 0 .748 0l4-4.5A.5.5 0 0 0 12 6z" /></svg>
 									</button>
 								</form>
 							</div>
@@ -89,15 +88,25 @@
 											<th scope="col">Address</th>
 											<th scope="col">Manager Id</th>
 											<th scope="col">Contact Number</th>
+											<%
+											if (request.getAttribute("isAdmin").equals("1")) {
+											%>
 											<th scope="col">Edit</th>
+											<%
+											}
+											%>
 										</tr>
 									</thead>
 									<tbody>
 										<%
-										int sno = 1;
+										int sno = (((int) (request.getAttribute("pageno")) - 1) * 10) + 1;
+										int loop = 1;
 										if (request.getAttribute("branches") != null) {
 											List<BranchDetails> transactionRecords = (List<BranchDetails>) request.getAttribute("branches");
 											for (BranchDetails individualBranch : transactionRecords) {
+												if (loop++ == 11) {
+											break;
+												}
 												JSONObject branchJson = new JSONObject();
 												branchJson.put("Id", individualBranch.getId());
 												branchJson.put("IFSC", individualBranch.getIfscCode());
@@ -112,7 +121,9 @@
 											<td><%=individualBranch.getAddress()%></td>
 											<td><%=individualBranch.getManagerId()%></td>
 											<td><%=individualBranch.getPhoneNumber()%></td>
-
+											<%
+											if (request.getAttribute("isAdmin").equals("1")) {
+											%>
 											<td>
 												<button type="button" class="btn link-button edit-details"
 													data-userEdit-id='<%=branchJson.toString()%>'
@@ -128,6 +139,9 @@
                                                     </svg>
 												</button>
 											</td>
+											<%
+											}
+											%>
 										</tr>
 										<%
 										}
@@ -136,22 +150,50 @@
 									</tbody>
 								</table>
 								<div class="pagination">
+									<%
+									if ((int) (request.getAttribute("pageno")) > 1) {
+									%>
 									<div class="left">
-										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-											fill="currentColor" class="bi bi-arrow-left-circle-fill"
-											viewBox="0 0 16 16">
-                                            <path
-												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
-                                        </svg>
+										<form action="home" method="post">
+											<input name="formType" value="branchPagination" type="hidden">
+											<input name="offset" value="<%=sno - 11%>" type="hidden">
+											<input name="pageno"
+												value="<%=(int) (request.getAttribute("pageno")) - 1%>"
+												type="hidden">
+											<button type="submit" class="btn link-button">
+												<svg xmlns="http://www.w3.org/2000/svg" width="40"
+													height="40" fill="currentColor"
+													class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+                                <path
+														d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+                            </svg>
+											</button>
+										</form>
 									</div>
+									<%
+									}
+									if (((List<BranchDetails>) request.getAttribute("branches")).size() > 10) {
+									%>
 									<div class="right">
-										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-											fill="currentColor" class="bi bi-arrow-right-circle-fill"
-											viewBox="0 0 16 16">
-                                            <path
-												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-                                        </svg>
+										<form action="home" method="post">
+											<input name="formType" value="branchPagination" type="hidden">
+											<input name="offset" value="<%=sno%>" type="hidden">
+											<input name="pageno"
+												value="<%=(int) (request.getAttribute("pageno")) + 1%>"
+												type="hidden">
+											<button type="submit" class="btn link-button">
+												<svg xmlns="http://www.w3.org/2000/svg" width="40"
+													height="40" fill="currentColor"
+													class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                <path
+														d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                            </svg>
+											</button>
+										</form>
 									</div>
+									<%
+									}
+									%>
 								</div>
 							</div>
 						</div>
@@ -213,6 +255,9 @@
 				<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 <script>    
+(document).getElementsByClassName("branch-nav")[0].classList
+.add("selected-link");
+
     document.querySelectorAll('.edit-details').forEach(button => {
         button.addEventListener('click', function () {
         	 const customerEditDetails = JSON.parse(this.getAttribute('data-userEdit-id'));
@@ -233,6 +278,7 @@
       			url:'home',
       			data:formdata,
       			success:function(response){
+      				console.log(response.status +"dafsghn");
       				if (response.error) {
                       	(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
                       	(document).getElementById("editmessage").style.color = 'red';
@@ -240,12 +286,22 @@
                       	        document.getElementById("editmessage").innerHTML = '';
                       	    }, 2000);
                       } else {
-                      	document.getElementById("editBranchForm").reset();
-                      	(document).getElementById("editmessage").innerHTML = 'successful';
-                      	(document).getElementById("editmessage").style.color = 'green';
-                      	 setTimeout(function() {
-                      	        document.getElementById("editmessage").innerHTML = '';
-                      	    }, 2000);
+                      	/* document.getElementById("editBranchForm").reset(); */
+                    	  if (response.status){
+                    		  /*document.getElementById(form.formId).reset(); */
+	                          	(document).getElementById("editmessage").innerHTML = 'successful';
+	                          	(document).getElementById("editmessage").style.color = 'green';
+	                          	 setTimeout(function() {
+	                          	        document.getElementById("editmessage").innerHTML = '';
+	                          	    }, 5000);
+                      	  }
+                      	  else{
+                      		(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
+                          	(document).getElementById("editmessage").style.color = 'red';
+                          	 setTimeout(function() {
+                          	        document.getElementById("editmessage").innerHTML = '';
+                          	    }, 2000);
+                      	  }
                       }
       			},
                   error: function(xhr, status, error) {

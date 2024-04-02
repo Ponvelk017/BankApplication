@@ -23,7 +23,11 @@
 </head>
 
 <body>
-
+	<%
+	response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
+	response.setHeader("paragma", "no-cache");
+	response.setHeader("Expires", "0");
+	%>
 	<jsp:include page="Navbar.jsp"></jsp:include>
 
 	<div class="container ">
@@ -62,5 +66,8 @@
 	</div>
 	</div>
 </body>
-
+<script>
+	(document).getElementsByClassName("complaint-sel")[0].classList
+			.add("selected-link");
+</script>
 </html>

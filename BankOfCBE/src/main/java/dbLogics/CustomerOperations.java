@@ -85,7 +85,6 @@ public class CustomerOperations implements Customer {
 				}
 				throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 			}
-
 		}
 		return result;
 	}
@@ -156,6 +155,7 @@ public class CustomerOperations implements Customer {
 				query.append(" User.Status = ? ");
 				count++;
 			}
+//			query.append(" order by Customer.Id");
 			statement = connection.prepareStatement((query.toString()));
 			count = 1;
 			if (customerDetails.getId() != 0) {
@@ -206,5 +206,21 @@ public class CustomerOperations implements Customer {
 		}
 
 		return records;
+	}
+
+	public int panAadharCheck(String pan, String aadhar) throws InvalidInputException {
+		String query = "select * from Customer where Pan = ? or Aadhar = ?";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setObject(1, pan);
+			statement.setObject(2, aadhar);
+			try (ResultSet records = statement.executeQuery()) {
+				if (records.next()) {
+					return 1;
+				}
+			}
+		} catch (SQLException e) {
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
+		return 0;
 	}
 }

@@ -25,6 +25,12 @@
 </head>
 
 <body>
+	<%
+	response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
+	response.setHeader("paragma", "no-cache");
+	response.setHeader("Expires", "0");
+	%>
+
 	<jsp:include page="Navbar.jsp"></jsp:include>
 	<div class="content">
 		<h1 class="welcome">Bank Of CBE Welcome's you</h1>
@@ -130,5 +136,8 @@
 			choosing our Bank</h2>
 	</div>
 </body>
-
+<script>
+	(document).getElementsByClassName("home-sel")[0].classList
+			.add("selected-link");
+</script>
 </html>

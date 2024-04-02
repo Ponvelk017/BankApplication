@@ -21,14 +21,31 @@
 		<servlet-name>GlobalController</servlet-name>
 		<url-pattern>/home</url-pattern>
 	</servlet-mapping>
-	
+
 	<filter>
-	<filter-name>RequestFilter</filter-name>
-	<filter-class>filter.RequestFilter</filter-class>
+		<filter-name>RequestFilter</filter-name>
+		<filter-class>filter.RequestFilter</filter-class>
 	</filter>
 	<filter-mapping>
-	<filter-name>RequestFilter</filter-name>
-	<url-pattern>/*</url-pattern>
+		<filter-name>RequestFilter</filter-name>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+	<filter>
+		<filter-name>SessionFilter</filter-name>
+		<filter-class>filter.SessionFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>SessionFilter</filter-name>
+		<url-pattern>/SessionFilter</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>FormValidation</filter-name>
+		<filter-class>filter.FormValidation</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>FormValidation</filter-name>
+		<url-pattern>/SessionFilter</url-pattern>
+	</filter-mapping>
 </web-app>

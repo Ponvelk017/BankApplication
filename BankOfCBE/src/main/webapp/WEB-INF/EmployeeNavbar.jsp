@@ -25,10 +25,6 @@
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-		<a class="navbar-brand" href="#"> <img src="Images/logo.png"
-			style="width: 22%; height: 22%;" class="d-inline-block align-top"
-			alt="Bank Logo">
-		</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse"
 			data-target="#navbarNav" aria-controls="navbarNav"
 			aria-expanded="false" aria-label="Toggle navigation">
@@ -36,55 +32,80 @@
 		</button>
 		<div class="collapse navbar-collapse flex-wrap" id="navbarNav">
 			<ul class="navbar-nav">
-				<li class="nav-item active"><a class="nav-link active"
-					href="<%=request.getContextPath()%>/home?page=EmployeeHome"><svg
-							xmlns="http://www.w3.org/2000/svg" width="30" height="30"
-							fill="currentColor" class="bi bi-bank" viewBox="0 0 16 16">
+				<div class="logobank">
+					<img src="Images/logo.png" style="width: 100%; height: 100%;"
+						class="d-inline-block align-top" alt="Bank Logo">
+				</div>
+				<div class="firstfive">
+					<div>
+						<li class="nav-item top account-nav"><a class="nav-link"
+							href="<%=request.getContextPath()%>/SessionFilter?page=EmployeeAccount"><svg
+									xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+									fill="currentColor" class="bi bi-person-vcard"
+									viewBox="0 0 16 16">
                             <path
-								d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.5.5 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89zM3.777 3h8.447L8 1zM2 6v7h1V6zm2 0v7h2.5V6zm3.5 0v7h1V6zm2 0v7H12V6zM13 6v7h1V6zm2-1V4H1v1zm-.39 9H1.39l-.25 1h13.72z" />
-                        </svg> Home</a></li>
-				<li class="nav-item"><a class="nav-link"
-					href="<%=request.getContextPath()%>/home?page=EmployeeUser"><svg
-							xmlns="http://www.w3.org/2000/svg" width="30" height="30"
-							fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+										d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5" />
                             <path
-								d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
-                        </svg> Users</a></li>
-				<li class="nav-item"><a class="nav-link"
-					href="<%=request.getContextPath()%>/home?page=EmployeeAccount"><svg
-							xmlns="http://www.w3.org/2000/svg" width="30" height="30"
-							fill="currentColor" class="bi bi-person-vcard"
-							viewBox="0 0 16 16">
+										d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z" />
+                        </svg>
+								<p>Accounts</p></a></li>
+					</div>
+					<div>
+						<li class="nav-item top user-nav"><a class="nav-link"
+							href="<%=request.getContextPath()%>/SessionFilter?page=EmployeeUser"><svg
+									xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+									fill="currentColor" class="bi bi-people-fill"
+									viewBox="0 0 16 16">
                             <path
-								d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5" />
-                            <path
-								d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z" />
-                        </svg>Accounts</a></li>
-				<li class="nav-item"><a class="nav-link"
-					href="<%=request.getContextPath()%>/home?page=EmployeeTransfer"><svg
-							xmlns="http://www.w3.org/2000/svg" width="30" height="30"
-							fill="currentColor" class="bi bi-arrow-left-right"
-							viewBox="0 0 16 16">
+										d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                        </svg>
+								<p>Users</p></a></li>
+					</div>
+					<div>
+						<li class="nav-item top transaction-nav"><a class="nav-link"
+							href="<%=request.getContextPath()%>/SessionFilter?page=EmployeeTransfer"><svg
+									xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+									fill="currentColor" class="bi bi-arrow-left-right"
+									viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
-								d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5" />
-                        </svg>Transactions</a></li>
-				<li class="nav-item"><a class="nav-link"
-					href="<%=request.getContextPath()%>/home?page=EmployeeBranch"><svg
-							xmlns="http://www.w3.org/2000/svg" width="30" height="30"
-							fill="currentColor" class="bi bi-geo-alt-fill"
-							viewBox="0 0 16 16">
+										d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5" />
+                        </svg>
+								<p>Transactions</p></a></li>
+					</div>
+					<div>
+						<li class="nav-item top branch-nav"><a class="nav-link"
+							href="<%=request.getContextPath()%>/SessionFilter?page=EmployeeBranch"><svg
+									xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+									fill="currentColor" class="bi bi-geo-alt-fill"
+									viewBox="0 0 16 16">
                             <path
-								d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
-                        </svg>Branchs<a></li>
-				<li class="nav-item profile"><a class="nav-link"
-					href="<%=request.getContextPath()%>/home?page=EmployeeProfile"><svg
-							xmlns="http://www.w3.org/2000/svg" width="30" height="30"
-							fill="currentColor" class="bi bi-person-circle"
-							viewBox="0 0 16 16">
+										d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                        </svg>
+								<p>Branches</p></a></li>
+					</div>
+					<div>
+						<li class="nav-item top"><a class="nav-link"
+							href="<%=request.getContextPath()%>/SessionFilter?page=logout"><svg
+									xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+									fill="currentColor" class="bi bi-arrow-right-square-fill"
+									viewBox="0 0 16 16">  <path
+										d="M0 14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2zm4.5-6.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5a.5.5 0 0 1 0-1" />
+					</svg>
+								<p>Logout</p></a></li>
+					</div>
+				</div>
+				<div class="lastone">
+					<li class="nav-item profile profile-nav"><a class="nav-link"
+						href="<%=request.getContextPath()%>/SessionFilter?page=EmployeeProfile"><svg
+								xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+								fill="currentColor" class="bi bi-person-circle"
+								viewBox="0 0 16 16">
                             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
                             <path fill-rule="evenodd"
-								d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-                        </svg>Profile</a></li>
+									d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                        </svg>
+							<p>Profile</p></a></li>
+				</div>
 			</ul>
 		</div>
 	</nav>

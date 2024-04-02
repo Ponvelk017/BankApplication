@@ -101,11 +101,11 @@
 								<input name="formType" value="newAccount" type="hidden">
 								<label for="accountno">Customer Id:</label> <input
 									class="textbox" type="number" id="id" name="id"
-									placeholder="Enter  Customer Id"><br> <label
+									placeholder="Enter  Customer Id" required><br> <label
 									for="accountno">Branch Id:</label> <input class="textbox"
-									type="text" id="ifsc" name="ifsc" placeholder="Enter IFSC">
-								<label for="accountno">Account Type:</label> <select
-									id="acctypeountno" name="type" class="textbox">
+									type="text" id="ifsc" name="ifsc" placeholder="Enter IFSC"
+									required> <label for="accountno">Account Type:</label>
+								<select id="acctypeountno" name="type" class="textbox" required>
 									<option value="Saving">Saving</option>
 									<option value="Salary">Salary</option>
 									<option value="Current">Current</option>
@@ -157,9 +157,13 @@
 									</thead>
 									<tbody>
 										<%
-										int sno = 1;
+										int sno = (((int) (request.getAttribute("pageno")) - 1) * 10) + 1;
 										Map<Long, AccountDetails> users = (Map<Long, AccountDetails>) request.getAttribute("accounts");
+										int loop = 1;
 										for (Entry individualAccount : users.entrySet()) {
+											if (loop++ == 11) {
+												break;
+											}
 											AccountDetails accountDetails = (AccountDetails) individualAccount.getValue();
 											JSONObject accountJson = new JSONObject();
 											accountJson.put("AccountNumber", accountDetails.getAccountNumber());
@@ -198,28 +202,51 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-left-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="accountPagination" type="hidden">
+									<input name="offset" value="<%=sno - 12%>" type="hidden">
+									<input name="pageno"
+										value="<%=(int) (request.getAttribute("pageno")) - 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if ((int) (request.getAttribute("pageno")) <= 1) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-left-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                                 </svg>
+									</button>
+								</form>
 							</div>
 							<div class="right">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-right-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="accountPagination" type="hidden">
+									<input name="offset" value="<%=sno - 1%>" type="hidden">
+									<input name="pageno"
+										value="<%=(int) (request.getAttribute("pageno")) + 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if (((Map<Long, AccountDetails>) request.getAttribute("accounts")).size() < 10) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-right-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                                 </svg>
+									</button>
+								</form>
 							</div>
+
 						</div>
 					</div>
 				</div>
 				<div id="edit" style="display: none;">
 					<div id="statement">
 						<div class="justify-content-center row" style="display: flex;">
-							<h3>Edit Accounts</h3>
+							<h3>Available Accounts</h3>
 							<div class="duration">
 								<form id="fetchaccount" action="home" method="post"
 									class="durationform" style="justify-content: end; gap: 3%;">
@@ -255,9 +282,13 @@
 									</thead>
 									<tbody>
 										<%
-										sno = 1;
+										int editSno = (((int) (request.getAttribute("editPageno")) - 1) * 10) + 1;
 										Map<Long, AccountDetails> editAccounts = (Map<Long, AccountDetails>) request.getAttribute("editAccounts");
+										int editLoop = 1;
 										for (Entry individualAccount : editAccounts.entrySet()) {
+											if (editLoop++ == 11) {
+												break;
+											}
 											AccountDetails accountDetails = (AccountDetails) individualAccount.getValue();
 											JSONObject accountJson = new JSONObject();
 											accountJson.put("AccountNumber", accountDetails.getAccountNumber());
@@ -268,7 +299,7 @@
 											accountJson.put("Status", accountDetails.getStatus());
 										%>
 										<tr>
-											<td><%=sno++%></td>
+											<td><%=editSno++%></td>
 											<td><%=accountDetails.getAccountNumber()%></td>
 											<td><%=accountDetails.getUserId()%></td>
 											<td><%=accountDetails.getBranchId()%></td>
@@ -358,20 +389,45 @@
 								</table>
 								<div class="pagination">
 									<div class="left">
-										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-											fill="currentColor" class="bi bi-arrow-left-circle-fill"
-											viewBox="0 0 16 16">
-                                            <path
-												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
-                                        </svg>
+										<form action="home" method="post">
+											<input name="formType" value="accountEditPagination"
+												type="hidden"> <input name="offset"
+												value="<%=editSno - 12%>" type="hidden"> <input
+												name="pageno"
+												value="<%=(int) (request.getAttribute("editPageno")) - 1%>"
+												type="hidden">
+											<button type="submit" class="btn link-button"
+												<%if ((int) (request.getAttribute("editPageno")) <= 1) {%>
+												disabled <%}%>>
+												<svg xmlns="http://www.w3.org/2000/svg" width="40"
+													height="40" fill="currentColor"
+													class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+                                    <path
+														d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+                                </svg>
+											</button>
+										</form>
 									</div>
+
 									<div class="right">
-										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-											fill="currentColor" class="bi bi-arrow-right-circle-fill"
-											viewBox="0 0 16 16">
-                                            <path
-												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-                                        </svg>
+										<form action="home" method="post">
+											<input name="formType" value="accountEditPagination"
+												type="hidden"> <input name="offset"
+												value="<%=editSno - 1%>" type="hidden"> <input
+												name="pageno"
+												value="<%=(int) (request.getAttribute("editPageno")) + 1%>"
+												type="hidden">
+											<button type="submit" class="btn link-button"
+												<%if (((Map<Long, AccountDetails>) request.getAttribute("editAccounts")).size() < 10) {%>
+												disabled <%}%>>
+												<svg xmlns="http://www.w3.org/2000/svg" width="40"
+													height="40" fill="currentColor"
+													class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                    <path
+														d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                </svg>
+											</button>
+										</form>
 									</div>
 								</div>
 							</div>
@@ -412,10 +468,13 @@
 										</tr>
 									</thead>
 									<%
-									sno = 1;
+									int deleteSno = (((int) (request.getAttribute("editPageno")) - 1) * 10) + 1;
 									Map<Long, AccountDetails> inactiveAccounts = (Map<Long, AccountDetails>) request.getAttribute("inactiveAccounts");
+									int deleteLoop = 1;
 									for (Entry individualAccount : inactiveAccounts.entrySet()) {
-
+										if (deleteLoop++ == 11) {
+											break;
+										}
 										AccountDetails accountDetails = (AccountDetails) individualAccount.getValue();
 										JSONObject inactiveAccountJson = new JSONObject();
 										inactiveAccountJson.put("AccountNumber", accountDetails.getAccountNumber());
@@ -426,7 +485,7 @@
 										inactiveAccountJson.put("Status", accountDetails.getStatus());
 									%>
 									<tr>
-										<td><%=sno++%></td>
+										<td><%=deleteLoop++%></td>
 										<td><%=accountDetails.getAccountNumber()%></td>
 										<td><%=accountDetails.getUserId()%></td>
 										<td><%=accountDetails.getBranchId()%></td>
@@ -470,21 +529,46 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-left-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="accountDeletePagination"
+										type="hidden"> <input name="offset"
+										value="<%=deleteLoop - 12%>" type="hidden"> <input
+										name="pageno"
+										value="<%=(int) (request.getAttribute("deletePageno")) - 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if ((int) (request.getAttribute("deletePageno")) <= 1) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-left-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                                 </svg>
+									</button>
+								</form>
 							</div>
 							<div class="right">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-									fill="currentColor" class="bi bi-arrow-right-circle-fill"
-									viewBox="0 0 16 16">
+								<form action="home" method="post">
+									<input name="formType" value="accountDeletePagination"
+										type="hidden"> <input name="offset"
+										value="<%=deleteLoop - 1%>" type="hidden"> <input
+										name="pageno"
+										value="<%=(int) (request.getAttribute("deletePageno")) + 1%>"
+										type="hidden">
+									<button type="submit" class="btn link-button"
+										<%if (((Map<Long, AccountDetails>) request.getAttribute("inactiveAccounts")).size() < 10) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-right-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-										d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                                 </svg>
+									</button>
+								</form>
 							</div>
+
 						</div>
 					</div>
 				</div>
@@ -732,37 +816,47 @@
 
 </body>
 <script>
-    var buttonContentPairs = [
-        { buttonId: "add-button", contentId: "addaccount" },
-        { buttonId: "view-button", contentId: "view" },
-        { buttonId: "edit-button", contentId: "edit" },
-        { buttonId: "status-button", contentId: "status" }
-    ];
-    
-    var openedDivId = localStorage.getItem('openedEditDiv');
-	console.log(openedDivId);
-    if (openedDivId) {
-        document.getElementById(openedDivId).style.display = 'block';
-    } else {
-        document.getElementById('view').style.display = 'block';
-    }
-    
-    buttonContentPairs.forEach(pair => {
-        var button = document.getElementById(pair.buttonId);
-        var content = document.getElementById(pair.contentId);
+(document).getElementsByClassName("account-nav")[0].classList
+.add("selected-link");
 
-        button.addEventListener('click', function () {
-            if (content.style.display !== 'block') {
-                buttonContentPairs.forEach(otherPair => {
-                    if (otherPair.contentId !== pair.contentId) {
-                        document.getElementById(otherPair.contentId).style.display = 'none';
-                    }
-                });
-                content.style.display = 'block';
-                localStorage.setItem('openedEditDiv', pair.contentId);
-            }
-        });
+var buttonContentPairs = [
+    { buttonId: "add-button", contentId: "addaccount" },
+    { buttonId: "view-button", contentId: "view" },
+    { buttonId: "edit-button", contentId: "edit" },
+    { buttonId: "status-button", contentId: "status" }
+];
+
+var openedDivId = localStorage.getItem('openedEditDiv');
+if (openedDivId) {
+    document.getElementById(openedDivId).style.display = 'block';
+    var correspondingButtonId = buttonContentPairs.find(pair => pair.contentId === openedDivId).buttonId;
+    document.getElementById(correspondingButtonId).classList.add('selected-siderbar');
+} else {
+    document.getElementById('view').style.display = 'block';
+    document.getElementById('view-button').classList.add('selected-siderbar');
+}
+
+buttonContentPairs.forEach(pair => {
+    var button = document.getElementById(pair.buttonId);
+    var content = document.getElementById(pair.contentId);
+
+    button.addEventListener('click', function () {
+        if (content.style.display !== 'block') {
+            buttonContentPairs.forEach(otherPair => {
+                var otherButton = document.getElementById(otherPair.buttonId);
+                var otherContent = document.getElementById(otherPair.contentId);
+                if (otherPair.contentId !== pair.contentId) {
+                    otherContent.style.display = 'none';
+                    otherButton.classList.remove('selected-siderbar');
+                }
+            });
+            content.style.display = 'block';
+            button.classList.add('selected-siderbar');
+            localStorage.setItem('openedEditDiv', pair.contentId);
+        }
     });
+});
+
     
     //view modal for account
     document.querySelectorAll('.view-details').forEach(button => {
@@ -784,7 +878,7 @@
     		var formdata = $(this).serialize();
     		$.ajax({
     			type:'POST',
-    			url:'home',
+    			url:'FormValidation',
     			data:formdata,
     			success:function(response){
     				if (response.error) {
@@ -794,12 +888,21 @@
                     	        document.getElementById("newaccountmessage").innerHTML = '';
                     	    }, 2000);
                     } else {
-                    	document.getElementById("newAccount").reset();
-                    	(document).getElementById("newaccountmessage").innerHTML = 'successful';
-                    	(document).getElementById("newaccountmessage").style.color = 'green';
-                    	 setTimeout(function() {
-                    	        document.getElementById("newaccountmessage").innerHTML = '';
-                    	    }, 2000);
+                    	 if (response.status){
+                         	document.getElementById("newAccount").reset();
+                        	(document).getElementById("newaccountmessage").innerHTML = 'successful';
+                        	(document).getElementById("newaccountmessage").style.color = 'green';
+                        	 setTimeout(function() {
+                        	        document.getElementById("newaccountmessage").innerHTML = '';
+                        	    }, 2000);
+                     	  }
+                     	  else{
+                          	(document).getElementById("newaccountmessage").innerHTML = response.message;
+                        	(document).getElementById("newaccountmessage").style.color = 'red';
+                        	 setTimeout(function() {
+                        	        document.getElementById("newaccountmessage").innerHTML = '';
+                        	    }, 2000);
+                     	  }
                     }
     			},
                 error: function(xhr, status, error) {
@@ -856,9 +959,15 @@
                         	(document).getElementById(form.messageId).innerHTML = 'Something went wrong, Try Again';
                         	(document).getElementById(form.messageId).style.color = 'red';
                         } else {
-                        	document.getElementById(form.formId).reset();
-                        	(document).getElementById(form.messageId).innerHTML = 'successful';
-                        	(document).getElementById(form.messageId).style.color = 'green';
+                        	  if (response.status){
+                        		  document.getElementById(form.formId).reset();
+                              	(document).getElementById(form.messageId).innerHTML = 'successful';
+                              	(document).getElementById(form.messageId).style.color = 'green';
+                          	  }
+                          	  else{
+                          		(document).getElementById(form.messageId).innerHTML = 'Something went wrong, Try Again';
+                            	(document).getElementById(form.messageId).style.color = 'red'; 
+                          	  }
                         }
                     },
                     error: function(xhr, status, error) {
@@ -896,8 +1005,6 @@
 		});
     
     
-</script>
-
 </script>
 
 </html>

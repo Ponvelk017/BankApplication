@@ -219,7 +219,6 @@ public class TransactionOperations implements Transaction {
 			query.append(" limit " + condition.get("limit"));
 			query.append(" offset " + offsetValue);
 			statement = connection.prepareStatement(query.toString());
-			System.out.println(query.toString());
 			count = 1;
 			if (transactionDetails.getUserId() != 0) {
 				statement.setLong(count++, transactionDetails.getUserId());

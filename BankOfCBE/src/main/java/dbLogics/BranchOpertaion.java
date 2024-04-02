@@ -51,26 +51,28 @@ public class BranchOpertaion implements Branch {
 	}
 
 	@Override
-	public BranchDetails getDetails(Object value) throws InvalidInputException {
+	public List<BranchDetails> getDetails(Object value) throws InvalidInputException {
 		InputCheck.checkNull(value);
-		BranchDetails branchDetails = new BranchDetails();
+		List<BranchDetails> result = new ArrayList<BranchDetails>();
 		String query = "select * from Branch where Id = ? or IFSCCode = ? ";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, value);
 			statement.setObject(2, value);
 			try (ResultSet record = statement.executeQuery()) {
-				if (record.next()) {
+				while (record.next()) {
+					BranchDetails branchDetails = new BranchDetails();
 					branchDetails.setId(record.getInt("Id"));
 					branchDetails.setIfscCode(record.getString("IFSCCode"));
 					branchDetails.setAddress(record.getString("Address"));
 					branchDetails.setManagerId(record.getInt("ManagerId"));
 					branchDetails.setPhoneNumber(record.getLong("Contact"));
+					result.add(branchDetails);
 				}
 			}
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 		}
-		return branchDetails;
+		return result;
 	}
 
 	@Override

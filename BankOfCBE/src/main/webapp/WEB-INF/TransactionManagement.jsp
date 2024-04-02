@@ -34,7 +34,7 @@
 	<jsp:include page="EmployeeNavbar.jsp"></jsp:include>
 	<div class="container account">
 		<div class="conditionData">
-			<h2 style="padding: 1%;">You can Customize your Data</h2>
+			<h2 style="padding: 1%;">Customize Data</h2>
 			<div>
 				<form id="transactionForm" action="home" class="conditionform"
 					method="post">
@@ -67,7 +67,7 @@
 			<div id="view">
 				<div id="statement">
 					<div class="justify-content-center row">
-						<h3>Latest Transactions</h3>
+						<h3>Transactions</h3>
 						<div class=" latesttransaction ">
 							<table class="table table-striped"
 								style="padding-top: 5px; font-size: large;">
@@ -271,18 +271,16 @@
 
 					%>
 					<div class="pagination">
-						<%
-						if ((int) (request.getAttribute("pageno")) > 1) {
-						%>
 						<div class="left">
 							<form action="home" method="post">
 								<input name="formType" value="transferPagination" type="hidden">
-								<input name="offset" value="<%=sno - 10%>" type="hidden">
+								<input name="offset" value="<%=sno - 11%>" type="hidden">
 								<input name="pageno"
 									value="<%=(int) (request.getAttribute("pageno")) - 1%>"
 									type="hidden">
-								<button type="submit" class="btn link-button">
-
+								<button type="submit" class="btn link-button"
+									<%if ((int) (request.getAttribute("pageno")) > 1) {%>
+									disabled <%}%>>
 									<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
 										fill="currentColor" class="bi bi-arrow-left-circle-fill"
 										viewBox="0 0 16 16">
@@ -292,10 +290,6 @@
 								</button>
 							</form>
 						</div>
-						<%
-						}
-						if ( ((List<TransactionDetails>)request.getAttribute("latestTransactions")).size() > 10) {
-						%>
 						<div class="right">
 							<form action="home" method="post">
 								<input name="formType" value="transferPagination" type="hidden">
@@ -303,7 +297,9 @@
 									name="pageno"
 									value="<%=(int) (request.getAttribute("pageno")) + 1%>"
 									type="hidden">
-								<button type="submit" class="btn link-button">
+								<button type="submit" class="btn link-button"
+									<%if (((List<TransactionDetails>) request.getAttribute("latestTransactions")).size() > 10) {%>
+									idsabled <%}%>>
 									<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
 										fill="currentColor" class="bi bi-arrow-right-circle-fill"
 										viewBox="0 0 16 16">
@@ -313,9 +309,6 @@
 								</button>
 							</form>
 						</div>
-						<%
-						}
-						%>
 					</div>
 				</div>
 			</div>
@@ -330,6 +323,9 @@
 
 </body>
 <script>
+(document).getElementsByClassName("transaction-nav")[0].classList
+.add("selected-link");
+
 	//view modal for account
 	document.querySelectorAll('.view-details').forEach(button => {
 	    button.addEventListener('click', function () {
