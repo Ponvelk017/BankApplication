@@ -9,6 +9,9 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map.Entry"%>
 <%@ page import="org.json.JSONObject"%>
+<%@ page import="java.time.LocalDate"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -39,16 +42,20 @@
 				<form id="transactionForm" action="home" class="conditionform"
 					method="post">
 					<input name="formType" value="searchTransactionForm" type="hidden">
-					<input name="pageno"
-						value="<%=((int) (request.getAttribute("pageno")) - 1)%>"
-						id="pagination-pageno" type="hidden"> <label
-						class="labletext" for="customerId">CustomerId</label> <input
+					<input name="pageno" id="pageno"
+						value="<%=request.getAttribute("pageno")%>" type="hidden">
+					<label class="labletext" for="customerId">CustomerId</label> <input
 						class="inputtag" id="customerId" name="customerId" type="number"
 						value="${param.customerId}"> <label class="labletext"
 						for="fromDate">From</label> <input class="inputtag" id="fromDate"
 						name="fromDate" type="date" value="${param.fromDate}"> <label
-						class="labletext" for="toDate">To</label> <input class="inputtag"
-						id="toDate" name="toDate" type="date" value="${param.toDate}">
+						class="labletext" for="toDate">To</label>
+					<%
+					LocalDate currentDate = LocalDate.now();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					%>
+					<input class="inputtag" id="toDate" name="toDate" type="date"
+						max="<%=currentDate.format(formatter)%>" value="${param.toDate}">
 					<label class="labletext" for="sortBy">SortBy</label> <select
 						id="sortBy" name="sortBy" class="inputtextbox"
 						value="${param.sortBy}">
@@ -62,7 +69,7 @@
 						<option value="withdraw">Credit</option>
 					</select>
 					<div class="inputbut">
-						<button type="button" onclick="transactionformSubmitionfirst()">Get
+						<button type="submit" onclick="submitTransaction()">Get
 							Records</button>
 					</div>
 				</form>
@@ -278,8 +285,7 @@
 					%>
 					<div class="pagination">
 						<div class="left">
-							<button type="submit" class="btn link-button"
-								onclick="transactionformSubmitionback()"
+							<button type="submit" class="btn link-button" 	onclick="submitTransactionPrevious()"
 								<%if ((int) (request.getAttribute("pageno")) <= 1) {%> disabled
 								<%}%>>
 								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
@@ -289,13 +295,13 @@
 										d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                             </svg>
 							</button>
-							<!-- </form> -->
 						</div>
 						<div class="right">
+
 							<button type="submit" class="btn link-button"
-								onclick="transactionformSubmition()"
-								<%if (((List<TransactionDetails>) request.getAttribute("latestTransactions")).size() < 10) {%>
-								disabled <%}%>>
+								onclick="submitTransactionNext()"
+								<%if (((List<TransactionDetails>) request.getAttribute("latestTransactions")).size() >= 10) {%>
+								idsabled <%}%>>
 								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
 									fill="currentColor" class="bi bi-arrow-right-circle-fill"
 									viewBox="0 0 16 16">
@@ -303,13 +309,11 @@
 										d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                             </svg>
 							</button>
-							<!-- </form> -->
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script
@@ -344,25 +348,24 @@
 	    	 document.getElementById('ifsc').innerHTML = transactionDetails.IFSC;
 	    });
 	});
-		
-	function transactionformSubmitionfirst(){
-		document.getElementById("pagination-pageno").value = +(document.getElementById("pagination-pageno").value);
-		console.log(+(document.getElementById("pagination-pageno").value))
+	
+	function submitTransaction(){
 		var form = document.getElementById("transactionForm");
-		form.submit();
+		form.submit()
 	}
 	
-	function transactionformSubmition(){
-		document.getElementById("pagination-pageno").value = +(document.getElementById("pagination-pageno").value)+1;
-		console.log(+(document.getElementById("pagination-pageno").value))
+	function submitTransactionNext(){
+		document.getElementById("pageno").value = +document.getElementById("pageno").value+1;
 		var form = document.getElementById("transactionForm");
-		form.submit();
+		form.submit()
 	}
 	
-	function transactionformSubmitionback(){
-		document.getElementById("pagination-pageno").value = +(document.getElementById("pagination-pageno").value)-1;
+	function submitTransactionPrevious(){
+		document.getElementById("pageno").value = +document.getElementById("pageno").value-1;
 		var form = document.getElementById("transactionForm");
-		form.submit();
+		form.submit()
 	}
+	
+	
 </script>
 </html>

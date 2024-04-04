@@ -45,20 +45,6 @@ public class CustomerFunctions {
 		} else {
 			return "Name should only contain Alphabets";
 		}
-//		if (customer.getName().matches("^[A-Za-z.]+") && (customer.getMobile() + "").matches("^[0-9]{10}$")
-//				&& customer.getEmail().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-//						+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
-//			LocalDate currentDate = LocalDate.now();
-//			LocalDate dob = LocalDate.ofInstant(Instant.ofEpochMilli(customer.getDOB()), ZoneId.systemDefault());
-//			Period period = Period.between(dob, currentDate);
-//			if (period.getYears() >= 18 && "MaleFemale".contains(customer.getGender()) && customer.getPassword()
-//					.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[a-zA-Z0-9@#$%^&+=!]).{8,}$")) {
-//				if (customer.getAadhar().length() == 12 && customer.getPan().length() == 10) {
-//					return 1;
-//				}
-//			}
-//		}
-//		return -1;
 	}
 
 	public int addCustomer(List<CustomerDetails> customers) throws InvalidInputException {
@@ -123,7 +109,7 @@ public class CustomerFunctions {
 		}
 	}
 
-	public Map<Integer, CustomerDetails> getCustomerProfile(CustomerDetails customerDetails)
+	public Map<Integer, CustomerDetails> getCustomerProfile(CustomerDetails customerDetails , String userType)
 			throws InvalidInputException {
 		InputCheck.checkNull(customerDetails);
 		new CustomerDetails();
@@ -132,12 +118,16 @@ public class CustomerFunctions {
 		columnToGet.add("Customer.Address");
 		columnToGet.add("Customer.Aadhar");
 		columnToGet.add("Customer.Pan");
-		List<CustomerDetails> customerDet = customerOpertaion.getCustomCustomer(customerDetails, columnToGet);
+		List<CustomerDetails> customerDet = customerOpertaion.getCustomCustomer(customerDetails, columnToGet , userType);
 		Map<Integer, CustomerDetails> result = new HashMap<Integer, CustomerDetails>();
 		for (CustomerDetails singleRecord : customerDet) {
 			result.put(singleRecord.getId(), singleRecord);
 		}
 		return result;
+	}
+	
+	public int checkPanAadhar(String pan, String aadhar) throws InvalidInputException {
+		return customerOpertaion.panAadharCheck(pan, aadhar);
 	}
 
 }

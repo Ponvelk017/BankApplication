@@ -131,8 +131,7 @@
 								<form id="fetchaccount" action="home" method="post"
 									class="durationform" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="fetchAccount" type="hidden">
-									Account Number <input style="width: 30%;" name="id"
-										type="number">
+									Customer Id <input style="width: 30%;" name="id" type="number">
 									<button class="link-button" type="submit">
 										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
 											fill="currentColor" class="bi bi-arrow-down-square-fill"
@@ -251,8 +250,7 @@
 								<form id="fetchaccount" action="home" method="post"
 									class="durationform" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="fetchEditAccount" type="hidden">
-									Account Number <input style="width: 30%;" name="id"
-										type="number">
+									Customer Id <input style="width: 30%;" name="id" type="number">
 									<button class="link-button" type="submit">
 										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
 											fill="currentColor" class="bi bi-arrow-down-square-fill"
@@ -372,13 +370,39 @@
 														type="hidden"> <input name="formType"
 														value="blockAccount" type="hidden"> <input
 														name="status" value="0" type="hidden">
-													<button class="link-button block-button">
+													<button type="button" class="btn link-button"
+														data-bs-toggle="modal"
+														data-bs-target="#staticBackdropblock">
 														<svg xmlns="http://www.w3.org/2000/svg" width="30"
 															height="30" fill="currentColor" class="bi bi-ban"
 															viewBox="0 0 16 16">
 															<path
 																d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" /></svg>
 													</button>
+
+													<div class="modal fade" id="staticBackdropblock"
+														data-bs-backdrop="static" data-bs-keyboard="false"
+														tabindex="-1" aria-labelledby="staticBackdropLabel"
+														aria-hidden="true">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h1 class="modal-title fs-5" id="staticBackdropLabel">Block
+																		User</h1>
+																</div>
+																<div class="modal-body">
+																	Are you sure , Do you want to Block the Account ?<br>
+																	 <p class="message" id="blockMessage"></p> 
+																</div>
+																<div class="modal-footer">
+																	<button type="button" class="btn btn-secondary"
+																		data-bs-dismiss="modal" onclick="pageRefresh()">Back</button>
+																	<button class="btn-primary block-button">
+																		Proceed</button>
+																</div>
+															</div>
+														</div>
+													</div>
 												</form>
 											</td>
 										</tr>
@@ -437,23 +461,7 @@
 				<div id="status" style="display: none;">
 					<div id="statement">
 						<div class="justify-content-center row" style="display: flex;">
-							<h3>Blocked and Deleted Users</h3>
-							<div class="duration">
-								<form id="fetchaccount" action="home" method="post"
-									class="durationform" style="justify-content: end; gap: 3%;">
-									<input name="formType" value="fetchAccount" type="hidden">
-									Account Number <input style="width: 30%;" name="id"
-										type="number">
-									<button class="link-button" type="submit">
-										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
-											fill="currentColor" class="bi bi-arrow-down-square-fill"
-											viewBox="0 0 16 16">
-                                            <path
-												d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0" />
-                                        </svg>
-									</button>
-								</form>
-							</div>
+							<h3>Blocked and Deleted Accounts</h3>
 							<div class=" latesttransaction ">
 								<table class="table table-striped"
 									style="padding-top: 5px; font-size: large;">
@@ -510,13 +518,38 @@
 													type="hidden"> <input name="formType"
 													value="blockAccount" type="hidden"> <input
 													name="status" value="1" type="hidden">
-												<button class="link-button block-button">
+												<button type="button" class="btn link-button"
+													data-bs-toggle="modal"
+													data-bs-target="#staticBackdropunblock">
 													<svg xmlns="http://www.w3.org/2000/svg" width="30"
 														height="30" fill="currentColor" class="bi bi-ban"
 														viewBox="0 0 16 16">
 															<path
 															d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" /></svg>
 												</button>
+												<div class="modal fade" id="staticBackdropunblock"
+													data-bs-backdrop="static" data-bs-keyboard="false"
+													tabindex="-1" aria-labelledby="staticBackdropLabel"
+													aria-hidden="true">
+													<div class="modal-dialog">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h1 class="modal-title fs-5" id="staticBackdropLabel">UnBlock
+																	User</h1>
+															</div>
+															<div class="modal-body">
+																Are you sure , Do you want to UnBlock the Account ?<br>
+																<p class="message" id="unblockMessage"></p>
+															</div>
+															<div class="modal-footer">
+																<button type="button" class="btn btn-secondary"
+																	data-bs-dismiss="modal" onclick="pageRefresh()">Back</button>
+																<button class="btn-primary block-button">
+																	Proceed</button>
+															</div>
+														</div>
+													</div>
+												</div>
 											</form>
 										</td>
 										<%
@@ -689,7 +722,7 @@
 										for="accountno">Account Number:</label> <input class="textbox"
 										type="number" id="accountNumber" name="accountno"> <label
 										style="padding-top: 2%;" for="amount">Amount:</label> <input
-										class="textbox" type="text" id="amount" name="amount"
+										class="textbox" type="number" id="amount" name="amount"
 										placeholder="Enter Amount" required><br>
 									<button type="submit">Deposit</button>
 								</form>
@@ -733,7 +766,7 @@
 										class="textbox" type="number" id="Withdrawaccount"
 										name="accountno"> <label style="padding-top: 2%;"
 										for="amount">Amount:</label> <input class="textbox"
-										type="text" id="amount" name="amount"
+										type="number" id="amount" name="amount"
 										placeholder="Enter Amount" required><br> <label
 										style="padding-top: 2%;" for="accountno">Remarks:</label> <input
 										class="textbox" type="text" id="remark" name="remark"
@@ -780,10 +813,11 @@
 										class="textbox" type="number" id="transferaccount"
 										name="accountno"> <label style="padding-top: 2%;"
 										for="recaccount">Receiver Account Number:</label> <input
-										class="textbox" type="text" id="recaccount" name="recaccount"
-										placeholder="Enter Receiver Account Number" required><br>
-									<label style="padding-top: 2%;" for="amount">Amount:</label> <input
-										class="textbox" type="text" id="amount" name="amount"
+										class="textbox" type="number" id="recaccount"
+										name="recaccount" placeholder="Enter Receiver Account Number"
+										required><br> <label style="padding-top: 2%;"
+										for="amount">Amount:</label> <input class="textbox"
+										type="number" id="amount" name="amount"
 										placeholder="Enter Amount" required><br> <label
 										style="padding-top: 2%;" for="accountno">Remarks:</label> <input
 										class="textbox" type="text" id="remark" name="remark"
@@ -878,7 +912,7 @@ buttonContentPairs.forEach(pair => {
     		var formdata = $(this).serialize();
     		$.ajax({
     			type:'POST',
-    			url:'FormValidation',
+    			url:'SessionFilter',
     			data:formdata,
     			success:function(response){
     				if (response.error) {
@@ -888,9 +922,10 @@ buttonContentPairs.forEach(pair => {
                     	        document.getElementById("newaccountmessage").innerHTML = '';
                     	    }, 2000);
                     } else {
+                    	console.log(response);
                     	 if (response.status){
                          	document.getElementById("newAccount").reset();
-                        	(document).getElementById("newaccountmessage").innerHTML = 'successful';
+                        	(document).getElementById("newaccountmessage").innerHTML = response.message;
                         	(document).getElementById("newaccountmessage").style.color = 'green';
                         	 setTimeout(function() {
                         	        document.getElementById("newaccountmessage").innerHTML = '';
@@ -984,16 +1019,29 @@ buttonContentPairs.forEach(pair => {
 		        $(this).submit(function(event){
 		            event.preventDefault();
 		            var formdata = $(this).serialize();
-		            var formType = $(this).find('input[name="formType"]').val(); 
 		            $.ajax({
 		                type:'POST',
 		                url:'home',
 		                data:formdata,
 		                success:function(response){
 		                    if (response.error) {
-		                        window.alert("Unsuccessful");
+		                    	(document).getElementById("blockMessage").innerHTML = "Something Went wrong.Try After sometimes !"
+                              	(document).getElementById("blockMessage").style.color = 'red';
+		                    	(document).getElementById("unblockMessage").innerHTML = "Something Went wrong.Try After sometimes !"
+	                              	(document).getElementById("unblockMessage").style.color = 'red';
 		                    } else {
-		                        window.alert("Successful"); 
+		                    	if(response.status){
+		                    		(document).getElementById("blockMessage").innerHTML = response.message;
+	                              	(document).getElementById("blockMessage").style.color = 'green';
+	                              	(document).getElementById("unblockMessage").innerHTML = response.message;
+	                              	(document).getElementById("unblockMessage").style.color = 'green';
+		                    	}
+		                    	else{
+		                    		(document).getElementById("blockMessage").innerHTML = response.message;
+	                              	(document).getElementById("blockMessage").style.color = 'red';
+	                              	(document).getElementById("unblockMessage").innerHTML = response.message;
+	                              	(document).getElementById("unblockMessage").style.color = 'red';
+		                    	}
 		                    }
 		                },
 		                error: function(xhr, status, error) {
@@ -1004,6 +1052,9 @@ buttonContentPairs.forEach(pair => {
 		    });
 		});
     
+    function pageRefresh(){
+    	location.reload();
+    }
     
 </script>
 

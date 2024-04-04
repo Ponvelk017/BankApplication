@@ -128,8 +128,8 @@ public class CustomerOperations implements Customer {
 	}
 
 	@Override
-	public List<CustomerDetails> getCustomCustomer(CustomerDetails customerDetails, List<String> columnToGet)
-			throws InvalidInputException {
+	public List<CustomerDetails> getCustomCustomer(CustomerDetails customerDetails, List<String> columnToGet,
+			String userType) throws InvalidInputException {
 		InputCheck.checkNull(customerDetails);
 		InputCheck.checkNull(columnToGet);
 		getMappingDetails();
@@ -155,7 +155,11 @@ public class CustomerOperations implements Customer {
 				query.append(" User.Status = ? ");
 				count++;
 			}
-//			query.append(" order by Customer.Id");
+			if (count > 1) {
+				query.append("AND ");
+			}
+			query.append(" User.Type = ? ");
+			count++;
 			statement = connection.prepareStatement((query.toString()));
 			count = 1;
 			if (customerDetails.getId() != 0) {
@@ -168,6 +172,7 @@ public class CustomerOperations implements Customer {
 					statement.setString(count++, "Inactive");
 				}
 			}
+			statement.setObject(count++, userType);
 			try (ResultSet record = statement.executeQuery()) {
 				ResultSetMetaData metadata = record.getMetaData();
 				int columns = metadata.getColumnCount();
@@ -223,4 +228,6 @@ public class CustomerOperations implements Customer {
 		}
 		return 0;
 	}
+	
+	
 }

@@ -2,7 +2,6 @@ package customLogics;
 
 import java.util.Map;
 
-import dbLogics.EmployeeOperations;
 import dbLogics.UserOperations;
 import details.CustomerDetails;
 import utility.Common;
@@ -12,7 +11,6 @@ import utility.InvalidInputException;
 public class UserFunctions {
 
 	private UserOperations userOpertaion = new UserOperations();
-	private EmployeeOperations employee = new EmployeeOperations();
 
 	public boolean login(int userId, String password) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(userId);
@@ -33,7 +31,7 @@ public class UserFunctions {
 
 	public String getSinglRecord(String column, int userId) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(userId);
-		return (String) userOpertaion.getSingleRecord(column, "Id", userId);
+		return userOpertaion.getSingleRecord(column, "Id", userId)+"";
 	}
 
 	public int coloumnUpdation(String column, Object value, int userId) throws InvalidInputException {

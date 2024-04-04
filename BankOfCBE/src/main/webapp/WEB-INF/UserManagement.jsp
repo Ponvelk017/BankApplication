@@ -104,13 +104,14 @@
 						<div id="customer" class="col-5 align-items-center">
 							<form id="customerForm" class="text-center forms"
 								style="padding-top: 5%;">
-								<label for="accountno">Name:</label> <input class="textbox"
-									type="text" id="name" name="name" placeholder="Enter Name"
-									required> <label for="accountno">Date Of Birth:</label>
-								<input class="textbox" type="date" id="dob" name="dob"
-									placeholder="Enter DOB" required><br> <label
-									for="accountno">Mobile:</label> <input class="textbox"
-									type="number" id="mobile" name="mobile"
+								<input name="formType" value="newCustomer" type="hidden"
+									id="userType"> <label for="accountno">Name:</label> <input
+									class="textbox" type="text" id="name" name="name"
+									placeholder="Enter Name" required> <label
+									for="accountno">Date Of Birth:</label> <input class="textbox"
+									type="date" id="dob" name="dob" placeholder="Enter DOB"
+									required><br> <label for="accountno">Mobile:</label>
+								<input class="textbox" type="number" id="mobile" name="mobile"
 									placeholder="Enter  Mobile Number" required><br> <label
 									for="accountno">Email:</label> <input class="textbox"
 									type="email" id="email" name="email" placeholder="Enter Email"
@@ -125,10 +126,15 @@
 									onchange="changeUser()" required>
 									<option value="" disabled selected hidden>--Select--</option>
 									<option>User</option>
+									<%
+									if (request.getAttribute("isAdmin").equals("1")) {
+									%>
 									<option>Employee</option>
+									<%
+									}
+									%>
 								</select><br>
 								<div id="user-details" style="display: none;">
-									<input name="formType" value="newCustomer" type="hidden">
 									<label for="accountno">Address:</label> <input class="textbox"
 										type="text" id="address" name="address"
 										placeholder="Enter Address"><br> <label
@@ -139,7 +145,6 @@
 										type="text" id="pan" name="pan" placeholder="ASDFG12345"><br>
 								</div>
 								<div id="employee-detail" style="display: none;">
-									<input name="formType" value="newEmployee" type="hidden">
 									<label for="accountno">Working Branch:</label> <input
 										class="textbox" type="text" id="branch" name="branch"
 										placeholder="ASDFG12345"><br> <label
@@ -147,13 +152,7 @@
 										name="admin" class="textbox">
 										<option value="" disabled selected hidden>--Select--</option>
 										<option value="0">Employee</option>
-										<%
-										if (request.getAttribute("isAdmin").equals("1")) {
-										%>
 										<option value="1">Manager</option>
-										<%
-										}
-										%>
 									</select><br>
 								</div>
 								<button type="submit">Add</button>
@@ -298,7 +297,7 @@
 							<div class="duration">
 								<form action="home" method="post" id="customerId"
 									class="durationform" style="justify-content: end; gap: 3%;">
-									<input name="formType" value="CustomerDetailsEditForm"
+									<input name="formType" value="searchCustomerInEdit"
 										type="hidden"> Customer Id <input style="width: 30%;"
 										name="id" type="number">
 									<button class="link-button" type="submit">
@@ -390,13 +389,39 @@
 														type="hidden"> <input name="status" value="0"
 														type="hidden"> <input name="formType"
 														value="blockUser" type="hidden">
-													<button class="link-button block-button">
+
+													<button type="button" class="btn link-button"
+														data-bs-toggle="modal"
+														data-bs-target="#staticBackdropblock">
 														<svg xmlns="http://www.w3.org/2000/svg" width="30"
 															height="30" fill="currentColor" class="bi bi-ban"
 															viewBox="0 0 16 16">
 															<path
 																d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" /></svg>
 													</button>
+													<div class="modal fade" id="staticBackdropblock"
+														data-bs-backdrop="static" data-bs-keyboard="false"
+														tabindex="-1" aria-labelledby="staticBackdropLabel"
+														aria-hidden="true">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h1 class="modal-title fs-5" id="staticBackdropLabel">Block
+																		User</h1>
+																</div>
+																<div class="modal-body">
+																	Are you sure , Do you want to Block the user ?<br>
+																	<p class="message" id="blockMessage"></p>
+																</div>
+																<div class="modal-footer">
+																	<button type="button" class="btn btn-secondary"
+																		data-bs-dismiss="modal" onclick="pageRefresh()">Back</button>
+																	<button class="btn-primary block-button">
+																		Proceed</button>
+																</div>
+															</div>
+														</div>
+													</div>
 												</form>
 											</td>
 
@@ -456,21 +481,6 @@
 					<div id="statement">
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>Blocked and Deleted Users</h3>
-							<div class="duration">
-								<form id="blockedFilter" class="durationform" action="home"
-									method="post" style="justify-content: end; gap: 3%;">
-									<input name="formType" value="blockedFilter" type="hidden">
-									Customer Id <input style="width: 30%;" name="id" type="number">
-									<button class="link-button" type="submit">
-										<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
-											fill="currentColor" class="bi bi-arrow-down-square-fill"
-											viewBox="0 0 16 16">
-                                            <path
-												d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0" />
-                                        </svg>
-									</button>
-								</form>
-							</div>
 							<div class=" latesttransaction ">
 								<table class="table table-striped"
 									style="padding-top: 5px; font-size: large;">
@@ -540,13 +550,38 @@
 														type="hidden"> <input name="status" value="1"
 														type="hidden"> <input name="formType"
 														value="blockUser" type="hidden">
-													<button class="link-button block-button">
+													<button type="button" class="btn link-button"
+														data-bs-toggle="modal"
+														data-bs-target="#staticBackdropunblock">
 														<svg xmlns="http://www.w3.org/2000/svg" width="30"
 															height="30" fill="currentColor" class="bi bi-ban"
 															viewBox="0 0 16 16">
 															<path
 																d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" /></svg>
 													</button>
+													<div class="modal fade" id="staticBackdropunblock"
+														data-bs-backdrop="static" data-bs-keyboard="false"
+														tabindex="-1" aria-labelledby="staticBackdropLabel"
+														aria-hidden="true">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h1 class="modal-title fs-5" id="staticBackdropLabel">UnBlock
+																		User</h1>
+																</div>
+																<div class="modal-body">
+																	Are you sure , Do you want to UnBlock the user ?<br>
+																	<p class="message" id="unblockMessage"></p>
+																</div>
+																<div class="modal-footer">
+																	<button type="button" class="btn btn-secondary"
+																		data-bs-dismiss="modal" onclick="pageRefresh()">Back</button>
+																	<button class="btn-primary block-button">
+																		Proceed</button>
+																</div>
+															</div>
+														</div>
+													</div>
 													<%
 													} else {
 													%>
@@ -730,15 +765,7 @@
 											<p id="customerStatus"></p>
 										</td>
 									</tr>
-									<tr>
-										<th scope="col">
-											<p>Deleted At</p>
-										</th>
-										<td>:</td>
-										<td>
-											<p id="customerDeletion"></p>
-										</td>
-									</tr>
+
 								</tbody>
 							</table>
 						</div>
@@ -777,8 +804,8 @@
 										for="accountno">Name:</label> <input class="textbox"
 										type="text" id="editname" name="name"> <label
 										for="accountno">Mobile:</label> <input class="textbox"
-										type="number" id="editmobile" name="mobile"><br> <label
-										for="accountno">Email:</label> <input class="textbox"
+										type="number" id="editmobile" name="mobile"><br>
+									<label for="accountno">Email:</label> <input class="textbox"
 										type="email" id="editemail" name="email"><br> <label
 										for="accountno">Date Of Birth:</label> <input class="textbox"
 										type="date" id="editdob" name="dob"><br> <label
@@ -817,87 +844,87 @@
 
 </body>
 <script>
-
-(document).getElementsByClassName("user-nav")[0].classList
-.add("selected-link");
-
-
-var buttonContentPairs = [
-    { buttonId: "add-button", contentId: "addcustomer" },
-    { buttonId: "view-button", contentId: "view" },
-    { buttonId: "edit-button", contentId: "edit" },
-    { buttonId: "status-button", contentId: "status" }
-];
-
-var openedDivId = localStorage.getItem('openedDiv');
-
-if (openedDivId) {
-    document.getElementById(openedDivId).style.display = 'block';
-    var correspondingButtonId = buttonContentPairs.find(pair => pair.contentId === openedDivId).buttonId;
-    document.getElementById(correspondingButtonId).classList.add('selected-siderbar');
-} else {
-    document.getElementById('view').style.display = 'block';
-    document.getElementById('view-button').classList.add('selected-siderbar');
-}
-buttonContentPairs.forEach(pair => {
-    var button = document.getElementById(pair.buttonId);
-    var content = document.getElementById(pair.contentId);
-
-    button.addEventListener('click', function () {
-        if (content.style.display !== 'block') {
-            buttonContentPairs.forEach(otherPair => {
-                if (otherPair.contentId !== pair.contentId) {
-                    document.getElementById(otherPair.contentId).style.display = 'none';
-                    document.getElementById(otherPair.buttonId).classList.remove('selected-siderbar');
-                }
-            });
-            content.style.display = 'block';
-            button.classList.add('selected-siderbar');
-            localStorage.setItem('openedDiv', pair.contentId);
-        }
-    });
-});
-
-    // switch between employee and customer account creation
-    function changeUser(){
-    	var selectedUser = document.getElementById("usertype").value;
-    	 if(selectedUser === "User"){
-    		document.getElementById("user-details").style.display='block';
-    		document.getElementById("employee-detail").style.display='none';
-    	}
-		if(selectedUser === "Employee"){
-			document.getElementById("user-details").style.display='none';
-    		document.getElementById("employee-detail").style.display='block';	
-		 }
-    }
-    
-    // displaying the customer record when the view button is clicked
-    document.querySelectorAll('.view-details').forEach(button => {
-        button.addEventListener('click', function () {
-        	 const customerDetails = JSON.parse(this.getAttribute('data-user-id'));
-        	 document.getElementById('customerName').innerHTML = customerDetails.Name;
-        	 document.getElementById('customerMobile').innerHTML = customerDetails.Mobile;
-        	 document.getElementById('customerEmail').innerHTML = customerDetails.Email;
-        	 var date =new Date(customerDetails.Dob);
-  			 var year = date.getFullYear();
-  			 var month = ('0' + (date.getMonth() + 1)).slice(-2); 
-  			 var day = ('0' + date.getDate()).slice(-2);
-  			 var formattedDate = year + '-' + month + '-' + day;
-             document.getElementById('customerDob').innerHTML = formattedDate;	 
-        	 document.getElementById('customerAddress').innerHTML = customerDetails.Address;
-        	 document.getElementById('CustomerAadhar').innerHTML = '********'+(customerDetails.Aadhar).substring(8);
-        	 document.getElementById('customerPan').innerHTML = '********'+(customerDetails.Pan).substring(6);
-        	 document.getElementById('customerStatus').innerHTML =((customerDetails.Status)=='1')?'Active':'InActive';
-        	 var deleteddate =new Date(customerDetails.DeleteAt);
-  			 var deletedyear = date.getFullYear();
-  			 var deletedmonth = ('0' + (date.getMonth() + 1)).slice(-2); 
-  			 var deletedday = ('0' + date.getDate()).slice(-2);
-  			 var deletedformattedDate = year + '-' + month + '-' + day;
-  			 console.log(deleteddate+" "+deletedyear+" "+customerDetails.DeleteAt);
-        	 document.getElementById('customerDeletion').innerHTML =((customerDetails.DeleteAt)=='0')?deletedformattedDate:'Nil';
-        });
-    });
-    
+	
+	(document).getElementsByClassName("user-nav")[0].classList
+	.add("selected-link");
+	
+	
+	var buttonContentPairs = [
+	    { buttonId: "add-button", contentId: "addcustomer" },
+	    { buttonId: "view-button", contentId: "view" },
+	    { buttonId: "edit-button", contentId: "edit" },
+	    { buttonId: "status-button", contentId: "status" }
+	];
+	
+	var openedDivId = localStorage.getItem('openedDiv');
+	
+	if (openedDivId) {
+	    document.getElementById(openedDivId).style.display = 'block';
+	    var correspondingButtonId = buttonContentPairs.find(pair => pair.contentId === openedDivId).buttonId;
+	    document.getElementById(correspondingButtonId).classList.add('selected-siderbar');
+	} else {
+	    document.getElementById('view').style.display = 'block';
+	    document.getElementById('view-button').classList.add('selected-siderbar');
+	}
+	buttonContentPairs.forEach(pair => {
+	    var button = document.getElementById(pair.buttonId);
+	    var content = document.getElementById(pair.contentId);
+	
+	    button.addEventListener('click', function () {
+	        if (content.style.display !== 'block') {
+	            buttonContentPairs.forEach(otherPair => {
+	                if (otherPair.contentId !== pair.contentId) {
+	                    document.getElementById(otherPair.contentId).style.display = 'none';
+	                    document.getElementById(otherPair.buttonId).classList.remove('selected-siderbar');
+	                }
+	            });
+	            content.style.display = 'block';
+	            button.classList.add('selected-siderbar');
+	            localStorage.setItem('openedDiv', pair.contentId);
+	        }
+	    });
+	});
+	
+	    // switch between employee and customer account creation
+	    function changeUser(){
+	    	var selectedUser = document.getElementById("usertype").value;
+	    	 if(selectedUser === "User"){
+	    		document.getElementById("userType").value = "newCustomer";
+	    		document.getElementById("user-details").style.display='block';
+	    		document.getElementById("employee-detail").style.display='none';
+	    	}
+			if(selectedUser === "Employee"){
+				document.getElementById("userType").value = "newEmployee";
+				document.getElementById("user-details").style.display='none';
+	    		document.getElementById("employee-detail").style.display='block';	
+			 }
+	    }
+	    
+	    // displaying the customer record when the view button is clicked
+	    document.querySelectorAll('.view-details').forEach(button => {
+	        button.addEventListener('click', function () {
+	        	 const customerDetails = JSON.parse(this.getAttribute('data-user-id'));
+	        	 document.getElementById('customerName').innerHTML = customerDetails.Name;
+	        	 document.getElementById('customerMobile').innerHTML = customerDetails.Mobile;
+	        	 document.getElementById('customerEmail').innerHTML = customerDetails.Email;
+	        	 var date =new Date(customerDetails.Dob);
+	  			 var year = date.getFullYear();
+	  			 var month = ('0' + (date.getMonth() + 1)).slice(-2); 
+	  			 var day = ('0' + date.getDate()).slice(-2);
+	  			 var formattedDate = year + '-' + month + '-' + day;
+	             document.getElementById('customerDob').innerHTML = formattedDate;	 
+	        	 document.getElementById('customerAddress').innerHTML = customerDetails.Address;
+	        	 document.getElementById('CustomerAadhar').innerHTML = '********'+(customerDetails.Aadhar).substring(8);
+	        	 document.getElementById('customerPan').innerHTML = '********'+(customerDetails.Pan).substring(6);
+	        	 document.getElementById('customerStatus').innerHTML =((customerDetails.Status)=='1')?'Active':'InActive';
+	        	 var deleteddate =new Date(customerDetails.DeleteAt);
+	  			 var deletedyear = date.getFullYear();
+	  			 var deletedmonth = ('0' + (date.getMonth() + 1)).slice(-2); 
+	  			 var deletedday = ('0' + date.getDate()).slice(-2);
+	  			 var deletedformattedDate = year + '-' + month + '-' + day;
+	        });
+	    });
+	    
     
     // displaing customer details in edit button
       document.querySelectorAll('.edit-details').forEach(button => {
@@ -941,7 +968,7 @@ buttonContentPairs.forEach(pair => {
                           } else {
                         	  if (response.status){
 	                          	document.getElementById(form.formId).reset();
-	                          	(document).getElementById(form.messageId).innerHTML = 'successful';
+	                          	(document).getElementById(form.messageId).innerHTML = response.message;
 	                          	(document).getElementById(form.messageId).style.color = 'green';
                         	  }
                         	  else{
@@ -963,6 +990,8 @@ buttonContentPairs.forEach(pair => {
       	$("#editUserDetails").submit(function(event){
       		event.preventDefault();
       		var formdata = $(this).serialize();
+
+      	  console.log("hi");
       		$.ajax({
       			type:'POST',
       			url:'SessionFilter',
@@ -971,6 +1000,7 @@ buttonContentPairs.forEach(pair => {
       				if (response.error) {
                       	(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
                       	(document).getElementById("editmessage").style.color = 'red';
+                      	
                       } else {
                       	document.getElementById("editUserDetails").reset();
                       	(document).getElementById("editmessage").innerHTML = 'successful';
@@ -990,16 +1020,29 @@ buttonContentPairs.forEach(pair => {
 		        $(this).submit(function(event){
 		            event.preventDefault();
 		            var formdata = $(this).serialize();
-		            var formType = $(this).find('input[name="formType"]').val(); 
 		            $.ajax({
 		                type:'POST',
 		                url:'home',
 		                data:formdata,
 		                success:function(response){
-		                    if (response.error) {
-		                        window.alert("Unsuccessful");
+		                	if (response.error) {
+		                    	(document).getElementById("blockMessage").innerHTML = "Something Went wrong.Try After sometimes !"
+                              	(document).getElementById("blockMessage").style.color = 'red';
+		                    	(document).getElementById("unblockMessage").innerHTML = "Something Went wrong.Try After sometimes !"
+	                              	(document).getElementById("unblockMessage").style.color = 'red';
 		                    } else {
-		                        window.alert("Successful"); 
+		                    	if(response.status){
+		                    		(document).getElementById("blockMessage").innerHTML = response.message;
+	                              	(document).getElementById("blockMessage").style.color = 'green';
+	                              	(document).getElementById("unblockMessage").innerHTML = response.message;
+	                              	(document).getElementById("unblockMessage").style.color = 'green';
+		                    	}
+		                    	else{
+		                    		(document).getElementById("blockMessage").innerHTML = response.message;
+	                              	(document).getElementById("blockMessage").style.color = 'red';
+	                              	(document).getElementById("unblockMessage").innerHTML = response.message;
+	                              	(document).getElementById("unblockMessage").style.color = 'red';
+		                    	}
 		                    }
 		                },
 		                error: function(xhr, status, error) {
@@ -1009,7 +1052,9 @@ buttonContentPairs.forEach(pair => {
 		        });
 		    });
 		});
-
+		 function pageRefresh(){
+		    	location.reload();
+		    }
 
 </script>
 

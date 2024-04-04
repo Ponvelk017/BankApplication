@@ -245,14 +245,86 @@
 						</div>
 					</div>
 				</div>
-				<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-				<script
-					src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-				<script
-					src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-				<script
-					src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-				<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+				<%
+				if (request.getAttribute("isAdmin").equals("1")) {
+				%>
+				<div
+					style="display: flex; flex-direction: column; justify-content: flex-end; margin-right: 2%; margin-bottom: 2%; padding-left: 90%;">
+					<button type="button" class="btn link-button"
+						data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+						<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+							fill="currentColor" class="bi bi-pencil-square"
+							viewBox="0 0 16 16">
+                            <path
+								d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path fill-rule="evenodd"
+								d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                        </svg>
+						Adding New Branch
+					</button>
+					<div class="modal fade" id="staticBackdrop"
+						data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+						aria-labelledby="staticBackdropLabel" aria-hidden="true">
+						<div
+							class="modal-dialog modal-dialog-centered .modal-dialog-custom"
+							style="max-width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h1 class="modal-title fs-5" id="staticBackdropLabel">Add
+										New Branch</h1>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"
+										aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<div id="withdraw">
+										<div class="d-flex justify-content-center transactionbox row">
+											<h3>New Branch</h3>
+											<div class="col-5 align-items-center"
+												style="padding-top: 4%;">
+												<form id="newBranch" class="text-center forms" method="post"
+													style="padding-top: 5%;">
+													<input name="formType" value="newBranch" type="hidden">
+													<label for="accountno">IFSC Code:</label> <input
+														class="textbox" type="text" id="ifsc" name="ifsc" required>
+													<label for="accountno">Address:</label> <input
+														class="textbox" type="text" id="mobile" name="address"
+														required><br> <label for="accountno">Manager
+														ID:</label> <input class="textbox" type="number" id="mobile"
+														name="manager" required><br> <label
+														for="accountno">Contact:</label> <input class="textbox"
+														type="number" id="mobile" name="contact" required><br>
+													<button type="submit">Submit</button>
+												</form>
+												<p class="message" id="newmessage"></p>
+											</div>
+											<div class="col-6"
+												style="background-image: url(Images/password.jpg); background-size: cover; background-position: center;">
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<%
+				}
+				%>
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 <script>    
 (document).getElementsByClassName("branch-nav")[0].classList
@@ -278,7 +350,6 @@
       			url:'home',
       			data:formdata,
       			success:function(response){
-      				console.log(response.status +"dafsghn");
       				if (response.error) {
                       	(document).getElementById("editmessage").innerHTML = 'Something went wrong, Try Again';
                       	(document).getElementById("editmessage").style.color = 'red';
@@ -286,13 +357,11 @@
                       	        document.getElementById("editmessage").innerHTML = '';
                       	    }, 2000);
                       } else {
-                      	/* document.getElementById("editBranchForm").reset(); */
                     	  if (response.status){
-                    		  /*document.getElementById(form.formId).reset(); */
 	                          	(document).getElementById("editmessage").innerHTML = 'successful';
 	                          	(document).getElementById("editmessage").style.color = 'green';
 	                          	 setTimeout(function() {
-	                          	        document.getElementById("editmessage").innerHTML = '';
+	                          	        document.getElementById("newmessage").innerHTML = '';
 	                          	    }, 5000);
                       	  }
                       	  else{
@@ -300,6 +369,47 @@
                           	(document).getElementById("editmessage").style.color = 'red';
                           	 setTimeout(function() {
                           	        document.getElementById("editmessage").innerHTML = '';
+                          	    }, 2000);
+                      	  }
+                      }
+      			},
+                  error: function(xhr, status, error) {
+                  	window.alert("Something Went Wrong, Try after sometime....");
+                  }
+      		});
+      	});
+      }); 
+    
+    $(document).ready(function(){
+      	$("#newBranch").submit(function(event){
+      		event.preventDefault();
+      		var formdata = $(this).serialize();
+      		console.log(formdata);
+      		$.ajax({
+      			type:'POST',
+      			url:'SessionFilter',
+      			data:formdata,
+      			success:function(response){
+      				if (response.error) {
+                      	(document).getElementById("newmessage").innerHTML = 'Something went wrong, Try Again';
+                      	(document).getElementById("newmessage").style.color = 'red';
+                      	 setTimeout(function() {
+                      	        document.getElementById("newmessage").innerHTML = '';
+                      	    }, 2000);
+                      } else {
+                    	  if (response.status){
+                        	  console.log(response.status);
+	                          	(document).getElementById("newmessage").innerHTML = 'successful';
+	                          	(document).getElementById("newmessage").style.color = 'green';
+	                          	 setTimeout(function() {
+	                          	        document.getElementById("newmessage").innerHTML = '';
+	                          	    }, 5000);
+                      	  }
+                      	  else{
+                      		(document).getElementById("newmessage").innerHTML = response.message;
+                          	(document).getElementById("newmessage").style.color = 'red';
+                          	 setTimeout(function() {
+                          	        document.getElementById("newmessage").innerHTML = '';
                           	    }, 2000);
                       	  }
                       }

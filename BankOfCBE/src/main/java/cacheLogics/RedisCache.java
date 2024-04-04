@@ -83,7 +83,7 @@ public class RedisCache implements Cache {
 				columnToGet.add("Customer.Aadhar");
 				columnToGet.add("Customer.Pan");
 				List<CustomerDetails> customerDet = customerOperations.getCustomCustomer(tempCustomerDetails,
-						columnToGet);
+						columnToGet,"0");
 				customerDetails = customerDet.get(0);
 				setCustomer(customerId, customerDetails);
 			}

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import customDB.Branch;
+import customDB.Complaint;
 import details.BranchDetails;
 import utility.DBConnection;
 import utility.InputCheck;
@@ -95,6 +96,18 @@ public class BranchOpertaion implements Branch {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 		}
 		return results;
+	}
+
+	public int addComplaint(Complaint complaint) throws InvalidInputException {
+		String query = "insert into Complaint (UserId,ComplaintType,Discription) values(?,?,?)";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setObject(1, complaint.getUserId());
+			statement.setObject(2, complaint.getComplaintType());
+			statement.setObject(3, complaint.getDiscription());
+			return statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
 	}
 
 }

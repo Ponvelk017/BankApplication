@@ -64,7 +64,7 @@ public class CacheData{
 			columnToGet.add("Customer.Address");
 			columnToGet.add("Customer.Aadhar");
 			columnToGet.add("Customer.Pan");
-			List<CustomerDetails> customerDet = customerOperations.getCustomCustomer(customerDetails, columnToGet);
+			List<CustomerDetails> customerDet = customerOperations.getCustomCustomer(customerDetails, columnToGet,"0");
 			Map<Integer, CustomerDetails> result = new HashMap<Integer, CustomerDetails>();
 			for (CustomerDetails singleRecord : customerDet) {
 				System.out.println(singleRecord.getId() + " " + singleRecord.getName());

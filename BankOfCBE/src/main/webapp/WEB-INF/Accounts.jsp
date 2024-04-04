@@ -9,6 +9,8 @@
 <%@ page import="java.util.Map"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map.Entry"%>
+<%@ page import="java.time.LocalDate"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
 
 
 
@@ -31,17 +33,10 @@
 	crossorigin="anonymous"></script>
 <link rel="stylesheet" href="include/StyleSheet.css" />
 <link rel="stylesheet" href="include/HomeStyle.css" />
-<link rel="stylesheet" href="include/UserManagement.css" />
 <title>Account</title>
 </head>
 
 <body>
-	<%
-	response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
-	response.setHeader("paragma", "no-cache");
-	response.setHeader("Expires", "0");
-	%>
-
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<button class="navbar-toggler" type="button" data-toggle="collapse"
 			data-target="#navbarNav" aria-controls="navbarNav"
@@ -170,7 +165,7 @@
                             <path fill-rule="evenodd"
 								d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5" />
                         </svg>
-						IntraBank Transfer
+						Intra-Bank Transfer
 					</button>
 				</div>
 			</li>
@@ -185,7 +180,7 @@
                             <path fill-rule="evenodd"
 								d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
                         </svg>
-						InterBank Transfer
+						Inter-Bank Transfer
 					</button>
 				</div>
 			</li>
@@ -259,9 +254,19 @@
 							<form id="duration" action="<%=request.getContextPath()%>/home"
 								class="durationform" method="post">
 								<input name="formType" value="transactionDuration" type="hidden">
-								From <input style="width: 35%;" name="from" type="date" required>
-								To <input style="width: 35%;" name="to" type="date" required>
-								<button class="link-button" type="submit">
+								<input name="pageno"
+									value="<%=((int) (request.getAttribute("pageno")))%>"
+									id="pageno" type="hidden">
+								<%
+								LocalDate currentDate = LocalDate.now();
+								DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+								%>
+								From <input style="width: 35%;" name="from" type="date" required
+									value="${param.from }" max="<%=currentDate.format(formatter)%>">
+								To <input style="width: 35%;" name="to" type="date" required
+									value="${param.to}" max="<%=currentDate.format(formatter)%>">
+								<button class="link-button" type="submit"
+									onclick="transferDetsils()">
 									<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
 										fill="currentColor" class="bi bi-arrow-down-square-fill"
 										viewBox="0 0 16 16">
@@ -274,7 +279,7 @@
 						<div class=" latesttransaction ">
 							<table class="table table-striped"
 								style="padding-top: 5px; font-size: large;">
-								<thead style="padding-bottom: 2px">
+								<thead>
 									<tr>
 										<th scope="col">S.No</th>
 										<th scope="col">Transaction Id</th>
@@ -284,7 +289,7 @@
 										<th scope="col">Remarks</th>
 										<th scope="col">Amount</th>
 										<th scope="col">Closing Balance</th>
-										<th scope="col">Date</th>
+										<th scope="col">Time and Date</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -314,54 +319,43 @@
 									}
 									%>
 								</tbody>
+								</p>
 							</table>
 							<div class="pagination">
 								<div class="left">
-									<form action="home" method="post">
-										<input name="formType" value="transactionUserPagination"
-											type="hidden"> <input name="offset"
-											value="<%=sno - 12%>" type="hidden"> <input
-											name="pageno"
-											value="<%=(int) (request.getAttribute("pageno")) - 1%>"
-											type="hidden">
-										<button type="submit" class="btn link-button"
-											<%if ((int) (request.getAttribute("pageno")) <= 1) {%>
-											disabled <%}%>>
-											<svg xmlns="http://www.w3.org/2000/svg" width="40"
-												height="40" fill="currentColor"
-												class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+									<button type="submit" class="btn link-button"
+										onclick="transferDetsilsPrevious()"
+										<%if ((int) (request.getAttribute("pageno")) <= 1) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-left-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-													d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+												d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                                 </svg>
-										</button>
-									</form>
+									</button>
+
 								</div>
 
 								<div class="right">
-									<form action="home" method="post">
-										<input name="formType" value="transactionUserPagination"
-											type="hidden"> <input name="offset"
-											value="<%=sno - 1%>" type="hidden"> <input
-											name="pageno"
-											value="<%=(int) (request.getAttribute("pageno")) + 1%>"
-											type="hidden">
-										<button type="submit" class="btn link-button"
-											<%if (((List<TransactionDetails>) request.getAttribute("latestTransaction")).size() < 10) {%>
-											disabled <%}%>>
-											<svg xmlns="http://www.w3.org/2000/svg" width="40"
-												height="40" fill="currentColor"
-												class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+
+									<button type="submit" class="btn link-button"
+										onclick="transferDetsilsNext()"
+										<%if (((List<TransactionDetails>) request.getAttribute("latestTransaction")).size() <= 10) {%>
+										disabled <%}%>>
+										<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+											fill="currentColor" class="bi bi-arrow-right-circle-fill"
+											viewBox="0 0 16 16">
                                     <path
-													d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+												d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                                 </svg>
-										</button>
-									</form>
+									</button>
+
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
 				<div id="deposit" style="display: none";>
 					<div class="d-flex transactionbox row">
 						<h3>You are one step ahead to Deposit</h3>
@@ -385,7 +379,7 @@
 									%>
 								</select> <label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									placeholder="Enter Amount" required><br>
+									placeholder="Enter Amount" required max="100000"><br>
 								<button type="submit">Deposit</button>
 							</form>
 							<p class="message" id="depositMessage"></p>
@@ -418,9 +412,9 @@
 									%>
 								</select> <label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									placeholder="Enter Amount" required><br> <label
-									style="padding-top: 2%;" for="accountno">Remarks:</label> <input
-									class="textbox" type="text" id="remark" name="remark"
+									placeholder="Enter Amount" required max="100000"><br>
+								<label style="padding-top: 2%;" for="accountno">Remarks:</label>
+								<input class="textbox" type="text" id="remark" name="remark"
 									placeholder="Enter Remarks" required><br>
 								<button type="submit">Withdraw</button>
 							</form>
@@ -458,9 +452,9 @@
 									placeholder="Enter Receiver Account Number" required><br>
 								<label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									placeholder="Enter Amount" required><br> <label
-									style="padding-top: 2%;" for="accountno">Remarks:</label> <input
-									class="textbox" type="text" id="remark" name="remark"
+									placeholder="Enter Amount" required max="100000"><br>
+								<label style="padding-top: 2%;" for="accountno">Remarks:</label>
+								<input class="textbox" type="text" id="remark" name="remark"
 									placeholder="Enter Remarks" required><br>
 								<button type="submit">Transfer</button>
 							</form>
@@ -498,8 +492,8 @@
 									placeholder="Enter Receiver Account Number" required><br>
 								<label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									placeholder="Enter Amount" required><br> <label
-									style="padding-top: 2%;" for="ifsc">IFSC Code:</label> <input
+									max="100000" placeholder="Enter Amount" required><br>
+								<label style="padding-top: 2%;" for="ifsc">IFSC Code:</label> <input
 									class="textbox" type="text" id="ifsc" name="ifsc"
 									placeholder="Enter IFSC code" required><br> <label
 									style="padding-top: 2%;" for="accountno">Remarks:</label> <input
@@ -516,7 +510,6 @@
 				</div>
 			</div>
 		</div>
-	</div>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script
@@ -580,11 +573,11 @@ buttonContentPairs.forEach(pair => {
                         } else {
                           	  if (response.status){
                           		  document.getElementById(form.formId).reset();
-                                	(document).getElementById(form.messageId).innerHTML = 'Successful';
+                                	(document).getElementById(form.messageId).innerHTML = response.message;
                                 	(document).getElementById(form.messageId).style.color = 'green';
                             	  }
                             	  else{
-                            		(document).getElementById(form.messageId).innerHTML = 'Unsuccessful , Invalid Input';
+                            		(document).getElementById(form.messageId).innerHTML = response.message;
                               	(document).getElementById(form.messageId).style.color = 'red'; 
                             	  }
                         }
@@ -597,5 +590,23 @@ buttonContentPairs.forEach(pair => {
         });
     });
     
-</script>
+    
+    function transferDetsils(){
+    	var form = document.getElementById("duration");
+    	form.submit();
+    }
+    
+    function transferDetsilsNext(){
+    	document.getElementById("pageno").value = +document.getElementById("pageno").value+1;
+    	var form = document.getElementById("duration");
+    	form.submit();
+    }
+    
+    function transferDetsilsPrevious(){
+    	console.log("hi");
+    	document.getElementById("pageno").value = +document.getElementById("pageno").value-1;
+    	var form = document.getElementById("duration");
+    	form.submit();
+    }
+ </script>
 </html>

@@ -2,6 +2,7 @@ package customLogics;
 
 import java.util.List;
 
+import customDB.Complaint;
 import dbLogics.BranchOpertaion;
 import details.BranchDetails;
 import utility.InputCheck;
@@ -28,5 +29,9 @@ public class BranchFunction {
 
 	public List<BranchDetails> getBranchDetails(int limit, int offset) throws InvalidInputException {
 		return branchOperation.getBranches(limit, offset);
+	}
+	
+	public void newComplaint(Complaint complaint) {
+		
 	}
 }

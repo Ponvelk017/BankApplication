@@ -23,11 +23,6 @@
 </head>
 
 <body>
-	<%
-	response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
-	response.setHeader("paragma", "no-cache");
-	response.setHeader("Expires", "0");
-	%>
 	<jsp:include page="Navbar.jsp"></jsp:include>
 
 	<div class="container ">
@@ -40,14 +35,10 @@
 				<h4>We are here to help you , share your Issue</h4>
 				<div class="col-5 align-items-center" style="padding-top: 4%;">
 					<form id="deposit" class="text-center forms" method="post"
-						style="padding-top: 5%;">
-						<label for="accountno">Name:</label> <input class="textbox"
-							type="text" id="name" name="name" placeholder="Enter Name"
-							required><br> <label style="padding-top: 2%;"
-							for="amount">Customer Id:</label> <input class="textbox"
-							type="text" id="id" name="id" placeholder="Enter Customer Id"
-							required><br> <label for="type">Issues Type:</label>
-						<select id="type" name="type" class="textbox" required>
+						action="home" style="padding-top: 5%;">
+						<input name="formType" value="none" type="hidden"> <label
+							for="type">Issues Type:</label> <select id="type" name="type"
+							class="textbox">
 							<option value="Account">Accounts</option>
 							<option value="Profile">Profile</option>
 							<option value="Transaction">Transaction</option>
@@ -55,7 +46,14 @@
 						</select> <label style="padding-top: 2%;" for="amount">Issue:</label> <input
 							class="textbox" type="text" id="issue" name="issue"
 							placeholder="Enter Issue" required><br>
-						<button type="button" onclick="message()">Submit</button>
+						<button type="submit">Submit</button>
+						<%
+						if (request.getAttribute("message") != null) {
+						%>
+						<p style="color: green;"><%=request.getAttribute("message")%></p>
+						<%
+						}
+						%>
 					</form>
 				</div>
 				<div class="col-6"
@@ -69,9 +67,5 @@
 <script>
 	(document).getElementsByClassName("complaint-sel")[0].classList
 			.add("selected-link");
-	
-	function message(){
-		window.alert("We Will look into the Problem and contact you !")
-	}
 </script>
 </html>

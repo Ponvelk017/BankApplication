@@ -174,10 +174,11 @@ public class FormValidation implements Filter {
 				break;
 			case "changePassword": {
 				JSONObject responseData = new JSONObject();
-				System.out.println(request.getParameter("newPassword") + " " + request.getParameter("re-password"));
-				if (request.getParameter("newPassword").equals(request.getParameter("re-password"))) {
+				System.out.println(request.getParameter("newpassword")+" "+request.getParameter("re-password"));
+				if (request.getParameter("newpassword").equals(request.getParameter("re-password"))) {
 					if (request.getParameter("newPassword").matches(
-						    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?]).{8,}$")) {
+							"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+\\\\|[\\]{};:'\",.<>/?]).{8,}$\n"
+									+ "")) {
 						responseData.put("status", true);
 						responseData.put("message", "Success");
 						RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");

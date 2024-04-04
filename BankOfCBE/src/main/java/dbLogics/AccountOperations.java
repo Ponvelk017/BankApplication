@@ -138,16 +138,10 @@ public class AccountOperations implements Account {
 			count++;
 		}
 		if (accountDetails.getUserId() != 0) {
-			if (count > 1) {
-				query.append(" and ");
-			}
 			query.append("UserId = ? ");
 			count++;
 		}
 		if (accountDetails.getStatus() != null) {
-			if (count > 1) {
-				query.append(" and ");
-			}
 			query.append("Status = ? ");
 			count++;
 		}
@@ -160,7 +154,11 @@ public class AccountOperations implements Account {
 				statement.setInt(count++, accountDetails.getUserId());
 			}
 			if (accountDetails.getStatus() != null) {
-				statement.setString(count++, accountDetails.getStatus());
+				if (accountDetails.getStatus().endsWith("Active")) {
+					statement.setString(count++, "Active");
+				} else {
+					statement.setString(count++, "Inactive");
+				}
 			}
 			try (ResultSet record = statement.executeQuery()) {
 				userAccount = setDetails(record);
@@ -174,9 +172,7 @@ public class AccountOperations implements Account {
 	@Override
 	public Map<Long, AccountDetails> getAccounts(int limit, int offset, String status) throws InvalidInputException {
 		Map<Long, AccountDetails> userAccount = new LinkedHashMap<Long, AccountDetails>();
-		String query = "select * from Account where Status = ? order by AccountNumber desc limit " + limit + " offset "
-				+ offset;
-//		System.out.println(query);
+		String query = "select * from Account where Status = ? order by AccountNumber desc limit " + limit + " offset " + offset;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, status);
 			try (ResultSet record = statement.executeQuery()) {

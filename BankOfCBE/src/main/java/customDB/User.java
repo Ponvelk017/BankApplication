@@ -16,9 +16,6 @@ public interface User {
 
 	public int updateColumn(String coloumn, Object value, int userId) throws InvalidInputException;
 
-	public Map<Integer, CustomerDetails> getCustomData(CustomerDetails customerDetails, String branchId,
-			Map<String, Object> condition) throws InvalidInputException;
-
 	// BlockedUser
 
 	public Map<String, Object> getBlockedDetails(int userId) throws InvalidInputException;
