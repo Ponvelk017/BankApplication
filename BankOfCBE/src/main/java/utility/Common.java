@@ -24,7 +24,6 @@ public class Common {
 		    e.printStackTrace();
 		}
 		return milliSecond;
-
 	}
 
 	public static String milliToDate(long millis) {

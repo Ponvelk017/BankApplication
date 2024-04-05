@@ -18,11 +18,12 @@ public class EmployeeOperations implements Employee {
 	private Connection connection = DBConnection.getConnection();
 
 	private String insertUser = "insert into User (Name,DOB,Mobile,Email,Gender,Password) values (?,?,?,?,?,?)";
-	private String insertEmployee = "insert into Employee values (?,?,?,?)";
+	private String insertEmployee = "insert into Employee (Id,Branch,Admin, CreatedTime, ModifiedBy) values (?,?,?,?,?)";
 
 	@Override
 	public List<Integer> insertEmployee(List<EmployeeDetails> employees) throws InvalidInputException {
 		InputCheck.checkNull(employees);
+		System.out.println("hi");
 		int affectedRows = 0, employeeId = 0;
 		List<Integer> result = new ArrayList<Integer>();
 		for (EmployeeDetails employee : employees) {
@@ -45,6 +46,8 @@ public class EmployeeOperations implements Employee {
 					empStatement.setInt(1, employeeId);
 					empStatement.setString(2, employee.getBranch());
 					empStatement.setBoolean(3, employee.getAdmin());
+					empStatement.setLong(4, employee.getCreatedTime());
+					empStatement.setInt(5, employee.getModifiedBy());
 					affectedRows = empStatement.executeUpdate();
 					result.add(affectedRows);
 					connection.commit();
@@ -92,7 +95,7 @@ public class EmployeeOperations implements Employee {
 			statement.setObject(1, value);
 			statement.setInt(2, Id);
 			affectedRows = statement.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 		}

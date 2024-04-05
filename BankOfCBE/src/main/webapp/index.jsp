@@ -51,7 +51,6 @@ body {
 					placeholder="Enter Password" required><br>
 				<button type="submit">log in</button>
 			</form>
-			</p>
 		</div>
 
 	</div>

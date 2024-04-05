@@ -10,6 +10,41 @@ public class AccountDetails implements Serializable {
 	private long balance;
 	private String accountStatus;
 	private String accountType;
+	private long createdTime;
+	private int modifiedBy;
+	private long modifiedTime;
+
+	public String getAccountStatus() {
+		return accountStatus;
+	}
+
+	public void setAccountStatus(String accountStatus) {
+		this.accountStatus = accountStatus;
+	}
+
+	public long getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public int getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(int modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
 
 	public String getAccountType() {
 		return accountType;

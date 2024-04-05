@@ -36,11 +36,6 @@ public class EmployeeFunctions {
 
 	public int addEmployee(List<EmployeeDetails> employees) throws InvalidInputException {
 		InputCheck.checkNull(employees);
-		for (EmployeeDetails employee : employees) {
-			if (EmployeeFunctions.validateDetails(employee) == -1) {
-				return -1;
-			}
-		}
 		List<Integer> result = employeeOperations.insertEmployee(employees);
 		for (Integer singleRecord : result) {
 			if (singleRecord == 0) {

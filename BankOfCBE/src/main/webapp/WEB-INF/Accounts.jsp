@@ -16,7 +16,6 @@
 
 <!DOCTYPE html>
 <%@page import="controller.GlobalController"%>
-<%@page import="org.apache.tomcat.jni.Global"%>
 <html lang="en">
 
 <head>
@@ -251,7 +250,7 @@
 					<div class="justify-content-center row" style="display: flex;">
 						<h3>You Latest Transactions</h3>
 						<div class="duration">
-							<form id="duration" action="<%=request.getContextPath()%>/home"
+							<form id="duration" action="SessionFilter"
 								class="durationform" method="post">
 								<input name="formType" value="transactionDuration" type="hidden">
 								<input name="pageno"
@@ -379,7 +378,7 @@
 									%>
 								</select> <label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									placeholder="Enter Amount" required max="100000"><br>
+									placeholder="Enter Amount" required max="200000" min="0"><br>
 								<button type="submit">Deposit</button>
 							</form>
 							<p class="message" id="depositMessage"></p>
@@ -412,7 +411,7 @@
 									%>
 								</select> <label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									placeholder="Enter Amount" required max="100000"><br>
+									placeholder="Enter Amount" required max="200000" min="0"><br>
 								<label style="padding-top: 2%;" for="accountno">Remarks:</label>
 								<input class="textbox" type="text" id="remark" name="remark"
 									placeholder="Enter Remarks" required><br>
@@ -452,7 +451,7 @@
 									placeholder="Enter Receiver Account Number" required><br>
 								<label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									placeholder="Enter Amount" required max="100000"><br>
+									placeholder="Enter Amount" required max="200000" min="0"><br>
 								<label style="padding-top: 2%;" for="accountno">Remarks:</label>
 								<input class="textbox" type="text" id="remark" name="remark"
 									placeholder="Enter Remarks" required><br>
@@ -492,7 +491,7 @@
 									placeholder="Enter Receiver Account Number" required><br>
 								<label style="padding-top: 2%;" for="amount">Amount:</label> <input
 									class="textbox" type="number" id="amount" name="amount"
-									max="100000" placeholder="Enter Amount" required><br>
+									max="200000" min="0" placeholder="Enter Amount" required><br>
 								<label style="padding-top: 2%;" for="ifsc">IFSC Code:</label> <input
 									class="textbox" type="text" id="ifsc" name="ifsc"
 									placeholder="Enter IFSC code" required><br> <label
@@ -564,7 +563,7 @@ buttonContentPairs.forEach(pair => {
                 console.log(formData);
                 $.ajax({
                     type: 'POST',
-                    url: 'home',
+                    url: 'SessionFilter',
                     data: formData,
                     success: function(response) {
                         if (response.error) {

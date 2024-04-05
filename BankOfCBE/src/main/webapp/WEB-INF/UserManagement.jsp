@@ -170,7 +170,7 @@
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>User Profiles</h3>
 							<div class="duration">
-								<form action="home" method="post" id="customerId"
+								<form action="SessionFilter" method="post" id="customerId"
 									class="durationform" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="searchUser" type="hidden">
 									Customer Id <input style="width: 30%;" name="id" type="number"
@@ -250,7 +250,7 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="userPagination" type="hidden">
 									<input name="offset" value="<%=sno - 13%>" type="hidden">
 									<input name="pageno"
@@ -269,7 +269,7 @@
 								</form>
 							</div>
 							<div class="right">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="userPagination" type="hidden">
 									<input name="offset" value="<%=sno - 1%>" type="hidden">
 									<input name="pageno"
@@ -295,7 +295,7 @@
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>Edit Profiles</h3>
 							<div class="duration">
-								<form action="home" method="post" id="customerId"
+								<form action="SessionFilter" method="post" id="customerId"
 									class="durationform" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="searchCustomerInEdit"
 										type="hidden"> Customer Id <input style="width: 30%;"
@@ -323,7 +323,7 @@
 											<th scope="col">Address</th>
 											<th scope="col">View</th>
 											<th scope="col">Edit</th>
-											<th scope="col">Delete</th>
+											<th scope="col">Block</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -433,7 +433,7 @@
 								</table>
 								<div class="pagination">
 									<div class="left">
-										<form action="home" method="post">
+										<form action="SessionFilter" method="post">
 											<input name="formType" value="userEditPagination"
 												type="hidden"> <input name="offset"
 												value="<%=editSno - 13%>" type="hidden"> <input
@@ -453,7 +453,7 @@
 										</form>
 									</div>
 									<div class="right">
-										<form action="home" method="post">
+										<form action="SessionFilter" method="post">
 											<input name="formType" value="userEditPagination"
 												type="hidden"> <input name="offset"
 												value="<%=editSno - 1%>" type="hidden"> <input
@@ -494,7 +494,6 @@
 											<th scope="col">Address</th>
 											<th scope="col">View</th>
 											<th scope="col">Unblock</th>
-											<th scope="col">Delete</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -591,29 +590,6 @@
 													%>
 												
 											</td>
-											<td>
-												<%
-												if (customer.getDeleteAt().equals("0")) {
-												%>
-												<form class="deleteForm">
-													<input name="id" value="<%=customer.getId()%>"
-														type="hidden"> <input name="formType"
-														value="deleteUser" type="hidden">
-													<button class="link-button block-button">
-														<svg xmlns="http://www.w3.org/2000/svg" width="30"
-															height="30" fill="currentColor" class="bi bi-trash3-fill"
-															viewBox="0 0 16 16">
-															<path
-																d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" /></svg>
-													</button>
-												</form> <%
- } else {
- %>
-												<button class="link-button block-button">-----</button> <%
- }
- %>
-											</td>
-
 										</tr>
 										<%
 										}
@@ -624,7 +600,7 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="userDeletePagination"
 										type="hidden"> <input name="offset"
 										value="<%=deletedSno - 13%>" type="hidden"> <input
@@ -645,7 +621,7 @@
 								</form>
 							</div>
 							<div class="right">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="userDeletePagination"
 										type="hidden"> <input name="offset"
 										value="<%=deletedSno - 1%>" type="hidden"> <input
@@ -811,6 +787,8 @@
 										type="date" id="editdob" name="dob"><br> <label
 										for="accountno">Address:</label> <input class="textbox"
 										type="text" id="editaddress" name="address"><br>
+									<br> <label for="accountno">Gender:</label> <input
+										class="textbox" type="text" id="editgender" name="gender"><br>
 									<label for="accountno">Aadhar Number:</label> <input
 										class="textbox" type="number" id="editaadhar" name="aadhar"><br>
 									<label for="accountno">Pan Number:</label> <input
@@ -941,9 +919,16 @@
      			var formattedDate = year + '-' + month + '-' + day;
              document.getElementById('editdob').value = formattedDate;	 
         	 document.getElementById('editaddress').value = customerEditDetails.Address;
+        	 document.getElementById('editgender').value = customerEditDetails.Gender;
         	 document.getElementById('editaadhar').value = customerEditDetails.Aadhar;
         	 document.getElementById('editpan').value = customerEditDetails.Pan;
-        	 /* document.getElementById('editstatus').value =((customerEditDetails.Status)=='1')?'Active':'InActive'; */
+        	 
+        	 
+        	 document.querySelectorAll('.textbox').forEach(input => {
+                 input.addEventListener('change', function() {
+                     customerEditDetails[this.name] = this.value;
+                 });
+             });
          });
     });
     
@@ -990,8 +975,6 @@
       	$("#editUserDetails").submit(function(event){
       		event.preventDefault();
       		var formdata = $(this).serialize();
-
-      	  console.log("hi");
       		$.ajax({
       			type:'POST',
       			url:'SessionFilter',
@@ -1022,7 +1005,7 @@
 		            var formdata = $(this).serialize();
 		            $.ajax({
 		                type:'POST',
-		                url:'home',
+		                url:'SessionFilter',
 		                data:formdata,
 		                success:function(response){
 		                	if (response.error) {

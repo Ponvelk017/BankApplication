@@ -128,7 +128,7 @@
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>Accounts</h3>
 							<div class="duration">
-								<form id="fetchaccount" action="home" method="post"
+								<form id="fetchaccount" action="SessionFilter" method="post"
 									class="durationform" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="fetchAccount" type="hidden">
 									Customer Id <input style="width: 30%;" name="id" type="number">
@@ -201,7 +201,7 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="accountPagination" type="hidden">
 									<input name="offset" value="<%=sno - 11%>" type="hidden">
 									<input name="pageno"
@@ -220,7 +220,7 @@
 								</form>
 							</div>
 							<div class="right">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="accountPagination" type="hidden">
 									<input name="offset" value="<%=sno - 1%>" type="hidden">
 									<input name="pageno"
@@ -247,7 +247,7 @@
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>Available Accounts</h3>
 							<div class="duration">
-								<form id="fetchaccount" action="home" method="post"
+								<form id="fetchaccount" action="SessionFilter" method="post"
 									class="durationform" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="fetchEditAccount" type="hidden">
 									Customer Id <input style="width: 30%;" name="id" type="number">
@@ -413,7 +413,7 @@
 								</table>
 								<div class="pagination">
 									<div class="left">
-										<form action="home" method="post">
+										<form action="SessionFilter" method="post">
 											<input name="formType" value="accountEditPagination"
 												type="hidden"> <input name="offset"
 												value="<%=editSno - 11%>" type="hidden"> <input
@@ -434,7 +434,7 @@
 									</div>
 
 									<div class="right">
-										<form action="home" method="post">
+										<form action="SessionFilter" method="post">
 											<input name="formType" value="accountEditPagination"
 												type="hidden"> <input name="offset"
 												value="<%=editSno - 1%>" type="hidden"> <input
@@ -562,7 +562,7 @@
 						</div>
 						<div class="pagination">
 							<div class="left">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="accountDeletePagination"
 										type="hidden"> <input name="offset"
 										value="<%=deleteLoop - 11%>" type="hidden"> <input
@@ -582,7 +582,7 @@
 								</form>
 							</div>
 							<div class="right">
-								<form action="home" method="post">
+								<form action="SessionFilter" method="post">
 									<input name="formType" value="accountDeletePagination"
 										type="hidden"> <input name="offset"
 										value="<%=deleteLoop - 1%>" type="hidden"> <input
@@ -722,7 +722,7 @@
 										for="accountno">Account Number:</label> <input class="textbox"
 										type="number" id="accountNumber" name="accountno"> <label
 										style="padding-top: 2%;" for="amount">Amount:</label> <input
-										class="textbox" type="number" id="amount" name="amount"
+										class="textbox" type="number" id="amount" name="amount" max="200000" min="0"
 										placeholder="Enter Amount" required><br>
 									<button type="submit">Deposit</button>
 								</form>
@@ -766,7 +766,7 @@
 										class="textbox" type="number" id="Withdrawaccount"
 										name="accountno"> <label style="padding-top: 2%;"
 										for="amount">Amount:</label> <input class="textbox"
-										type="number" id="amount" name="amount"
+										type="number" id="amount" name="amount" max="200000" min="0"
 										placeholder="Enter Amount" required><br> <label
 										style="padding-top: 2%;" for="accountno">Remarks:</label> <input
 										class="textbox" type="text" id="remark" name="remark"
@@ -817,7 +817,7 @@
 										name="recaccount" placeholder="Enter Receiver Account Number"
 										required><br> <label style="padding-top: 2%;"
 										for="amount">Amount:</label> <input class="textbox"
-										type="number" id="amount" name="amount"
+										type="number" id="amount" name="amount" max="200000" min="0"
 										placeholder="Enter Amount" required><br> <label
 										style="padding-top: 2%;" for="accountno">Remarks:</label> <input
 										class="textbox" type="text" id="remark" name="remark"
@@ -987,7 +987,7 @@ buttonContentPairs.forEach(pair => {
                 var formData = $(this).serialize();
                 $.ajax({
                     type: 'POST',
-                    url: 'home',
+                    url: 'SessionFilter',
                     data: formData,
                     success: function(response) {
                         if (response.error) {
@@ -1021,7 +1021,7 @@ buttonContentPairs.forEach(pair => {
 		            var formdata = $(this).serialize();
 		            $.ajax({
 		                type:'POST',
-		                url:'home',
+		                url:'SessionFilter',
 		                data:formdata,
 		                success:function(response){
 		                    if (response.error) {

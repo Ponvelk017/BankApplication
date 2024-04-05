@@ -47,18 +47,15 @@ public class FormValidation implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
-
 		if (request.getParameter("formType") == null) {
 			RequestDispatcher loginDispatcher = request.getRequestDispatcher("/home");
 			loginDispatcher.forward(request, response);
 		} else {
 			String formType = request.getParameter("formType");
-			System.out.println(formType);
 			switch (formType) {
 			case "newCustomer": {
-				System.out.println("yfghjihgvh");
 				JSONObject responseData = new JSONObject();
-				if (request.getParameter("name").matches("^[A-Za-z.]+")) {
+				if (request.getParameter("name").matches("^[A-Za-z. ]+")) {
 					if (request.getParameter("mobile").matches("^[0-9]{10}$")) {
 						if (request.getParameter("email").matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 								+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
@@ -105,10 +102,8 @@ public class FormValidation implements Filter {
 			}
 				break;
 			case "newEmployee": {
-
-				System.out.println("yfghjihgvherthjnbvfwret");
 				JSONObject responseData = new JSONObject();
-				if (request.getParameter("name").matches("^[A-Za-z.]+")) {
+				if (request.getParameter("name").matches("^[A-Za-z. ]+")) {
 					if (request.getParameter("mobile").matches("^[0-9]{10}$")) {
 						if (request.getParameter("email").matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 								+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
@@ -119,6 +114,7 @@ public class FormValidation implements Filter {
 							Period period = Period.between(dob, currentDate);
 							if (period.getYears() >= 18) {
 								if (request.getParameter("branch").matches("^[A-Z0-9]{10}$")) {
+									System.out.println("jfgvhubghiu");
 									responseData.put("status", true);
 									responseData.put("message", "Success");
 									RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");
@@ -177,7 +173,7 @@ public class FormValidation implements Filter {
 				System.out.println(request.getParameter("newPassword") + " " + request.getParameter("re-password"));
 				if (request.getParameter("newPassword").equals(request.getParameter("re-password"))) {
 					if (request.getParameter("newPassword").matches(
-						    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?]).{8,}$")) {
+							"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?]).{8,}$")) {
 						responseData.put("status", true);
 						responseData.put("message", "Success");
 						RequestDispatcher homeDispatcher = request.getRequestDispatcher("/home");
@@ -212,6 +208,10 @@ public class FormValidation implements Filter {
 				response.getWriter().write(responseData.toString());
 			}
 				break;
+			default: {
+				RequestDispatcher loginDispatcher = request.getRequestDispatcher("/home");
+				loginDispatcher.forward(request, response);
+			}
 			}
 		}
 

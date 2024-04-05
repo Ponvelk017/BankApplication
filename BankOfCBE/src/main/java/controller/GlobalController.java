@@ -197,10 +197,6 @@ public class GlobalController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession currentUser = request.getSession(false);
-		int loggedUserId = 0;
-		if (currentUser.getAttributeNames().hasMoreElements()) {
-			loggedUserId = (int) currentUser.getAttribute("UserId");
-		}
 		try {
 			String formType = request.getParameter("formType");
 			switch (formType) {
@@ -254,7 +250,8 @@ public class GlobalController extends HttpServlet {
 								RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
 								loginDispatcher.forward(request, response);
 							}
-							String errorMessage = "Invalid UserId or Password . You have only "+(2-(int) blockedUser.get("InvalidAttempts")+" Attempts Remaining");
+							String errorMessage = "Invalid UserId or Password . You have only "
+									+ (2 - (int) blockedUser.get("InvalidAttempts") + " Attempts Remaining");
 							request.setAttribute("message", errorMessage);
 							RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
 							loginDispatcher.forward(request, response);
@@ -263,6 +260,17 @@ public class GlobalController extends HttpServlet {
 				}
 			}
 				break;
+			}
+			int loggedUserId = 0;
+			if (currentUser == null || currentUser != null && currentUser.getAttribute("UserId") == null) {
+				request.setAttribute("message", "Session Expired");
+				RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
+				loginDispatcher.forward(request, response);
+			}
+			if (currentUser.getAttribute("UserId") != null) {
+				loggedUserId = (int) currentUser.getAttribute("UserId");
+			}
+			switch (formType) {
 			case "transactionDuration": {
 				String fromDate = (request.getParameter("from"));
 				String toDate = (request.getParameter("to"));
@@ -480,6 +488,8 @@ public class GlobalController extends HttpServlet {
 				customerDetails.setAadhar(request.getParameter("aadhar"));
 				customerDetails.setPan(request.getParameter("pan"));
 				customerDetails.setPassword("Welcome@123");
+				customerDetails.setCreatedTime(System.currentTimeMillis());
+				customerDetails.setModifiedBy(loggedUserId);
 				int result = customerFunctions
 						.addCustomer(new ArrayList<CustomerDetails>(Arrays.asList(customerDetails)));
 				if (result > 0) {
@@ -494,7 +504,6 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "newEmployee": {
-				System.out.println("ijuytfcg nkopiyftug ");
 				JSONObject responseData = new JSONObject();
 				if ((branchFunctions.getBranchDetails(request.getParameter("branch")).size()) == 0) {
 					responseData.put("status", false);
@@ -513,6 +522,8 @@ public class GlobalController extends HttpServlet {
 				employeeDetails.setBranch(request.getParameter("branch"));
 				employeeDetails.setAdmin((request.getParameter("admin").equals("1")) ? true : false);
 				employeeDetails.setPassword("Welcome@123");
+				employeeDetails.setCreatedTime(System.currentTimeMillis());
+				employeeDetails.setModifiedBy(loggedUserId);
 				int result = employeeFunctions
 						.addEmployee(new ArrayList<EmployeeDetails>(Arrays.asList(employeeDetails)));
 				if (result > 0) {
@@ -565,6 +576,7 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "deleteUser": {
+				System.out.println("hello");
 				customerFunctions.deleteUser(Integer.parseInt(request.getParameter("id")));
 			}
 				break;
@@ -624,6 +636,8 @@ public class GlobalController extends HttpServlet {
 				accountDetails.setUserId(Integer.parseInt(request.getParameter("id")));
 				accountDetails.setBranchId(request.getParameter("ifsc"));
 				accountDetails.setAccountType(request.getParameter("type"));
+				accountDetails.setCreatedTime(System.currentTimeMillis());
+				accountDetails.setModifiedBy(loggedUserId);
 				if (!request.getParameter("balance").isEmpty()) {
 					accountDetails.setBalance(Long.parseLong(request.getParameter("balance")));
 				}
@@ -661,15 +675,17 @@ public class GlobalController extends HttpServlet {
 					userId = Integer.parseInt(request.getParameter("customerId"));
 				}
 				if (!request.getParameter("fromDate").equals("")) {
-					fromdate = Common.dateToMilli((request.getParameter("fromDate"))) - 86400000;
+					fromdate = Common.dateToMilli((request.getParameter("fromDate")));
 				}
 				if (!request.getParameter("toDate").equals("")) {
-					fromdate = Common.dateToMilli((request.getParameter("toDate")));
+					todate = Common.dateToMilli((request.getParameter("toDate"))) + 86400000 - 1;
 				}
 				TransactionDetails transactioDetails = new TransactionDetails();
 				if (!request.getParameter("transactionType").equals("all")) {
 					transactioDetails.setTranactionType(request.getParameter("transactionType"));
 				}
+				System.out.println(fromdate + " " + request.getParameter("fromDate") + " " + todate + " "
+						+ request.getParameter("toDate"));
 				transactioDetails.setUserId(userId);
 				Map<String, Object> duration = new HashMap<String, Object>();
 				duration.put("From", fromdate);
@@ -704,7 +720,6 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "branchSearch": {
-				System.out.println(request.getParameter("branchid"));
 				String isAdmin = currentUser.getAttribute("isAdmin") + "";
 				List<BranchDetails> branches = branchFunctions.getBranchDetails(request.getParameter("branchid"));
 				request.setAttribute("branches", branches);
@@ -836,6 +851,27 @@ public class GlobalController extends HttpServlet {
 				} else {
 					responseData.put("status", false);
 					responseData.put("message", "Password Does't Match");
+				}
+				response.setContentType("application/json");
+				response.getWriter().write(responseData.toString());
+			}
+				break;
+			case "newBranch": {
+				BranchDetails branchDetails = new BranchDetails();
+				branchDetails.setIfscCode(request.getParameter("ifsc"));
+				branchDetails.setAddress(request.getParameter("address"));
+				branchDetails.setManagerId(Integer.parseInt(request.getParameter("manager")));
+				branchDetails.setPhoneNumber(Long.parseLong(request.getParameter("contact")));
+				branchDetails.setCreatedTime(System.currentTimeMillis());
+				branchDetails.setModifiedBy(loggedUserId);
+				int result = branchFunctions.addBranch(branchDetails);
+				JSONObject responseData = new JSONObject();
+				if (result > 0) {
+					responseData.put("status", true);
+					responseData.put("message", "Updates Successfully");
+				} else {
+					responseData.put("status", false);
+					responseData.put("message", "Failed");
 				}
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());

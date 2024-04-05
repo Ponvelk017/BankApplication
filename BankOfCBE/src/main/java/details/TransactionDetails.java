@@ -12,6 +12,24 @@ public class TransactionDetails {
 	private long amount;
 	private long closingBalance;
 	private long time;
+	private long createdTime;
+	private int modifiedBy;
+
+	public long getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public int getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(int modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
 
 	public String getTranactionType() {
 		return tranactionType;

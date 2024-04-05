@@ -46,8 +46,9 @@ public class SessionFilter implements Filter {
 			request.setAttribute("message", "Session Expired");
 			RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
 			loginDispatcher.forward(request, response);
+		} else {
+			chain.doFilter(request, response);
 		}
-		chain.doFilter(request, response);
 	}
 
 	/**

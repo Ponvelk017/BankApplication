@@ -63,7 +63,7 @@
 						<div class="justify-content-center row" style="display: flex;">
 							<h3>Edit Branch</h3>
 							<div class="duration">
-								<form id="duration" class="durationform" action="home"
+								<form id="duration" class="durationform" action="SessionFilter"
 									method="post" style="justify-content: end; gap: 3%;">
 									<input name="formType" value="branchSearch" type="hidden">
 									Branch Id <input style="width: 30%;" name="branchid"
@@ -154,7 +154,7 @@
 									if ((int) (request.getAttribute("pageno")) > 1) {
 									%>
 									<div class="left">
-										<form action="home" method="post">
+										<form action="SessionFilter" method="post">
 											<input name="formType" value="branchPagination" type="hidden">
 											<input name="offset" value="<%=sno - 11%>" type="hidden">
 											<input name="pageno"
@@ -175,7 +175,7 @@
 									if (((List<BranchDetails>) request.getAttribute("branches")).size() > 10) {
 									%>
 									<div class="right">
-										<form action="home" method="post">
+										<form action="SessionFilter" method="post">
 											<input name="formType" value="branchPagination" type="hidden">
 											<input name="offset" value="<%=sno%>" type="hidden">
 											<input name="pageno"
@@ -347,7 +347,7 @@
       		var formdata = $(this).serialize();
       		$.ajax({
       			type:'POST',
-      			url:'home',
+      			url:'SessionFilter',
       			data:formdata,
       			success:function(response){
       				if (response.error) {

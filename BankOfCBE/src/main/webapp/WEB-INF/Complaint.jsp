@@ -35,7 +35,7 @@
 				<h4>We are here to help you , share your Issue</h4>
 				<div class="col-5 align-items-center" style="padding-top: 4%;">
 					<form id="deposit" class="text-center forms" method="post"
-						action="home" style="padding-top: 5%;">
+						action="SessionFilter" style="padding-top: 5%;">
 						<input name="formType" value="none" type="hidden"> <label
 							for="type">Issues Type:</label> <select id="type" name="type"
 							class="textbox">

@@ -23,7 +23,7 @@ public class AccountOperations implements Account {
 
 	private Connection connection = DBConnection.getConnection();
 
-	private final String createAccount = "insert into Account(UserId , BranchId , AccountType) values (?,?,?)";
+	private final String createAccount = "insert into Account(UserId , BranchId , AccountType , CreatedTime, ModifiedBy) values (?,?,?,?,?)";
 
 	private Map<String, String> mappingRecords = new HashMap<String, String>();
 
@@ -98,6 +98,8 @@ public class AccountOperations implements Account {
 			statement.setInt(1, account.getUserId());
 			statement.setString(2, account.getBranchId());
 			statement.setString(3, account.getAccountType());
+			statement.setLong(4, account.getCreatedTime());
+			statement.setInt(5, account.getModifiedBy());
 			affectedRow = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
@@ -172,7 +174,8 @@ public class AccountOperations implements Account {
 	@Override
 	public Map<Long, AccountDetails> getAccounts(int limit, int offset, String status) throws InvalidInputException {
 		Map<Long, AccountDetails> userAccount = new LinkedHashMap<Long, AccountDetails>();
-		String query = "select * from Account where Status = ? order by AccountNumber desc limit " + limit + " offset " + offset;
+		String query = "select * from Account where Status = ? order by AccountNumber desc limit " + limit + " offset "
+				+ offset;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, status);
 			try (ResultSet record = statement.executeQuery()) {

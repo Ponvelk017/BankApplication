@@ -49,16 +49,6 @@ public class CustomerFunctions {
 
 	public int addCustomer(List<CustomerDetails> customers) throws InvalidInputException {
 		InputCheck.checkNull(customers);
-		for (CustomerDetails customer : customers) {
-			String validation = CustomerFunctions.validateDetails(customer);
-			if (!validation.equals("success")) {
-				return 0;
-			}
-			int pan = customerOpertaion.panAadharCheck(customer.getPan(), customer.getAadhar());
-			if(pan >= 1) {
-				return 0;
-			}
-		}
 		List<Integer> result = customerOpertaion.insertCustomer(customers);
 		for (Integer singleRecord : result) {
 			if (singleRecord == 0) {
@@ -76,7 +66,6 @@ public class CustomerFunctions {
 			if (affectedColumns > 0) {
 				customerCache.deleteCustomer(Id);
 			}
-			System.out.println(affectedColumns);
 			return affectedColumns;
 		}
 	}
@@ -90,7 +79,6 @@ public class CustomerFunctions {
 			if (affectedColumns > 0) {
 				customerCache.deleteCustomer(Id);
 			}
-			System.out.println(affectedColumns);
 			return affectedColumns;
 		}
 	}
@@ -104,7 +92,6 @@ public class CustomerFunctions {
 			if (affectedColumns > 0) {
 				customerCache.deleteCustomer(Id);
 			}
-			System.out.println(affectedColumns);
 			return affectedColumns;
 		}
 	}

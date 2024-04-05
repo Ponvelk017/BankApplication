@@ -22,12 +22,14 @@ public class BranchOpertaion implements Branch {
 	public int insertBranch(BranchDetails branchDetails) throws InvalidInputException {
 		InputCheck.checkNull(branchDetails);
 		int affectedrows = 0;
-		String query = "insert into Branch(IFSCCode,Address,ManagerId,Contact) values(?,?,?,?)";
+		String query = "insert into Branch(IFSCCode,Address,ManagerId,Contact, CreatedTime, ModifiedBy) values(?,?,?,?,?,?)";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setString(1, branchDetails.getIfscCode());
 			statement.setString(2, branchDetails.getAddress());
 			statement.setInt(3, branchDetails.getManagerId());
 			statement.setLong(4, branchDetails.getPhoneNumber());
+			statement.setLong(5, branchDetails.getCreatedTime());
+			statement.setInt(6, branchDetails.getModifiedBy());
 			affectedrows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);

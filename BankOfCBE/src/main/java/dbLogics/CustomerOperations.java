@@ -24,7 +24,7 @@ public class CustomerOperations implements Customer {
 	private Connection connection = DBConnection.getConnection();
 
 	private String insertUser = "insert into User (Name,DOB,Mobile,Email,Gender,Password) values (?,?,?,?,?,?)";
-	private String insertCustomer = "insert into Customer values (?,?,?,?)";
+	private String insertCustomer = "insert into Customer (Id,Aadhar,Pan,Address, CreatedTime, ModifiedBy) values (?,?,?,?,?,?)";
 	private String mappingDetails = "select * from User left join Customer on User.Id = Customer.Id where User.Id = -1;";
 
 	private Map<String, String> mappingRecords = new HashMap<String, String>();
@@ -60,6 +60,7 @@ public class CustomerOperations implements Customer {
 				statement.setString(4, customer.getEmail());
 				statement.setString(5, customer.getGender());
 				statement.setString(6, Common.encryptPassword(customer.getPassword()));
+
 				statement.executeUpdate();
 				try (ResultSet record = statement.getGeneratedKeys()) {
 					if (record.next()) {
@@ -71,6 +72,8 @@ public class CustomerOperations implements Customer {
 					empStatement.setString(2, customer.getAadhar());
 					empStatement.setString(3, customer.getPan());
 					empStatement.setString(4, customer.getAddress());
+					empStatement.setLong(5, customer.getCreatedTime());
+					empStatement.setInt(6, customer.getModifiedBy());
 					affectedRows = empStatement.executeUpdate();
 					connection.commit();
 					result.add(affectedRows);
@@ -228,6 +231,5 @@ public class CustomerOperations implements Customer {
 		}
 		return 0;
 	}
-	
-	
+
 }

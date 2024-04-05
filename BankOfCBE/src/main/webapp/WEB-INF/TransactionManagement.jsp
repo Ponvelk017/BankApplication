@@ -39,22 +39,23 @@
 		<div class="conditionData">
 			<h2 style="padding: 1%;">Customize Data</h2>
 			<div>
-				<form id="transactionForm" action="home" class="conditionform"
+				<form id="transactionForm" action="SessionFilter" class="conditionform"
 					method="post">
 					<input name="formType" value="searchTransactionForm" type="hidden">
 					<input name="pageno" id="pageno"
 						value="<%=request.getAttribute("pageno")%>" type="hidden">
 					<label class="labletext" for="customerId">CustomerId</label> <input
 						class="inputtag" id="customerId" name="customerId" type="number"
-						value="${param.customerId}"> <label class="labletext"
-						for="fromDate">From</label> <input class="inputtag" id="fromDate"
-						name="fromDate" type="date" value="${param.fromDate}"> <label
-						class="labletext" for="toDate">To</label>
+						value="${param.customerId}">
 					<%
 					LocalDate currentDate = LocalDate.now();
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 					%>
-					<input class="inputtag" id="toDate" name="toDate" type="date"
+					<label class="labletext" for="fromDate">From</label> <input
+						class="inputtag" id="fromDate" name="fromDate" type="date"
+						max="<%=currentDate.format(formatter)%>" value="${param.fromDate}">
+					<label class="labletext" for="toDate">To</label> <input
+						class="inputtag" id="toDate" name="toDate" type="date"
 						max="<%=currentDate.format(formatter)%>" value="${param.toDate}">
 					<label class="labletext" for="sortBy">SortBy</label> <select
 						id="sortBy" name="sortBy" class="inputtextbox"
@@ -285,7 +286,8 @@
 					%>
 					<div class="pagination">
 						<div class="left">
-							<button type="submit" class="btn link-button" 	onclick="submitTransactionPrevious()"
+							<button type="submit" class="btn link-button"
+								onclick="submitTransactionPrevious()"
 								<%if ((int) (request.getAttribute("pageno")) <= 1) {%> disabled
 								<%}%>>
 								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
@@ -297,11 +299,10 @@
 							</button>
 						</div>
 						<div class="right">
-
 							<button type="submit" class="btn link-button"
 								onclick="submitTransactionNext()"
-								<%if (((List<TransactionDetails>) request.getAttribute("latestTransactions")).size() >= 10) {%>
-								idsabled <%}%>>
+								<%if (((List<TransactionDetails>) request.getAttribute("latestTransactions")).size() <= 10) {%>
+								disabled <%}%>>
 								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
 									fill="currentColor" class="bi bi-arrow-right-circle-fill"
 									viewBox="0 0 16 16">

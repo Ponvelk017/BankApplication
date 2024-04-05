@@ -45,7 +45,7 @@
 		<div class="account-branch"
 			style="display: flex; flex-direction: column; align-items: end;">
 			<h4>Account's Branch Details</h4>
-			<form id="BranchForm" action="home" method="post">
+			<form id="BranchForm" action="SessionFilter" method="post">
 				<input name="formType" value="BranchForm" type="hidden"> <select
 					id="accountno" name="accountno" class="textbox">
 					<%
