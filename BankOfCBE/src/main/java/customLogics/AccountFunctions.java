@@ -21,7 +21,8 @@ public class AccountFunctions {
 		InputCheck.checkNull(account);
 		AccountDetails tempAccountDetails = new AccountDetails();
 		tempAccountDetails.setUserId(account.getUserId());
-		System.out.println(account.getAccountType()+" "+account.getUserId()+" "+account.getBalance()+" "+account.getBranchId());
+		System.out.println(account.getAccountType() + " " + account.getUserId() + " " + account.getBalance() + " "
+				+ account.getBranchId());
 		Map<Long, AccountDetails> records = accountOperation.getCustomAccountDetails(tempAccountDetails);
 		for (Entry<?, ?> individualAccount : records.entrySet()) {
 			tempAccountDetails = (AccountDetails) individualAccount.getValue();
@@ -55,9 +56,10 @@ public class AccountFunctions {
 		return (long) accountOperation.getSingleRecord("Balance", "AccountNumber", accountNumber);
 	}
 
-	public String getStatus(long accountNumber) throws InvalidInputException {
+	public Object getSingleRecord(String column, long accountNumber) throws InvalidInputException {
+		InputCheck.checkNull(column);
 		InputCheck.checkNegativeInteger(accountNumber);
-		return (String) accountOperation.getSingleRecord("Status", "AccountNumber", accountNumber);
+		return accountOperation.getSingleRecord(column, "AccountNumber", accountNumber);
 	}
 
 	public int updateColoumn(String coloumn, Object value, long accountId) throws InvalidInputException {
@@ -78,8 +80,8 @@ public class AccountFunctions {
 		}
 		return affectedRows;
 	}
-	
-	public Map<Long, AccountDetails> getAccounts(int limit , int offset , String status) throws InvalidInputException{
-		return accountOperation.getAccounts(limit, offset,status);
+
+	public Map<Long, AccountDetails> getAccounts(int limit, int offset, String status) throws InvalidInputException {
+		return accountOperation.getAccounts(limit, offset, status);
 	}
 }

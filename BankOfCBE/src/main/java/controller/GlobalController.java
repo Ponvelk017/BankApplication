@@ -19,12 +19,15 @@ import org.json.JSONObject;
 
 import cacheLogics.RedisCache;
 import customLogics.AccountFunctions;
+import customLogics.AuditLoggerFunctions;
 import customLogics.BranchFunction;
 import customLogics.CustomerFunctions;
 import customLogics.EmployeeFunctions;
 import customLogics.TransactionFunctions;
 import customLogics.UserFunctions;
+import dbLogics.AuditLoggerOperation;
 import details.AccountDetails;
+import details.AuditLoggerDetails;
 import details.BranchDetails;
 import details.CustomerDetails;
 import details.EmployeeDetails;
@@ -45,6 +48,7 @@ public class GlobalController extends HttpServlet {
 	private AccountFunctions accountFunctions = new AccountFunctions();
 	private TransactionFunctions transactionFunctions = new TransactionFunctions();
 	private BranchFunction branchFunctions = new BranchFunction();
+	private AuditLoggerFunctions auditLoggerFunctions = new AuditLoggerFunctions();
 
 	public GlobalController() {
 		super();
@@ -125,6 +129,13 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "logout": {
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId("0");
+				auditDetails.setDescription("Logged Out");
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				auditDetails.setStatus("Success");
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				currentUser.invalidate();
 				response.sendRedirect("/BankOfCBE/");
 			}
@@ -217,6 +228,13 @@ public class GlobalController extends HttpServlet {
 							String userType = userFunctions.getSinglRecord("Type", Integer.parseInt(userId));
 							userSession.setAttribute("UserId", Integer.parseInt(userId));
 							userSession.setAttribute("UserType", userType);
+							AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+							auditDetails.setUserId(Integer.parseInt(userId));
+							auditDetails.setTargetId("0");
+							auditDetails.setDescription("Logged in");
+							auditDetails.setModifiedTime(System.currentTimeMillis());
+							auditDetails.setStatus("Success");
+							auditLoggerFunctions.insertAuditRecord(auditDetails);
 							if (userType != null) {
 								if (userType.equals("0")) {
 									RequestDispatcher homeDispatcher = request
@@ -314,15 +332,23 @@ public class GlobalController extends HttpServlet {
 			case "deposit": {
 				long accountNumber = Long.parseLong(request.getParameter("accountno"));
 				long amount = Long.parseLong(request.getParameter("amount"));
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
+				auditDetails.setDescription("Deposit");
 				long transactionId = transactionFunctions.newDeposite(accountNumber, amount);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (transactionId > 0) {
 					responseData.put("status", true);
 					responseData.put("message", "Deposit was Successful");
+					auditDetails.setStatus("Success");
 				} else {
 					responseData.put("status", false);
 					responseData.put("message", "Deposit was Unsuccessful.Please Try again!");
+					auditDetails.setStatus("Failed");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				request.setAttribute("pageno", 1);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
@@ -332,20 +358,23 @@ public class GlobalController extends HttpServlet {
 				long accountNumber = Long.parseLong(request.getParameter("accountno"));
 				long amount = Long.parseLong(request.getParameter("amount"));
 				String description = request.getParameter("remark");
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
+				auditDetails.setDescription("Withdraw");
 				long transactionId = transactionFunctions.newWithdraw(accountNumber, amount, description);
-				if (transactionId <= 0) {
-					request.setAttribute("message", "Something went wrong ,Withdraw was not successful.Try Again");
-				} else {
-					request.setAttribute("message", "Withdraw was Successfull");
-				}
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (transactionId > 0) {
 					responseData.put("status", true);
 					responseData.put("message", "Withdraw was Successful");
+					auditDetails.setStatus("Success");
 				} else {
 					responseData.put("status", false);
 					responseData.put("message", "Withdraw was Unsuccessful.Please Try again!");
+					auditDetails.setStatus("Failed");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				request.setAttribute("pageno", 1);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
@@ -357,16 +386,24 @@ public class GlobalController extends HttpServlet {
 				long recAccountNumber = Long.parseLong(request.getParameter("recaccount"));
 				long amount = Long.parseLong(request.getParameter("amount"));
 				String description = request.getParameter("remark");
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
+				auditDetails.setDescription("IntraBank Transfer");
 				Map<String, Integer> records = transactionFunctions.newTransferWithinBank(accountNumber,
 						recAccountNumber, amount, description);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (records.size() > 0) {
 					responseData.put("status", true);
 					responseData.put("message", "Transfer was Successful");
+					auditDetails.setStatus("Success");
 				} else {
 					responseData.put("status", false);
 					responseData.put("message", "Transfer was Unsuccessful.Please Try again!");
+					auditDetails.setStatus("Failed");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				request.setAttribute("pageno", 1);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
@@ -379,20 +416,27 @@ public class GlobalController extends HttpServlet {
 				long amount = Long.parseLong(request.getParameter("amount"));
 				String ifsc = request.getParameter("ifsc");
 				String description = request.getParameter("remark");
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
+				auditDetails.setDescription("InterBank Transfer");
 				long transactionId = transactionFunctions.newTransferOtherBank(accountNumber, recAccountNumber, amount,
 						description, ifsc);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (transactionId > 0) {
 					responseData.put("status", true);
 					responseData.put("message", "Transfer was Successful");
+					auditDetails.setStatus("Success");
 				} else {
 					responseData.put("status", false);
 					responseData.put("message", "Transfer was Unsuccessful.Please Try again!");
+					auditDetails.setStatus("Failed");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				request.setAttribute("pageno", 1);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
-
 			}
 				break;
 			case "BranchForm": {
@@ -407,6 +451,17 @@ public class GlobalController extends HttpServlet {
 					}
 				}
 				List<BranchDetails> branches = branchFunctions.getBranchDetails(firstbranchIfsc);
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId("0");
+				auditDetails.setDescription("Searched BranchDetail");
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				if (!branches.isEmpty()) {
+					auditDetails.setStatus("Success");
+				} else {
+					auditDetails.setStatus("Failed");
+				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				BranchDetails branchDetails = branches.get(0);
 				String managerName = userFunctions.getSinglRecord("Name", branchDetails.getManagerId());
 				String contact = userFunctions.getSinglRecord("Mobile", branchDetails.getManagerId());
@@ -420,6 +475,13 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "none": {
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId("0");
+				auditDetails.setDescription("Complaint Reposrting");
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				auditDetails.setStatus("Success");
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				request.setAttribute("message", "Complaint filed");
 				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/Complaint.jsp");
 				homeDispatcher.forward(request, response);
@@ -428,8 +490,19 @@ public class GlobalController extends HttpServlet {
 			case "searchUser": {
 				String statusActive = "1", statusInactive = "0";
 				CustomerDetails customerDetails = new CustomerDetails();
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Searched User");
 				customerDetails.setId(Integer.parseInt(request.getParameter("id")));
 				Map<Integer, CustomerDetails> searchedUser = customerFunctions.getCustomerProfile(customerDetails, "0");
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				if (!searchedUser.isEmpty()) {
+					auditDetails.setStatus("Success");
+				} else {
+					auditDetails.setStatus("Failed");
+				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				Map<Integer, CustomerDetails> activeUsers = userFunctions.getUsers(statusActive, false, 10, 0);
 				Map<Integer, CustomerDetails> inactiveUsers = userFunctions.getUsers(statusInactive, true, 10, 0);
 				request.setAttribute("user", searchedUser);
@@ -450,7 +523,18 @@ public class GlobalController extends HttpServlet {
 				String statusActive = "1", statusInactive = "0";
 				CustomerDetails customerDetails = new CustomerDetails();
 				customerDetails.setId(Integer.parseInt(request.getParameter("id")));
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Searched User");
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				Map<Integer, CustomerDetails> searchedUser = customerFunctions.getCustomerProfile(customerDetails, "0");
+				if (!searchedUser.isEmpty()) {
+					auditDetails.setStatus("Success");
+				} else {
+					auditDetails.setStatus("Failed");
+				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				Map<Integer, CustomerDetails> activeUsers = userFunctions.getUsers(statusActive, false, 10, 0);
 				Map<Integer, CustomerDetails> inactiveUsers = userFunctions.getUsers(statusInactive, true, 10, 0);
 				request.setAttribute("user", activeUsers);
@@ -490,15 +574,23 @@ public class GlobalController extends HttpServlet {
 				customerDetails.setPassword("Welcome@123");
 				customerDetails.setCreatedTime(System.currentTimeMillis());
 				customerDetails.setModifiedBy(loggedUserId);
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Inserted New Customer");
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				int result = customerFunctions
 						.addCustomer(new ArrayList<CustomerDetails>(Arrays.asList(customerDetails)));
 				if (result > 0) {
+					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 					responseData.put("message", "Customer Added Successfully");
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 					responseData.put("message", "Customer Addition was Unsuccessfull.Please Try Again");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
@@ -524,15 +616,23 @@ public class GlobalController extends HttpServlet {
 				employeeDetails.setPassword("Welcome@123");
 				employeeDetails.setCreatedTime(System.currentTimeMillis());
 				employeeDetails.setModifiedBy(loggedUserId);
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Inserted New Employee");
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				int result = employeeFunctions
 						.addEmployee(new ArrayList<EmployeeDetails>(Arrays.asList(employeeDetails)));
 				if (result > 0) {
+					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 					responseData.put("message", "Customer Added Successfully");
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 					responseData.put("message", "Customer Addition was Unsuccessfull.Please Try Again");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
@@ -548,43 +648,77 @@ public class GlobalController extends HttpServlet {
 				customerDetails.setAddress(request.getParameter("address"));
 				customerDetails.setAadhar(request.getParameter("aadhar"));
 				customerDetails.setPan(request.getParameter("pan"));
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("userid"));
+				auditDetails.setDescription("Edit Customer");
 				int result = customerFunctions.updateCustomer(Integer.parseInt(request.getParameter("userid")),
 						customerDetails);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
+					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "blockUser": {
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Block Customer");
 				int result = customerFunctions.updateStatus(Integer.parseInt(request.getParameter("id")),
 						request.getParameter("status"));
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
+					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 					responseData.put("message", "The Status of the User Changed");
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 					responseData.put("message", "The Status of the User was not Changed.Please Try Again");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "deleteUser": {
-				System.out.println("hello");
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Delete Customer");
 				customerFunctions.deleteUser(Integer.parseInt(request.getParameter("id")));
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				auditDetails.setStatus("Success");
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 			}
 				break;
 			case "fetchAccount": {
+				System.out.println("ahubcs");
 				String activeStatus = "1", inActiveStatus = "0";
 				AccountDetails accountDetails = new AccountDetails();
 				accountDetails.setUserId(Integer.parseInt(request.getParameter("id")));
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Searched Account");
 				Map<Long, AccountDetails> searchedAccounts = accountFunctions.accountDetails(accountDetails);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				if (!searchedAccounts.isEmpty()) {
+					auditDetails.setStatus("Success");
+				} else {
+					auditDetails.setStatus("Failed");
+				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				Map<Long, AccountDetails> editAccounts = accountFunctions.getAccounts(10, 0, activeStatus);
 				Map<Long, AccountDetails> inactiveAccounts = accountFunctions.getAccounts(10, 0, inActiveStatus);
 				request.setAttribute("accounts", searchedAccounts);
@@ -602,7 +736,18 @@ public class GlobalController extends HttpServlet {
 				String activeStatus = "1", inActiveStatus = "0";
 				AccountDetails accountDetails = new AccountDetails();
 				accountDetails.setUserId(Integer.parseInt(request.getParameter("id")));
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Searched Account");
 				Map<Long, AccountDetails> searchedAccounts = accountFunctions.accountDetails(accountDetails);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				if (!searchedAccounts.isEmpty()) {
+					auditDetails.setStatus("Success");
+				} else {
+					auditDetails.setStatus("Failed");
+				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				Map<Long, AccountDetails> editAccounts = accountFunctions.getAccounts(10, 0, activeStatus);
 				Map<Long, AccountDetails> inactiveAccounts = accountFunctions.getAccounts(10, 0, inActiveStatus);
 				request.setAttribute("accounts", editAccounts);
@@ -638,32 +783,50 @@ public class GlobalController extends HttpServlet {
 				accountDetails.setAccountType(request.getParameter("type"));
 				accountDetails.setCreatedTime(System.currentTimeMillis());
 				accountDetails.setModifiedBy(loggedUserId);
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setDescription("Creating New Account");
 				if (!request.getParameter("balance").isEmpty()) {
 					accountDetails.setBalance(Long.parseLong(request.getParameter("balance")));
 				}
 				int result = accountFunctions.addAccount(accountDetails);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				if (result > 0) {
+					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 					responseData.put("message", "Account Created Successfully");
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 					responseData.put("message", "Account Creation was Unsuccessfully.Please Try Again");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "blockAccount": {
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("accountno"));
+				auditDetails.setDescription(
+						(request.getParameter("status").equals("1")) ? "Unblocking Account" : "Blocking Account");
 				int result = accountFunctions.updateColoumn("Status", request.getParameter("status"),
 						Long.parseLong(request.getParameter("accountno")));
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
+					auditDetails.setStatus("Success");
+					responseData.put("status", true);
 					responseData.put("status", true);
 					responseData.put("message", "The Status of the Account Changed");
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 					responseData.put("message", "The Status of the Account was not Changed.Please Try Again");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
@@ -671,8 +834,13 @@ public class GlobalController extends HttpServlet {
 			case "searchTransactionForm": {
 				long fromdate = 0l, todate = 0l;
 				int userId = 0;
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId("0");
+				auditDetails.setDescription("Searching Transaction Details");
 				if (!request.getParameter("customerId").equals("")) {
 					userId = Integer.parseInt(request.getParameter("customerId"));
+					auditDetails.setTargetId(request.getParameter("id"));
 				}
 				if (!request.getParameter("fromDate").equals("")) {
 					fromdate = Common.dateToMilli((request.getParameter("fromDate")));
@@ -684,8 +852,6 @@ public class GlobalController extends HttpServlet {
 				if (!request.getParameter("transactionType").equals("all")) {
 					transactioDetails.setTranactionType(request.getParameter("transactionType"));
 				}
-				System.out.println(fromdate + " " + request.getParameter("fromDate") + " " + todate + " "
-						+ request.getParameter("toDate"));
 				transactioDetails.setUserId(userId);
 				Map<String, Object> duration = new HashMap<String, Object>();
 				duration.put("From", fromdate);
@@ -696,6 +862,13 @@ public class GlobalController extends HttpServlet {
 				duration.put("offset", (Integer.parseInt(request.getParameter("pageno")) * 10) - 10);
 				List<TransactionDetails> record = transactionFunctions.getCustomDetails(transactioDetails,
 						new ArrayList<String>(Arrays.asList("*")), duration);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				if (!record.isEmpty()) {
+					auditDetails.setStatus("Success");
+				} else {
+					auditDetails.setStatus("Failed");
+				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				request.setAttribute("latestTransactions", record);
 				request.setAttribute("pageno", (Integer.parseInt(request.getParameter("pageno"))));
 				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/TransactionManagement.jsp");
@@ -703,25 +876,45 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "editBranch": {
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("branchid"));
+				auditDetails.setDescription("Editing Branch");
 				BranchDetails branchDetails = new BranchDetails();
 				branchDetails.setAddress(request.getParameter("address"));
 				branchDetails.setManagerId(Integer.parseInt(request.getParameter("managerid")));
 				branchDetails.setPhoneNumber(Long.parseLong(request.getParameter("contact")));
 				int result = branchFunctions.updateRecord(branchDetails,
 						Integer.parseInt(request.getParameter("branchid")));
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
+					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "branchSearch": {
 				String isAdmin = currentUser.getAttribute("isAdmin") + "";
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(request.getParameter("branchid"));
+				auditDetails.setDescription("Search Branch");
 				List<BranchDetails> branches = branchFunctions.getBranchDetails(request.getParameter("branchid"));
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				if (!branches.isEmpty()) {
+					auditDetails.setStatus("Success");
+				} else {
+					auditDetails.setStatus("Failed");
+				}
+				auditDetails.setModifiedTime(System.currentTimeMillis());
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				request.setAttribute("branches", branches);
 				request.setAttribute("pageno", 1);
 				request.setAttribute("isAdmin", isAdmin);
@@ -837,27 +1030,40 @@ public class GlobalController extends HttpServlet {
 				String originalPassword = userFunctions.getSinglRecord("Password", loggedUserId);
 				String oldpassword = Common.encryptPassword(request.getParameter("oldPassword"));
 				int result = 0;
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(loggedUserId + "");
+				auditDetails.setDescription("Change Password");
 				JSONObject responseData = new JSONObject();
 				if (originalPassword.equals(oldpassword)) {
 					result = userFunctions.coloumnUpdation("Password", request.getParameter("newPassword"),
 							loggedUserId);
+					auditDetails.setModifiedTime(System.currentTimeMillis());
 					if (result > 0) {
+						auditDetails.setStatus("Success");
 						responseData.put("status", true);
 						responseData.put("message", "Updates Successfully");
 					} else {
+						auditDetails.setStatus("Failed");
 						responseData.put("status", false);
 						responseData.put("message", "Failed");
 					}
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 					responseData.put("message", "Password Does't Match");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
 				break;
 			case "newBranch": {
 				BranchDetails branchDetails = new BranchDetails();
+				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+				auditDetails.setUserId(loggedUserId);
+				auditDetails.setTargetId(loggedUserId + "");
+				auditDetails.setDescription("Add Branch");
 				branchDetails.setIfscCode(request.getParameter("ifsc"));
 				branchDetails.setAddress(request.getParameter("address"));
 				branchDetails.setManagerId(Integer.parseInt(request.getParameter("manager")));
@@ -865,14 +1071,18 @@ public class GlobalController extends HttpServlet {
 				branchDetails.setCreatedTime(System.currentTimeMillis());
 				branchDetails.setModifiedBy(loggedUserId);
 				int result = branchFunctions.addBranch(branchDetails);
+				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
+					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 					responseData.put("message", "Updates Successfully");
 				} else {
+					auditDetails.setStatus("Failed");
 					responseData.put("status", false);
 					responseData.put("message", "Failed");
 				}
+				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
 			}
