@@ -62,14 +62,14 @@ public class AccountFunctions {
 		return accountOperation.getSingleRecord(column, "AccountNumber", accountNumber);
 	}
 
-	public int updateColoumn(String coloumn, Object value, long accountId) throws InvalidInputException {
+	public int updateColoumn(String coloumn, Object value, long accountId , int userId) throws InvalidInputException {
 		InputCheck.checkNull(coloumn);
 		InputCheck.checkNull(value);
 		InputCheck.checkNegativeInteger(accountId);
 		int affectedRows = 0;
 		AccountDetails accountDetailsLock = (AccountDetails) accountCache.getAccount(accountId);
 		synchronized (accountDetailsLock) {
-			affectedRows = accountOperation.updateColumn(coloumn, value, accountId);
+			affectedRows = accountOperation.updateColumn(coloumn, value, accountId , userId);
 			if (affectedRows > 0) {
 				AccountDetails accountDetails = new AccountDetails();
 				accountDetails.setAccountNumber(accountId);

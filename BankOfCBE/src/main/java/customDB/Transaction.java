@@ -20,12 +20,15 @@ public interface Transaction {
 
 	public long getId() throws InvalidInputException;
 
-	public long deposite(TransactionDetails transactionDetails, boolean autoCommitFlag) throws InvalidInputException;
-
-	public long withdraw(TransactionDetails transactionDetails, boolean autoCommitFlag) throws InvalidInputException;
-
-	public Map<String, Integer> transferWithinBank(TransactionDetails transactionDetails) throws InvalidInputException;
-
-	public long transferOtherBank(long senderAcc, long receiverAcc, long amount, String description ,String ifsc)
+	public long deposit(TransactionDetails transactionDetails, boolean autoCommitFlag, int userId)
 			throws InvalidInputException;
+
+	public long withdraw(TransactionDetails transactionDetails, boolean autoCommitFlag, int userId)
+			throws InvalidInputException;
+
+	public Map<String, Integer> transferWithinBank(TransactionDetails transactionDetails, int userId)
+			throws InvalidInputException;
+
+	public long transferOtherBank(TransactionDetails transactionDetails,
+			int userId) throws InvalidInputException;
 }

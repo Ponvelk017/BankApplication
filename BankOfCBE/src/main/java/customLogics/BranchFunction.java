@@ -17,9 +17,9 @@ public class BranchFunction {
 		return branchOperation.insertBranch(branch);
 	}
 
-	public int updateRecord(BranchDetails branchDetails, int id) throws InvalidInputException {
+	public int updateRecord(BranchDetails branchDetails, int id , int modifiedBy) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(id);
-		return branchOperation.updateBranch(branchDetails, id);
+		return branchOperation.updateBranch(branchDetails, id , modifiedBy);
 	}
 
 	public List<BranchDetails> getBranchDetails(Object value) throws InvalidInputException {

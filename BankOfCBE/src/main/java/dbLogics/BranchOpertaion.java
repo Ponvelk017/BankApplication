@@ -38,14 +38,16 @@ public class BranchOpertaion implements Branch {
 	}
 
 	@Override
-	public int updateBranch(BranchDetails branchDetails, int id) throws InvalidInputException {
-		String query = "update Branch set Address = ?,ManagerId = ? ,Contact = ? where Id =?";
+	public int updateBranch(BranchDetails branchDetails, int id, int modifiedBy) throws InvalidInputException {
+		String query = "update Branch set Address = ?,ManagerId = ? ,Contact = ? , ModifiedBy=? , ModifiedTime = ? where Id =?";
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, branchDetails.getAddress());
 			statement.setObject(2, branchDetails.getManagerId());
 			statement.setObject(3, branchDetails.getPhoneNumber());
-			statement.setInt(4, id);
+			statement.setObject(4, modifiedBy);
+			statement.setObject(5, System.currentTimeMillis());
+			statement.setInt(6, id);
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);

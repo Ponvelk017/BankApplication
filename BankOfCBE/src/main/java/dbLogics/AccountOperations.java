@@ -188,15 +188,19 @@ public class AccountOperations implements Account {
 	}
 
 	@Override
-	public int updateColumn(String column, Object DepositeAmount, long accountNumber) throws InvalidInputException {
+	public int updateColumn(String column, Object DepositeAmount, long accountNumber, int userId)
+			throws InvalidInputException {
 		InputCheck.checkNull(column);
 		InputCheck.checkNull(DepositeAmount);
 		InputCheck.checkNull(accountNumber);
 		int affectedRows = 0;
-		String query = "update Account set " + column + " = ? where AccountNumber = ?";
+		String query = "update Account set " + column
+				+ " = ? ,ModifiedBy = ? , ModifiedTime = ? where AccountNumber = ?";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, DepositeAmount);
-			statement.setObject(2, accountNumber);
+			statement.setObject(2, userId);
+			statement.setObject(3, System.currentTimeMillis());
+			statement.setObject(4, accountNumber);
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);

@@ -25,7 +25,6 @@ import customLogics.CustomerFunctions;
 import customLogics.EmployeeFunctions;
 import customLogics.TransactionFunctions;
 import customLogics.UserFunctions;
-import dbLogics.AuditLoggerOperation;
 import details.AccountDetails;
 import details.AuditLoggerDetails;
 import details.BranchDetails;
@@ -131,7 +130,7 @@ public class GlobalController extends HttpServlet {
 			case "logout": {
 				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
 				auditDetails.setUserId(loggedUserId);
-				auditDetails.setTargetId("0");
+				auditDetails.setTargetId(loggedUserId + "");
 				auditDetails.setDescription("Logged Out");
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				auditDetails.setStatus("Success");
@@ -230,7 +229,7 @@ public class GlobalController extends HttpServlet {
 							userSession.setAttribute("UserType", userType);
 							AuditLoggerDetails auditDetails = new AuditLoggerDetails();
 							auditDetails.setUserId(Integer.parseInt(userId));
-							auditDetails.setTargetId("0");
+							auditDetails.setTargetId(Integer.parseInt(userId) + "");
 							auditDetails.setDescription("Logged in");
 							auditDetails.setModifiedTime(System.currentTimeMillis());
 							auditDetails.setStatus("Success");
@@ -336,7 +335,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setUserId(loggedUserId);
 				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
 				auditDetails.setDescription("Deposit");
-				long transactionId = transactionFunctions.newDeposite(accountNumber, amount);
+				long transactionId = transactionFunctions.newDeposite(accountNumber, amount, loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (transactionId > 0) {
@@ -362,7 +361,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setUserId(loggedUserId);
 				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
 				auditDetails.setDescription("Withdraw");
-				long transactionId = transactionFunctions.newWithdraw(accountNumber, amount, description);
+				long transactionId = transactionFunctions.newWithdraw(accountNumber, amount, description, loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (transactionId > 0) {
@@ -391,7 +390,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
 				auditDetails.setDescription("IntraBank Transfer");
 				Map<String, Integer> records = transactionFunctions.newTransferWithinBank(accountNumber,
-						recAccountNumber, amount, description);
+						recAccountNumber, amount, description, loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (records.size() > 0) {
@@ -421,7 +420,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setTargetId(accountFunctions.getSingleRecord("UserId", accountNumber).toString());
 				auditDetails.setDescription("InterBank Transfer");
 				long transactionId = transactionFunctions.newTransferOtherBank(accountNumber, recAccountNumber, amount,
-						description, ifsc);
+						description, ifsc, loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (transactionId > 0) {
@@ -453,7 +452,7 @@ public class GlobalController extends HttpServlet {
 				List<BranchDetails> branches = branchFunctions.getBranchDetails(firstbranchIfsc);
 				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
 				auditDetails.setUserId(loggedUserId);
-				auditDetails.setTargetId("0");
+				auditDetails.setTargetId(loggedUserId + "");
 				auditDetails.setDescription("Searched BranchDetail");
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				if (!branches.isEmpty()) {
@@ -477,7 +476,7 @@ public class GlobalController extends HttpServlet {
 			case "none": {
 				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
 				auditDetails.setUserId(loggedUserId);
-				auditDetails.setTargetId("0");
+				auditDetails.setTargetId(loggedUserId + "");
 				auditDetails.setDescription("Complaint Reposrting");
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				auditDetails.setStatus("Success");
@@ -576,12 +575,12 @@ public class GlobalController extends HttpServlet {
 				customerDetails.setModifiedBy(loggedUserId);
 				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
 				auditDetails.setUserId(loggedUserId);
-				auditDetails.setTargetId(request.getParameter("id"));
+				auditDetails.setTargetId("0");
 				auditDetails.setDescription("Inserted New Customer");
 				auditDetails.setModifiedTime(System.currentTimeMillis());
-				int result = customerFunctions
-						.addCustomer(new ArrayList<CustomerDetails>(Arrays.asList(customerDetails)));
+				int result = customerFunctions.addCustomer(customerDetails);
 				if (result > 0) {
+					auditDetails.setTargetId(result + "");
 					auditDetails.setStatus("Success");
 					responseData.put("status", true);
 					responseData.put("message", "Customer Added Successfully");
@@ -653,7 +652,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setTargetId(request.getParameter("userid"));
 				auditDetails.setDescription("Edit Customer");
 				int result = customerFunctions.updateCustomer(Integer.parseInt(request.getParameter("userid")),
-						customerDetails);
+						customerDetails, loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
@@ -674,7 +673,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setTargetId(request.getParameter("id"));
 				auditDetails.setDescription("Block Customer");
 				int result = customerFunctions.updateStatus(Integer.parseInt(request.getParameter("id")),
-						request.getParameter("status"));
+						request.getParameter("status"), loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
@@ -696,7 +695,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setUserId(loggedUserId);
 				auditDetails.setTargetId(request.getParameter("id"));
 				auditDetails.setDescription("Delete Customer");
-				customerFunctions.deleteUser(Integer.parseInt(request.getParameter("id")));
+				customerFunctions.deleteUser(Integer.parseInt(request.getParameter("id")), loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				auditDetails.setStatus("Success");
 				auditLoggerFunctions.insertAuditRecord(auditDetails);
@@ -813,7 +812,7 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setDescription(
 						(request.getParameter("status").equals("1")) ? "Unblocking Account" : "Blocking Account");
 				int result = accountFunctions.updateColoumn("Status", request.getParameter("status"),
-						Long.parseLong(request.getParameter("accountno")));
+						Long.parseLong(request.getParameter("accountno")), loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {
@@ -836,7 +835,7 @@ public class GlobalController extends HttpServlet {
 				int userId = 0;
 				AuditLoggerDetails auditDetails = new AuditLoggerDetails();
 				auditDetails.setUserId(loggedUserId);
-				auditDetails.setTargetId("0");
+				auditDetails.setTargetId(loggedUserId + "");
 				auditDetails.setDescription("Searching Transaction Details");
 				if (!request.getParameter("customerId").equals("")) {
 					userId = Integer.parseInt(request.getParameter("customerId"));
@@ -885,7 +884,7 @@ public class GlobalController extends HttpServlet {
 				branchDetails.setManagerId(Integer.parseInt(request.getParameter("managerid")));
 				branchDetails.setPhoneNumber(Long.parseLong(request.getParameter("contact")));
 				int result = branchFunctions.updateRecord(branchDetails,
-						Integer.parseInt(request.getParameter("branchid")));
+						Integer.parseInt(request.getParameter("branchid")), loggedUserId);
 				auditDetails.setModifiedTime(System.currentTimeMillis());
 				JSONObject responseData = new JSONObject();
 				if (result > 0) {

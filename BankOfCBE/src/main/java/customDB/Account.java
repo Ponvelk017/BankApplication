@@ -15,5 +15,6 @@ public interface Account {
 
 	public <K, V> Map<K, V> getCustomAccountDetails(AccountDetails accountDetails) throws InvalidInputException;
 
-	public int updateColumn(String column, Object DepositeAmount, long accountNumber) throws InvalidInputException;
+	public int updateColumn(String column, Object DepositeAmount, long accountNumber, int userId)
+			throws InvalidInputException ;
 }

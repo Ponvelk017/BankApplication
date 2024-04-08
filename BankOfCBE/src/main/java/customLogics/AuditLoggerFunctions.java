@@ -2,6 +2,10 @@ package customLogics;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import dbLogics.AuditLoggerOperation;
 import details.AuditLoggerDetails;
@@ -11,14 +15,35 @@ import utility.InvalidInputException;
 public class AuditLoggerFunctions {
 
 	private AuditLoggerOperation auditOperation = new AuditLoggerOperation();
+	private BlockingQueue<AuditLoggerDetails> detailsQueue = new LinkedBlockingQueue<>();
+	private ExecutorService executor = Executors.newFixedThreadPool(2);
 
-	public int insertAuditRecord(AuditLoggerDetails auditDetails) throws InvalidInputException {
-		InputCheck.checkNull(auditDetails);
-		return auditOperation.insertRecord(auditDetails);
+	public AuditLoggerFunctions() {
+		consumer();
 	}
-	
+
+	public void insertAuditRecord(AuditLoggerDetails auditDetails) throws InvalidInputException {
+		InputCheck.checkNull(auditDetails);
+		try {
+			detailsQueue.put(auditDetails);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void consumer() {
+		try {
+			while (true) {
+				AuditLoggerDetails auditDetails = detailsQueue.take();
+				auditOperation.insertRecord(auditDetails);
+			}
+		} catch (InterruptedException | InvalidInputException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
 	public List<AuditLoggerDetails> getAuditDetails(AuditLoggerDetails auditRecords, Map<String, Object> condition)
-			throws InvalidInputException{
+			throws InvalidInputException {
 		return auditOperation.getCustomData(auditRecords, condition);
 	}
 }

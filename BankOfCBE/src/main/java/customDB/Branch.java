@@ -9,7 +9,7 @@ public interface Branch {
 
 	public int insertBranch(BranchDetails branchDetails) throws InvalidInputException;
 
-	public int updateBranch(BranchDetails branchDetails , int id) throws InvalidInputException;
+	public int updateBranch(BranchDetails branchDetails, int id, int modifiedBy) throws InvalidInputException;
 
 	public List<BranchDetails> getDetails(Object value) throws InvalidInputException;
 

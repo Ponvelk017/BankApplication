@@ -46,57 +46,53 @@ public class CustomerOperations implements Customer {
 	}
 
 	@Override
-	public List<Integer> insertCustomer(List<CustomerDetails> customers) throws InvalidInputException {
+	public int insertCustomer(CustomerDetails customers) throws InvalidInputException {
 		InputCheck.checkNull(customers);
 		int affectedRows = 0, customerId = 0;
-		List<Integer> result = new ArrayList<Integer>();
-		for (CustomerDetails customer : customers) {
-			try (PreparedStatement statement = connection.prepareStatement(insertUser,
-					PreparedStatement.RETURN_GENERATED_KEYS)) {
-				connection.setAutoCommit(false);
-				statement.setString(1, customer.getName());
-				statement.setLong(2, customer.getDOB());
-				statement.setString(3, customer.getMobile());
-				statement.setString(4, customer.getEmail());
-				statement.setString(5, customer.getGender());
-				statement.setString(6, Common.encryptPassword(customer.getPassword()));
+		try (PreparedStatement statement = connection.prepareStatement(insertUser,
+				PreparedStatement.RETURN_GENERATED_KEYS)) {
+			connection.setAutoCommit(false);
+			statement.setString(1, customers.getName());
+			statement.setLong(2, customers.getDOB());
+			statement.setString(3, customers.getMobile());
+			statement.setString(4, customers.getEmail());
+			statement.setString(5, customers.getGender());
+			statement.setString(6, Common.encryptPassword(customers.getPassword()));
 
-				statement.executeUpdate();
-				try (ResultSet record = statement.getGeneratedKeys()) {
-					if (record.next()) {
-						customerId = record.getInt(1);
-					}
+			statement.executeUpdate();
+			try (ResultSet record = statement.getGeneratedKeys()) {
+				if (record.next()) {
+					customerId = record.getInt(1);
 				}
-				try (PreparedStatement empStatement = connection.prepareStatement(insertCustomer)) {
-					empStatement.setInt(1, customerId);
-					empStatement.setString(2, customer.getAadhar());
-					empStatement.setString(3, customer.getPan());
-					empStatement.setString(4, customer.getAddress());
-					empStatement.setLong(5, customer.getCreatedTime());
-					empStatement.setInt(6, customer.getModifiedBy());
-					affectedRows = empStatement.executeUpdate();
-					connection.commit();
-					result.add(affectedRows);
-				}
-			} catch (SQLException e) {
-				try {
-					if (connection != null) {
-						connection.rollback();
-					}
-				} catch (SQLException e1) {
-					throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e1);
-				}
-				throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 			}
+			try (PreparedStatement empStatement = connection.prepareStatement(insertCustomer)) {
+				empStatement.setInt(1, customerId);
+				empStatement.setString(2, customers.getAadhar());
+				empStatement.setString(3, customers.getPan());
+				empStatement.setString(4, customers.getAddress());
+				empStatement.setLong(5, customers.getCreatedTime());
+				empStatement.setInt(6, customers.getModifiedBy());
+				affectedRows = empStatement.executeUpdate();
+				connection.commit();
+			}
+		} catch (SQLException e) {
+			try {
+				if (connection != null) {
+					connection.rollback();
+				}
+			} catch (SQLException e1) {
+				throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e1);
+			}
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 		}
-		return result;
+		return customerId;
 	}
 
 	@Override
-	public int updateDetails(int id, CustomerDetails customerDeatails) throws InvalidInputException {
+	public int updateDetails(int id, CustomerDetails customerDeatails, int modifiedBy) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(id);
 
-		String query = "update User join Customer on User.Id = Customer.Id set Name = ?,DOB =?,Mobile=?,Email=?,Gender=?,Aadhar=?,Pan=?,Address=? where User.Id = ?";
+		String query = "update User join Customer on User.Id = Customer.Id set Name = ?,DOB =?,Mobile=?,Email=?,Gender=?,Aadhar=?,Pan=?,Address=?, ModifiedBy = ?,ModifiedTime = ? where User.Id = ?";
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, customerDeatails.getName());
@@ -107,7 +103,9 @@ public class CustomerOperations implements Customer {
 			statement.setObject(6, customerDeatails.getAadhar());
 			statement.setObject(7, customerDeatails.getPan());
 			statement.setObject(8, customerDeatails.getAddress());
-			statement.setObject(9, id);
+			statement.setObject(9, modifiedBy);
+			statement.setObject(10, System.currentTimeMillis());
+			statement.setObject(11, id);
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
@@ -116,13 +114,16 @@ public class CustomerOperations implements Customer {
 	}
 
 	@Override
-	public int updateRecord(int id, String column, Object value) throws InvalidInputException {
+	public int updateRecord(int id, String column, Object value, int modifiedBy) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(id);
-		String query = "update User join Customer on User.Id = Customer.Id set " + column + " = ? where User.Id = ?";
+		String query = "update User join Customer on User.Id = Customer.Id set " + column
+				+ " = ? , ModifiedBy = ?,ModifiedTime = ? where User.Id = ?";
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, value);
 			statement.setObject(2, id);
+			statement.setObject(3, modifiedBy);
+			statement.setObject(4, System.currentTimeMillis());
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);

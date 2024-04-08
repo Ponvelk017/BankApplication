@@ -78,7 +78,7 @@ public class TransactionFunctions {
 		return record;
 	}
 
-	public List<TransactionDetails> getLatestDetails(int limit, int offset,int userId, String sortColumn)
+	public List<TransactionDetails> getLatestDetails(int limit, int offset, int userId, String sortColumn)
 			throws InvalidInputException {
 		TransactionDetails transactioDetails = new TransactionDetails();
 		transactioDetails.setUserId(userId);
@@ -91,11 +91,11 @@ public class TransactionFunctions {
 		duration.put("offset", offset);
 		List<TransactionDetails> record = transactionOpertaion.getCustomData(transactioDetails,
 				new ArrayList<String>(Arrays.asList("*")), duration);
-		
+
 		return record;
 	}
 
-	public long newDeposite(long accountNumber, long depositeAmount) throws InvalidInputException {
+	public long newDeposite(long accountNumber, long depositeAmount, int userId) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(accountNumber);
 		InputCheck.checkNegativeInteger(depositeAmount);
 		AccountDetails accountDetailsLock = (AccountDetails) accountCache.getAccount(accountNumber);
@@ -103,11 +103,12 @@ public class TransactionFunctions {
 			TransactionDetails transactionDetails = new TransactionDetails();
 			transactionDetails.setAccountId(accountNumber);
 			transactionDetails.setAmount(depositeAmount);
-			return transactionOpertaion.deposite(transactionDetails, true);
+			return transactionOpertaion.deposit(transactionDetails, true, userId);
 		}
 	}
 
-	public long newWithdraw(long accountNumber, long withdrawAmount, String description) throws InvalidInputException {
+	public long newWithdraw(long accountNumber, long withdrawAmount, String description, int userId)
+			throws InvalidInputException {
 		InputCheck.checkNegativeInteger(accountNumber);
 		InputCheck.checkNegativeInteger(withdrawAmount);
 		InputCheck.checkNull(description);
@@ -117,12 +118,12 @@ public class TransactionFunctions {
 			transactionDetails.setAccountId(accountNumber);
 			transactionDetails.setAmount(withdrawAmount);
 			transactionDetails.setDescription(description);
-			return transactionOpertaion.withdraw(transactionDetails, true);
+			return transactionOpertaion.withdraw(transactionDetails, true, userId);
 		}
 	}
 
-	public Map<String, Integer> newTransferWithinBank(long senderAcc, long receiverAcc, long amount, String description)
-			throws InvalidInputException {
+	public Map<String, Integer> newTransferWithinBank(long senderAcc, long receiverAcc, long amount, String description,
+			int userId) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(senderAcc);
 		InputCheck.checkNegativeInteger(receiverAcc);
 		InputCheck.checkNegativeInteger(amount);
@@ -134,12 +135,12 @@ public class TransactionFunctions {
 			transactionDetails.setTransactionAccountId(receiverAcc);
 			transactionDetails.setAmount(amount);
 			transactionDetails.setDescription(description);
-			return transactionOpertaion.transferWithinBank(transactionDetails);
+			return transactionOpertaion.transferWithinBank(transactionDetails, userId);
 		}
 	}
 
-	public long newTransferOtherBank(long senderAcc, long receiverAcc, long amount, String description, String ifsc)
-			throws InvalidInputException {
+	public long newTransferOtherBank(long senderAcc, long receiverAcc, long amount, String description, String ifsc,
+			int userId) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(senderAcc);
 		InputCheck.checkNegativeInteger(receiverAcc);
 		InputCheck.checkNegativeInteger(amount);
@@ -147,7 +148,13 @@ public class TransactionFunctions {
 		InputCheck.checkNull(ifsc);
 		AccountDetails accountDetailsLock = (AccountDetails) accountCache.getAccount(senderAcc);
 		synchronized (accountDetailsLock) {
-			return transactionOpertaion.transferOtherBank(senderAcc, receiverAcc, amount, description, ifsc);
+			TransactionDetails transactionDetails = new TransactionDetails();
+			transactionDetails.setAccountId(senderAcc);
+			transactionDetails.setTransactionAccountId(receiverAcc);
+			transactionDetails.setAmount(amount);
+			transactionDetails.setDescription(description);
+			transactionDetails.setIFSCCode(ifsc);
+			return transactionOpertaion.transferOtherBank(transactionDetails, userId);
 		}
 	}
 }
