@@ -17,7 +17,10 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 
+import com.google.gson.JsonObject;
+
 import cacheLogics.RedisCache;
+import customLogics.APIFunctions;
 import customLogics.AccountFunctions;
 import customLogics.AuditLoggerFunctions;
 import customLogics.BranchFunction;
@@ -25,6 +28,7 @@ import customLogics.CustomerFunctions;
 import customLogics.EmployeeFunctions;
 import customLogics.TransactionFunctions;
 import customLogics.UserFunctions;
+import details.APIDetails;
 import details.AccountDetails;
 import details.AuditLoggerDetails;
 import details.BranchDetails;
@@ -48,6 +52,7 @@ public class GlobalController extends HttpServlet {
 	private TransactionFunctions transactionFunctions = new TransactionFunctions();
 	private BranchFunction branchFunctions = new BranchFunction();
 	private AuditLoggerFunctions auditLoggerFunctions = new AuditLoggerFunctions();
+	private APIFunctions apiFunctions = new APIFunctions();
 
 	public GlobalController() {
 		super();
@@ -63,7 +68,7 @@ public class GlobalController extends HttpServlet {
 		}
 		try {
 			if (page.equals("home") && currentUser.getAttribute("UserType").equals("1")) {
-				page = "EmployeeHome";
+				page = "EmployeeAccount";
 			}
 			switch (page) {
 			case "home": {
@@ -139,11 +144,6 @@ public class GlobalController extends HttpServlet {
 				response.sendRedirect("/BankOfCBE/");
 			}
 				break;
-			case "EmployeeHome": {
-				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/EmployeeHome.jsp");
-				homeDispatcher.forward(request, response);
-			}
-				break;
 			case "EmployeeUser": {
 				String statusActive = "1", statusInactive = "0";
 				String isAdmin = currentUser.getAttribute("isAdmin") + "";
@@ -198,6 +198,14 @@ public class GlobalController extends HttpServlet {
 				homeDispatcher.forward(request, response);
 			}
 				break;
+			case "api": {
+				List<APIDetails> apiDetails = apiFunctions.getAllAPI(11, 0);
+				request.setAttribute("apis", apiDetails);
+				request.setAttribute("pageno", 1);
+				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/API.jsp");
+				homeDispatcher.forward(request, response);
+			}
+				break;
 			}
 		} catch (InvalidInputException e) {
 			e.printStackTrace();
@@ -214,64 +222,75 @@ public class GlobalController extends HttpServlet {
 				String userId = request.getParameter("id");
 				String password = request.getParameter("password");
 				Map<String, Object> blockedUser = userFunctions.blockedDetails(Integer.parseInt(userId));
-				if ((int) blockedUser.get("InvalidAttempts") == 2) {
-					request.setAttribute("message", "User Blocked! Your Login Attempts Exceeded");
-					RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
-					loginDispatcher.forward(request, response);
-				}
-				if (userId.matches("^\\d+$")) {
-					if (password != null) {
-						boolean isAuth = userFunctions.login(Integer.parseInt(userId), password);
-						if (isAuth) {
-							userSession = request.getSession(true);
-							String userType = userFunctions.getSinglRecord("Type", Integer.parseInt(userId));
-							userSession.setAttribute("UserId", Integer.parseInt(userId));
-							userSession.setAttribute("UserType", userType);
-							AuditLoggerDetails auditDetails = new AuditLoggerDetails();
-							auditDetails.setUserId(Integer.parseInt(userId));
-							auditDetails.setTargetId(Integer.parseInt(userId) + "");
-							auditDetails.setDescription("Logged in");
-							auditDetails.setModifiedTime(System.currentTimeMillis());
-							auditDetails.setStatus("Success");
-							auditLoggerFunctions.insertAuditRecord(auditDetails);
-							if (userType != null) {
-								if (userType.equals("0")) {
-									RequestDispatcher homeDispatcher = request
-											.getRequestDispatcher("/WEB-INF/Home.jsp");
-									homeDispatcher.forward(request, response);
-								} else if (userType.equals("1")) {
-									int isAdmin = employeeFunctions.getAdmin(Integer.parseInt(userId));
-									userSession.setAttribute("isAdmin", isAdmin);
-									String activeStatus = "1", inActiveStatus = "0";
-									Map<Long, AccountDetails> accounts = accountFunctions.getAccounts(11, 0,
-											activeStatus);
-									Map<Long, AccountDetails> inactiveAccounts = accountFunctions.getAccounts(11, 0,
-											inActiveStatus);
-									request.setAttribute("accounts", accounts);
-									request.setAttribute("editAccounts", accounts);
-									request.setAttribute("inactiveAccounts", inactiveAccounts);
-									request.setAttribute("pageno", 1);
-									request.setAttribute("editPageno", 1);
-									request.setAttribute("deletePageno", 1);
-									RequestDispatcher homeDispatcher = request
-											.getRequestDispatcher("/WEB-INF/AccountManagement.jsp");
-									homeDispatcher.forward(request, response);
+				if ((request.getParameter("api") != null && request.getParameter("api").contains("api"))) {
+					JSONObject loginJson = new JSONObject();
+					loginJson.put("UserId", userId);
+					loginJson.put("IsAuth", userFunctions.login(Integer.parseInt(userId), password));
+					loginJson.put("UserType", userFunctions.getSinglRecord("Type", Integer.parseInt(userId)));
+					loginJson.put("Blocked-status", ((int) blockedUser.get("InvalidAttempts") == 2) ? true : false);
+					loginJson.put("Attempts", blockedUser.get("InvalidAttempts"));
+					response.setContentType("application/json");
+					response.getWriter().write(loginJson.toString());
+				} else {
+					if ((int) blockedUser.get("InvalidAttempts") == 2) {
+						request.setAttribute("message", "User Blocked! Your Login Attempts Exceeded");
+						RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
+						loginDispatcher.forward(request, response);
+					}
+					if (userId.matches("^\\d+$")) {
+						if (password != null) {
+							boolean isAuth = userFunctions.login(Integer.parseInt(userId), password);
+							if (isAuth) {
+								userSession = request.getSession(true);
+								String userType = userFunctions.getSinglRecord("Type", Integer.parseInt(userId));
+								userSession.setAttribute("UserId", Integer.parseInt(userId));
+								userSession.setAttribute("UserType", userType);
+								AuditLoggerDetails auditDetails = new AuditLoggerDetails();
+								auditDetails.setUserId(Integer.parseInt(userId));
+								auditDetails.setTargetId(Integer.parseInt(userId) + "");
+								auditDetails.setDescription("Logged in");
+								auditDetails.setModifiedTime(System.currentTimeMillis());
+								auditDetails.setStatus("Success");
+								auditLoggerFunctions.insertAuditRecord(auditDetails);
+								if (userType != null) {
+									if (userType.equals("0")) {
+										RequestDispatcher homeDispatcher = request
+												.getRequestDispatcher("/WEB-INF/Home.jsp");
+										homeDispatcher.forward(request, response);
+									} else if (userType.equals("1")) {
+										int isAdmin = employeeFunctions.getAdmin(Integer.parseInt(userId));
+										userSession.setAttribute("isAdmin", isAdmin);
+										String activeStatus = "1", inActiveStatus = "0";
+										Map<Long, AccountDetails> accounts = accountFunctions.getAccounts(11, 0,
+												activeStatus);
+										Map<Long, AccountDetails> inactiveAccounts = accountFunctions.getAccounts(11, 0,
+												inActiveStatus);
+										request.setAttribute("accounts", accounts);
+										request.setAttribute("editAccounts", accounts);
+										request.setAttribute("inactiveAccounts", inactiveAccounts);
+										request.setAttribute("pageno", 1);
+										request.setAttribute("editPageno", 1);
+										request.setAttribute("deletePageno", 1);
+										RequestDispatcher homeDispatcher = request
+												.getRequestDispatcher("/WEB-INF/AccountManagement.jsp");
+										homeDispatcher.forward(request, response);
+									}
 								}
-							}
-						} else {
-							userFunctions.addBlockedUser(Integer.parseInt(userId),
-									(int) blockedUser.get("InvalidAttempts") + 1, System.currentTimeMillis());
-							userFunctions.blockedDetails(Integer.parseInt(userId));
-							if ((int) blockedUser.get("InvalidAttempts") == 2) {
-								request.setAttribute("message", "User Blocked! Your Login Attempts Exceeded.");
+							} else {
+								userFunctions.addBlockedUser(Integer.parseInt(userId),
+										(int) blockedUser.get("InvalidAttempts") + 1, System.currentTimeMillis());
+								userFunctions.blockedDetails(Integer.parseInt(userId));
+								if ((int) blockedUser.get("InvalidAttempts") == 2) {
+									request.setAttribute("message", "User Blocked! Your Login Attempts Exceeded.");
+									RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
+									loginDispatcher.forward(request, response);
+								}
+								String errorMessage = "Invalid UserId or Password . You have only "
+										+ (2 - (int) blockedUser.get("InvalidAttempts") + " Attempts Remaining");
+								request.setAttribute("message", errorMessage);
 								RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
 								loginDispatcher.forward(request, response);
 							}
-							String errorMessage = "Invalid UserId or Password . You have only "
-									+ (2 - (int) blockedUser.get("InvalidAttempts") + " Attempts Remaining");
-							request.setAttribute("message", errorMessage);
-							RequestDispatcher loginDispatcher = request.getRequestDispatcher("index.jsp");
-							loginDispatcher.forward(request, response);
 						}
 					}
 				}
@@ -837,9 +856,9 @@ public class GlobalController extends HttpServlet {
 				auditDetails.setUserId(loggedUserId);
 				auditDetails.setTargetId(loggedUserId + "");
 				auditDetails.setDescription("Searching Transaction Details");
-				if (!request.getParameter("customerId").equals("")) {
+				if (!request.getParameter("customerId").equals("") && request.getParameter("customerId") != null) {
 					userId = Integer.parseInt(request.getParameter("customerId"));
-					auditDetails.setTargetId(request.getParameter("id"));
+					auditDetails.setTargetId(request.getParameter("customerId"));
 				}
 				if (!request.getParameter("fromDate").equals("")) {
 					fromdate = Common.dateToMilli((request.getParameter("fromDate")));
@@ -1084,6 +1103,41 @@ public class GlobalController extends HttpServlet {
 				auditLoggerFunctions.insertAuditRecord(auditDetails);
 				response.setContentType("application/json");
 				response.getWriter().write(responseData.toString());
+			}
+				break;
+
+			case "newAPIKey": {
+				String userId = request.getParameter("userId");
+				String apiKey = apiFunctions.APIKeyGeneration(Integer.parseInt(userId));
+				JSONObject responseData = new JSONObject();
+				if (apiKey != null) {
+					responseData.put("status", true);
+				} else {
+					responseData.put("status", false);
+				}
+				responseData.put("apiKey", apiKey);
+				response.setContentType("application/json");
+				response.getWriter().write(responseData.toString());
+			}
+				break;
+			case "apiPagination": {
+				List<APIDetails> apiDetails = apiFunctions.getAllAPI(11,
+						Integer.parseInt(request.getParameter("offset")));
+				request.setAttribute("apis", apiDetails);
+				request.setAttribute("pageno", Integer.parseInt(request.getParameter("pageno")));
+				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/API.jsp");
+				homeDispatcher.forward(request, response);
+			}
+				break;
+
+			case "apiKeySearch": {
+				APIDetails searchedAPi = apiFunctions.isValidAPIKey(request.getParameter("apiKey"));
+				List<APIDetails> apiDetails = new ArrayList<APIDetails>();
+				apiDetails.add(searchedAPi);
+				request.setAttribute("apis", apiDetails);
+				request.setAttribute("pageno", 1);
+				RequestDispatcher homeDispatcher = request.getRequestDispatcher("/WEB-INF/API.jsp");
+				homeDispatcher.forward(request, response);
 			}
 				break;
 			}

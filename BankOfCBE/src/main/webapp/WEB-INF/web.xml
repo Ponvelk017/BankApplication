@@ -21,6 +21,15 @@
 		<servlet-name>GlobalController</servlet-name>
 		<url-pattern>/home</url-pattern>
 	</servlet-mapping>
+	
+		<servlet>
+		<servlet-name>APIController</servlet-name>
+		<servlet-class>controller.APIController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>APIController</servlet-name>
+		<url-pattern>/api</url-pattern>
+	</servlet-mapping>
 
 	<filter>
 		<filter-name>RequestFilter</filter-name>

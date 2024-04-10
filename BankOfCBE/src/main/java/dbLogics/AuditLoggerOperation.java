@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import customDB.AuditLogger;
 import details.AuditLoggerDetails;
 import utility.DBConnection;
 import utility.InputCheck;
 import utility.InvalidInputException;
 
-public class AuditLoggerOperation {
+public class AuditLoggerOperation implements AuditLogger {
 
 	Connection connection = DBConnection.getConnection();
 
@@ -29,7 +30,8 @@ public class AuditLoggerOperation {
 			statement.setString(5, auditDetails.getStatus());
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
-			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+//			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+			e.printStackTrace();
 		}
 		return affectedRows;
 	}

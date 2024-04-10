@@ -117,13 +117,11 @@ public class CustomerOperations implements Customer {
 	public int updateRecord(int id, String column, Object value, int modifiedBy) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(id);
 		String query = "update User join Customer on User.Id = Customer.Id set " + column
-				+ " = ? , ModifiedBy = ?,ModifiedTime = ? where User.Id = ?";
+				+ " = ? where User.Id = ?";
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, value);
 			statement.setObject(2, id);
-			statement.setObject(3, modifiedBy);
-			statement.setObject(4, System.currentTimeMillis());
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);

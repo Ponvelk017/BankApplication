@@ -16,7 +16,7 @@ public class AuditLoggerFunctions {
 
 	private AuditLoggerOperation auditOperation = new AuditLoggerOperation();
 	private BlockingQueue<AuditLoggerDetails> detailsQueue = new LinkedBlockingQueue<>();
-	private ExecutorService executor = Executors.newFixedThreadPool(2);
+	private ExecutorService executor = Executors.newCachedThreadPool();
 
 	public AuditLoggerFunctions() {
 		consumer();
@@ -24,22 +24,26 @@ public class AuditLoggerFunctions {
 
 	public void insertAuditRecord(AuditLoggerDetails auditDetails) throws InvalidInputException {
 		InputCheck.checkNull(auditDetails);
-		try {
-			detailsQueue.put(auditDetails);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		executor.execute(() -> {
+			try {
+				detailsQueue.put(auditDetails);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	private void consumer() {
-		try {
-			while (true) {
-				AuditLoggerDetails auditDetails = detailsQueue.take();
-				auditOperation.insertRecord(auditDetails);
+		executor.execute(() -> {
+			try {
+				while (true) {
+					AuditLoggerDetails auditDetails = detailsQueue.take();
+					auditOperation.insertRecord(auditDetails);
+				}
+			} catch (InterruptedException | InvalidInputException e) {
+				Thread.currentThread().interrupt();
 			}
-		} catch (InterruptedException | InvalidInputException e) {
-			Thread.currentThread().interrupt();
-		}
+		});
 	}
 
 	public List<AuditLoggerDetails> getAuditDetails(AuditLoggerDetails auditRecords, Map<String, Object> condition)
