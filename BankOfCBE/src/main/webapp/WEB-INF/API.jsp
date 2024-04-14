@@ -7,8 +7,8 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map.Entry"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.time.Instant"%>
-<%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.text.SimpleDateFormat"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -110,9 +110,10 @@
 											<td><%=(individualAPi.getIsValid().equals("1") ? "Active" : "InActive")%></td>
 											<td>
 												<%
-												Instant instant = Instant.ofEpochMilli(individualAPi.getCreatedAt());
-												String formattedTimestamp = DateTimeFormatter.ISO_INSTANT.format(instant);
-												%> <%=formattedTimestamp%></td>
+												Date date = new Date(individualAPi.getCreatedAt());
+										        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+												%> <%=dateFormat.format(date)%></td>
 											<%
 											}
 											%>
@@ -177,7 +178,7 @@
                             <path fill-rule="evenodd"
 								d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                         </svg>
-						Adding New Branch
+						Create New API Key
 					</button>
 					<div class="modal fade" id="staticBackdrop"
 						data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"

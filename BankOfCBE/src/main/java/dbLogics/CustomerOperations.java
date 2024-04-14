@@ -116,8 +116,7 @@ public class CustomerOperations implements Customer {
 	@Override
 	public int updateRecord(int id, String column, Object value, int modifiedBy) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(id);
-		String query = "update User join Customer on User.Id = Customer.Id set " + column
-				+ " = ? where User.Id = ?";
+		String query = "update User join Customer on User.Id = Customer.Id set " + column + " = ? where User.Id = ?";
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setObject(1, value);
@@ -211,7 +210,6 @@ public class CustomerOperations implements Customer {
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 		}
-
 		return records;
 	}
 

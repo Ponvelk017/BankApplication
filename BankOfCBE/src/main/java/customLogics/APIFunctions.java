@@ -1,14 +1,25 @@
 package customLogics;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import dbLogics.APIOperations;
+import customDB.API;
 import details.APIDetails;
 import utility.InvalidInputException;
 
 public class APIFunctions {
 
-	private APIOperations apioperations = new APIOperations();
+	private API apioperations;
+
+	public APIFunctions() {
+		try {
+			Class<?> apiClass = Class.forName("dbLogics.APIOperations");
+			apioperations = (API) apiClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public String APIKeyGeneration(int userId) throws InvalidInputException {
 		return apioperations.newAPIKeyGeneration(userId);

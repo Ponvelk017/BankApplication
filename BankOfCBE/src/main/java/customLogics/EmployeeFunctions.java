@@ -1,12 +1,17 @@
 package customLogics;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import dbLogics.EmployeeOperations;
+import customDB.Employee;
+import details.CustomerDetails;
 import details.EmployeeDetails;
 import utility.Common;
 import utility.InputCheck;
@@ -14,7 +19,18 @@ import utility.InvalidInputException;
 
 public class EmployeeFunctions {
 
-	private EmployeeOperations employeeOperations = new EmployeeOperations();
+	private Employee employeeOperations;
+	
+	public EmployeeFunctions() {
+		try {
+			Class<?> employeeClass = Class.forName("dbLogics.EmployeeOperations");
+			employeeOperations = (Employee) employeeClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 	public static int validateDetails(EmployeeDetails employee) throws InvalidInputException {
 		InputCheck.checkNull(employee);
@@ -58,5 +74,21 @@ public class EmployeeFunctions {
 	public int getAdmin(int id) throws InvalidInputException {
 		Integer customerId = id;
 		return (int) employeeOperations.getSingleRecord("Admin", "Id", customerId);
+	}
+	
+	public Map<Integer, EmployeeDetails> getCustomerProfile(EmployeeDetails employeeDetails)
+			throws InvalidInputException {
+		InputCheck.checkNull(employeeDetails);
+		new CustomerDetails();
+		List<String> columnToGet = new ArrayList<String>();
+		columnToGet.add("User.*");
+		columnToGet.add("Employee.Branch");
+		columnToGet.add("Employee.Admin");
+		List<EmployeeDetails> employeeDet =employeeOperations.getCustomEmployee(employeeDetails, columnToGet);
+		Map<Integer, EmployeeDetails> result = new HashMap<Integer, EmployeeDetails>();
+		for (EmployeeDetails singleRecord : employeeDet) {
+			result.put(singleRecord.getId(), singleRecord);
+		}
+		return result;
 	}
 }

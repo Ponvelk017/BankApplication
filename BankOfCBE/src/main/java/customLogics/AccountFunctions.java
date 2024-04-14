@@ -1,21 +1,32 @@
 package customLogics;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import cacheLogics.RedisCache;
+import customDB.Account;
 import customDB.Cache;
-import dbLogics.AccountOperations;
 import details.AccountDetails;
 import utility.InputCheck;
 import utility.InvalidInputException;
 
 public class AccountFunctions {
 
-	private AccountOperations accountOperation = new AccountOperations();
+	private Account accountOperation;
 	private Cache accountCache = RedisCache.getInstance();
+
+	public AccountFunctions() {
+		try {
+			Class<?> accountClass = Class.forName("dbLogics.AccountOperations");
+			accountOperation = (Account) accountClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public int addAccount(AccountDetails account) throws InvalidInputException {
 		InputCheck.checkNull(account);
@@ -62,14 +73,14 @@ public class AccountFunctions {
 		return accountOperation.getSingleRecord(column, "AccountNumber", accountNumber);
 	}
 
-	public int updateColoumn(String coloumn, Object value, long accountId , int userId) throws InvalidInputException {
+	public int updateColoumn(String coloumn, Object value, long accountId, int userId) throws InvalidInputException {
 		InputCheck.checkNull(coloumn);
 		InputCheck.checkNull(value);
 		InputCheck.checkNegativeInteger(accountId);
 		int affectedRows = 0;
 		AccountDetails accountDetailsLock = (AccountDetails) accountCache.getAccount(accountId);
 		synchronized (accountDetailsLock) {
-			affectedRows = accountOperation.updateColumn(coloumn, value, accountId , userId);
+			affectedRows = accountOperation.updateColumn(coloumn, value, accountId, userId);
 			if (affectedRows > 0) {
 				AccountDetails accountDetails = new AccountDetails();
 				accountDetails.setAccountNumber(accountId);

@@ -1,5 +1,7 @@
 package customDB;
 
+import java.util.List;
+
 import details.APIDetails;
 import utility.InvalidInputException;
 
@@ -12,5 +14,7 @@ public interface API {
 	public int invalidateAPIKey(String apiKey) throws InvalidInputException;
 
 	public APIDetails getAPIKey(String apiKey) throws InvalidInputException;
+
+	public List<APIDetails> getAllAPIKey(int limit, int offset)throws InvalidInputException;
 
 }

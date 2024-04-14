@@ -17,8 +17,6 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 
-import com.google.gson.JsonObject;
-
 import cacheLogics.RedisCache;
 import customLogics.APIFunctions;
 import customLogics.AccountFunctions;
@@ -100,7 +98,7 @@ public class GlobalController extends HttpServlet {
 				Map<Long, AccountDetails> accountRecords = accountFunctions.accountDetails(accountDetails);
 				String firstbranchIfsc = "";
 				long firstAccountnumber = 0l;
-				for (Entry individualAccounts : accountRecords.entrySet()) {
+				for (Entry<?, ?> individualAccounts : accountRecords.entrySet()) {
 					firstbranchIfsc = ((AccountDetails) individualAccounts.getValue()).getBranchId();
 					firstAccountnumber = (long) ((AccountDetails) individualAccounts.getValue()).getAccountNumber();
 					break;
@@ -462,7 +460,7 @@ public class GlobalController extends HttpServlet {
 				accountDetails.setUserId(loggedUserId);
 				Map<Long, AccountDetails> accountRecords = accountFunctions.accountDetails(accountDetails);
 				String firstbranchIfsc = "";
-				for (Entry individualAccounts : accountRecords.entrySet()) {
+				for (Entry<?, ?> individualAccounts : accountRecords.entrySet()) {
 					if (request.getParameter("accountno").equals(individualAccounts.getKey().toString())) {
 						firstbranchIfsc = ((AccountDetails) individualAccounts.getValue()).getBranchId();
 						break;
@@ -721,7 +719,6 @@ public class GlobalController extends HttpServlet {
 			}
 				break;
 			case "fetchAccount": {
-				System.out.println("ahubcs");
 				String activeStatus = "1", inActiveStatus = "0";
 				AccountDetails accountDetails = new AccountDetails();
 				accountDetails.setUserId(Integer.parseInt(request.getParameter("id")));

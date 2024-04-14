@@ -1,5 +1,6 @@
 package customLogics;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 import cacheLogics.RedisCache;
 import customDB.Cache;
-import dbLogics.CustomerOperations;
+import customDB.Customer;
 import details.CustomerDetails;
 import utility.InputCheck;
 import utility.InvalidInputException;
@@ -19,7 +20,17 @@ import utility.InvalidInputException;
 public class CustomerFunctions {
 
 	private Cache customerCache = RedisCache.getInstance();
-	private CustomerOperations customerOpertaion = new CustomerOperations();
+	private Customer customerOpertaion;
+	
+	public CustomerFunctions() {
+		try {
+			Class<?> customerClass = Class.forName("dbLogics.CustomerOperations");
+			customerOpertaion = (Customer) customerClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static String validateDetails(CustomerDetails customer, int modifiedBy) throws InvalidInputException {
 		InputCheck.checkNull(customer);

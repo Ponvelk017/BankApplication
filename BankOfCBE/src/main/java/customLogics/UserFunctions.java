@@ -1,8 +1,9 @@
 package customLogics;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-import dbLogics.UserOperations;
+import customDB.User;
 import details.CustomerDetails;
 import utility.Common;
 import utility.InputCheck;
@@ -10,7 +11,17 @@ import utility.InvalidInputException;
 
 public class UserFunctions {
 
-	private UserOperations userOpertaion = new UserOperations();
+	private User userOpertaion;
+
+	public UserFunctions() {
+		try {
+			Class<?> userClass = Class.forName("dbLogics.UserOperations");
+			userOpertaion = (User) userClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public boolean login(int userId, String password) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(userId);
@@ -31,7 +42,7 @@ public class UserFunctions {
 
 	public String getSinglRecord(String column, int userId) throws InvalidInputException {
 		InputCheck.checkNegativeInteger(userId);
-		return userOpertaion.getSingleRecord(column, "Id", userId)+"";
+		return userOpertaion.getSingleRecord(column, "Id", userId) + "";
 	}
 
 	public int coloumnUpdation(String column, Object value, int userId) throws InvalidInputException {

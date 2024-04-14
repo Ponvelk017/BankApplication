@@ -1,49 +1,47 @@
 package customLogics;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import dbLogics.AuditLoggerOperation;
+import customDB.AuditLogger;
 import details.AuditLoggerDetails;
 import utility.InputCheck;
 import utility.InvalidInputException;
 
 public class AuditLoggerFunctions {
 
-	private AuditLoggerOperation auditOperation = new AuditLoggerOperation();
-	private BlockingQueue<AuditLoggerDetails> detailsQueue = new LinkedBlockingQueue<>();
-	private ExecutorService executor = Executors.newCachedThreadPool();
+	private AuditLogger auditOperation;
+	private ExecutorService executor = Executors.newFixedThreadPool(2);
 
 	public AuditLoggerFunctions() {
-		consumer();
+		try {
+			Class<?> auditClass = Class.forName("dbLogics.AuditLoggerOperation");
+			auditOperation = (AuditLogger) auditClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 	}
-
+	
 	public void insertAuditRecord(AuditLoggerDetails auditDetails) throws InvalidInputException {
 		InputCheck.checkNull(auditDetails);
-		executor.execute(() -> {
-			try {
-				detailsQueue.put(auditDetails);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		});
+		executor.execute(consumer(auditDetails));
 	}
 
-	private void consumer() {
-		executor.execute(() -> {
-			try {
-				while (true) {
-					AuditLoggerDetails auditDetails = detailsQueue.take();
+	private Runnable consumer(AuditLoggerDetails auditDetails) {
+		return new Runnable() {
+			@Override
+			public void run() {
+				try {
 					auditOperation.insertRecord(auditDetails);
+				} catch (InvalidInputException e) {
+					e.printStackTrace();
 				}
-			} catch (InterruptedException | InvalidInputException e) {
-				Thread.currentThread().interrupt();
 			}
-		});
+		};
 	}
 
 	public List<AuditLoggerDetails> getAuditDetails(AuditLoggerDetails auditRecords, Map<String, Object> condition)

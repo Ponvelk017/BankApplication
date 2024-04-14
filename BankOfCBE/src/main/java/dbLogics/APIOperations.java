@@ -59,7 +59,21 @@ public class APIOperations implements API {
 	@Override
 	public APIDetails getAPIKey(String apiKey) throws InvalidInputException {
 		String query = "select * from APIUser where APIKey = ?";
+		System.out.println(apiKey);
 		APIDetails apiDetails = new APIDetails();
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, apiKey);
+			try (ResultSet record = statement.executeQuery()) {
+				if (record.next()) {
+					if (record.getLong("CreatedAt") + 604800000 >= System.currentTimeMillis()) {
+						invalidateAPIKey(apiKey);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setString(1, apiKey);
 			try (ResultSet record = statement.executeQuery()) {
@@ -72,6 +86,7 @@ public class APIOperations implements API {
 				}
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
 		}
 		return apiDetails;

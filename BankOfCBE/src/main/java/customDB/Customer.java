@@ -16,4 +16,5 @@ public interface Customer {
 	public List<CustomerDetails> getCustomCustomer(CustomerDetails customerDetails, List<String> columnToGet,
 			String userType) throws InvalidInputException;
 
+	public int panAadharCheck(String pan, String aadhar) throws InvalidInputException;
 }

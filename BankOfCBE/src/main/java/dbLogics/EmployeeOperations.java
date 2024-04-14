@@ -101,4 +101,71 @@ public class EmployeeOperations implements Employee {
 		}
 		return affectedRows;
 	}
+
+	@Override
+	public List<EmployeeDetails> getCustomEmployee(EmployeeDetails employeeDetails, List<String> columnToGet)
+			throws InvalidInputException {
+		InputCheck.checkNull(employeeDetails);
+		InputCheck.checkNull(columnToGet);
+		List<EmployeeDetails> result = new ArrayList<EmployeeDetails>();
+		StringBuilder query = new StringBuilder("select ");
+		for (String individualColumn : columnToGet) {
+			query.append(individualColumn + " ,");
+		}
+		try {
+			query = new StringBuilder(query.subSequence(0, query.length() - 1));
+			query.append("from User left join Employee on User.Id = Employee.Id  where ");
+			PreparedStatement statement = connection.prepareStatement(query.toString());
+			query = new StringBuilder(query.subSequence(0, query.length() - 1));
+			int count = 1;
+			if (employeeDetails.getId() != 0) {
+				query.append(" User.Id = ? ");
+				count++;
+			}
+			if (employeeDetails.getStatus() != null) {
+				if (count > 1) {
+					query.append("AND ");
+				}
+				query.append(" User.Status = ? ");
+				count++;
+			}
+			if (count > 1) {
+				query.append("AND ");
+			}
+			query.append(" User.Type = ? ");
+			count++;
+			statement = connection.prepareStatement((query.toString()));
+			count = 1;
+			if (employeeDetails.getId() != 0) {
+				statement.setInt(count++, employeeDetails.getId());
+			}
+			if (employeeDetails.getStatus() != null) {
+				if (employeeDetails.getStatus().equals("Active")) {
+					statement.setString(count++, "Active");
+				} else {
+					statement.setString(count++, "Inactive");
+				}
+			}
+			statement.setObject(count++, "1");
+			try (ResultSet record = statement.executeQuery()) {
+				while(record.next()) {
+					EmployeeDetails employeeDet = new EmployeeDetails();
+					employeeDet.setId(record.getInt("Id"));
+					employeeDet.setName(record.getString("Name"));
+					employeeDet.setDOB(record.getLong("DOB"));
+					employeeDet.setMobile(record.getString("Mobile"));
+					employeeDet.setEmail(record.getString("Email"));
+					employeeDet.setStatus(record.getString("Status"));
+					employeeDet.setGender(record.getString("Gender"));
+					employeeDet.setType(record.getString("Type"));
+					employeeDet.setBranch(record.getString("Branch"));
+					employeeDet.setAdmin((record.getString("Admin").equals("1")?true:false));
+					result.add(employeeDet);
+				}
+			}
+		} catch (SQLException e) {
+			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
+		}
+		return result;
+	}
 }

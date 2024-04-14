@@ -1,5 +1,6 @@
 package customLogics;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.Map;
 
 import cacheLogics.RedisCache;
 import customDB.Cache;
-import dbLogics.TransactionOperations;
+import customDB.Transaction;
 import details.AccountDetails;
 import details.TransactionDetails;
 import utility.Common;
@@ -18,9 +19,19 @@ import utility.InvalidInputException;
 public class TransactionFunctions {
 
 	
-	private TransactionOperations transactionOpertaion = new TransactionOperations();
+	private Transaction transactionOpertaion;
 	private Cache accountCache = RedisCache.getInstance();
 
+	public TransactionFunctions() {
+		try {
+			Class<?> transactionClass = Class.forName("dbLogics.TransactionOperations");
+			transactionOpertaion = (Transaction) transactionClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public TransactionDetails getTransactionDetails(long transactionId, String conditionColumn)
 			throws InvalidInputException {
 		InputCheck.checkNegativeInteger(transactionId);
