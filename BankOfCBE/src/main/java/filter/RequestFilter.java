@@ -17,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RequestFilter implements Filter {
 
-    /**
-     * Default constructor. 
-     */
-    public RequestFilter() {
-        // TODO Auto-generated constructor stub
-    }
+	/**
+	 * Default constructor.
+	 */
+	public RequestFilter() {
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see Filter#destroy()
@@ -34,19 +34,17 @@ public class RequestFilter implements Filter {
 	/**
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-		HttpServletRequest request =(HttpServletRequest)req;
-		HttpServletResponse response = (HttpServletResponse)res;
-		String path = request.getRequestURI(); 
-		if(path.endsWith("/home")) {
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+			throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) res;
+		String path = request.getRequestURI();
+		if (path.endsWith("/home")) {
 			RequestDispatcher homeRequestDispatcher = request.getRequestDispatcher("/home");
 			homeRequestDispatcher.forward(request, response);
-		}
-		else if(path.contains("/style") || path.contains("/Images")){
-			chain.doFilter(req, res);
-		}
-		else {
-			chain.doFilter(req, res);
+		} 
+		else { // path.contains("/style") || path.contains("/Images")
+			chain.doFilter(request, res);
 		}
 	}
 

@@ -7,6 +7,12 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map.Entry"%>
 <%@ page import="org.json.JSONObject"%>
+
+<%
+response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
+response.setHeader("pragma", "no-cache");
+response.setHeader("Expires", "0");
+%>
 <!DOCTYPE html>
 <html lang="en">
 

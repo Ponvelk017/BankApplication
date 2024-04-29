@@ -21,8 +21,8 @@ public class APIFunctions {
 		}
 	}
 
-	public String APIKeyGeneration(int userId) throws InvalidInputException {
-		return apioperations.newAPIKeyGeneration(userId);
+	public String APIKeyGeneration(int userId, int scope) throws InvalidInputException {
+		return apioperations.newAPIKeyGeneration(userId, scope);
 	}
 
 	public APIDetails isValidAPIKey(String apiKey) throws InvalidInputException {

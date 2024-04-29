@@ -321,7 +321,8 @@ public class TransactionOperations implements Transaction {
 	}
 
 	@Override
-	public long withdraw(TransactionDetails transactionDetails, boolean autoCommitFlag , int userId) throws InvalidInputException {
+	public long withdraw(TransactionDetails transactionDetails, boolean autoCommitFlag, int userId)
+			throws InvalidInputException {
 		InputCheck.checkNull(transactionDetails);
 		InputCheck.checkNull(autoCommitFlag);
 		try {
@@ -334,7 +335,7 @@ public class TransactionOperations implements Transaction {
 			TransactionDetails transactionDet = new TransactionDetails();
 			if (balance > transactionDetails.getAmount()) {
 				affectedRows = accountOperation.updateColumn("Balance", balance - transactionDetails.getAmount(),
-						transactionDetails.getAccountId(),userId);
+						transactionDetails.getAccountId(), userId);
 				if (affectedRows > 0) {
 					transactionDet.setAccountId(transactionDetails.getAccountId());
 					transactionDet.setTransactionAccountId(transactionDetails.getTransactionAccountId());
@@ -351,6 +352,8 @@ public class TransactionOperations implements Transaction {
 					transactionDet.setModifiedBy(userId);
 					affectedRows = setTransferTransaction(transactionDet);
 				}
+			} else {
+				return -1;
 			}
 		} catch (SQLException e) {
 			try {
@@ -374,7 +377,8 @@ public class TransactionOperations implements Transaction {
 	}
 
 	@Override
-	public Map<String, Integer> transferWithinBank(TransactionDetails transactionDetails , int userId) throws InvalidInputException {
+	public Map<String, Integer> transferWithinBank(TransactionDetails transactionDetails, int userId)
+			throws InvalidInputException {
 		InputCheck.checkNull(transactionDetails);
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		try {
@@ -384,7 +388,7 @@ public class TransactionOperations implements Transaction {
 			receiverDet.setAccountId(transactionDetails.getTransactionAccountId());
 			receiverDet.setTransactionAccountId(transactionDetails.getAccountId());
 			receiverDet.setAmount(transactionDetails.getAmount());
-			long receiverUpdation = deposit(receiverDet, false , userId);
+			long receiverUpdation = deposit(receiverDet, false, userId);
 
 			TransactionDetails senderDet = new TransactionDetails();
 			senderDet.setId(getId());
@@ -392,7 +396,7 @@ public class TransactionOperations implements Transaction {
 			senderDet.setTransactionAccountId(transactionDetails.getTransactionAccountId());
 			senderDet.setDescription(transactionDetails.getDescription());
 			senderDet.setAmount(transactionDetails.getAmount());
-			long senderUpdation = withdraw(senderDet, false,userId);
+			long senderUpdation = withdraw(senderDet, false, userId);
 
 			long senderBalance = (long) accountOperation.getSingleRecord("Balance", "AccountNumber",
 					transactionDetails.getAccountId());
@@ -420,21 +424,22 @@ public class TransactionOperations implements Transaction {
 	}
 
 	@Override
-	public long transferOtherBank(TransactionDetails transactionDetails, int userId)
-			throws InvalidInputException {
+	public long transferOtherBank(TransactionDetails transactionDetails, int userId) throws InvalidInputException {
 		InputCheck.checkNull(transactionDetails);
 		try {
 			connection.setAutoCommit(false);
-			long senderBalance = (long) accountOperation.getSingleRecord("Balance", "AccountNumber", transactionDetails.getUserId());
+			long senderBalance = (long) accountOperation.getSingleRecord("Balance", "AccountNumber",
+					transactionDetails.getUserId());
 			int senderBalanceUpdation = 0;
 			TransactionDetails transactionDet = new TransactionDetails();
 			if (senderBalance >= transactionDetails.getAmount()) {
-				senderBalanceUpdation = accountOperation.updateColumn("Balance", senderBalance - transactionDetails.getAmount(), transactionDetails.getAccountId(), userId);
+				senderBalanceUpdation = accountOperation.updateColumn("Balance",
+						senderBalance - transactionDetails.getAmount(), transactionDetails.getAccountId(), userId);
 				if (senderBalanceUpdation > 0) {
 					transactionDet.setAccountId(transactionDetails.getAccountId());
 					transactionDet.setTransactionAccountId(transactionDetails.getTransactionAccountId());
-					transactionDet
-							.setUserId((int) accountOperation.getSingleRecord("UserId", "AccountNumber", transactionDetails.getAccountId()));
+					transactionDet.setUserId((int) accountOperation.getSingleRecord("UserId", "AccountNumber",
+							transactionDetails.getAccountId()));
 					transactionDet.setTransactionTime(System.currentTimeMillis());
 					transactionDet.setTransactionType("Withdraw");
 					transactionDet.setDescription(transactionDetails.getDescription());

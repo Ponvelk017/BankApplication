@@ -8,8 +8,8 @@ public class DBConnection {
 
 	public static Connection connection = null;
 	private static String url = "jdbc:mysql://localhost:3306/Bankapp";
-	private static String userName = "Ponvel";
-	private static String password = "Pink@dog1";
+	private static String userName = "root";
+	private static String password = "";
 
 	private DBConnection() {
 

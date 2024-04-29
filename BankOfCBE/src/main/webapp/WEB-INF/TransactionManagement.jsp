@@ -11,7 +11,11 @@
 <%@ page import="org.json.JSONObject"%>
 <%@ page import="java.time.LocalDate"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
-
+<%
+response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
+response.setHeader("pragma", "no-cache");
+response.setHeader("Expires", "0");
+%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -39,8 +43,8 @@
 		<div class="conditionData">
 			<h2 style="padding: 1%;">Customize Data</h2>
 			<div>
-				<form id="transactionForm" action="SessionFilter" class="conditionform"
-					method="post">
+				<form id="transactionForm" action="SessionFilter"
+					class="conditionform" method="post">
 					<input name="formType" value="searchTransactionForm" type="hidden">
 					<input name="pageno" id="pageno"
 						value="<%=request.getAttribute("pageno")%>" type="hidden">
@@ -115,7 +119,7 @@
 											transactionJson.put("TransactionTime", individualTransaction.getTime());
 											transactionJson.put("TransactionType", individualTransaction.getTranactionType());
 											transactionJson.put("Description", individualTransaction.getDescription());
-											transactionJson.put("Status", individualTransaction.getStatus());
+											transactionJson.put("Remark", individualTransaction.getDescription());
 											transactionJson.put("Amount", individualTransaction.getAmount());
 											transactionJson.put("ClosingBalance", individualTransaction.getClosingBalance());
 											transactionJson.put("IFSC", individualTransaction.getIFSCCode());
@@ -235,11 +239,11 @@
 													</tr>
 													<tr>
 														<th scope="col">
-															<p>Status</p>
+															<p>Remarks</p>
 														</th>
 														<td>:</td>
 														<td>
-															<p id="status"></p>
+															<p id="remark"></p>
 														</td>
 													</tr>
 													<tr>
@@ -343,7 +347,13 @@
   			 var day = ('0' + date.getDate()).slice(-2);
   			 var formattedDate = year + '-' + month + '-' + day;
 	    	 document.getElementById('time').innerHTML = formattedDate;
-	    	 document.getElementById('status').innerHTML = ((transactionDetails.Status)=='1')?'Active':'InActive';
+	    	 if (transactionDetails.Remark.trim() === "null") {
+	    		    document.getElementById('remark').innerHTML = "NIL";
+	    		} 
+	    	 else {
+	   	    	var sanitizedRemark = transactionDetails.Remark.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	   	    	document.getElementById('remark').innerHTML = sanitizedRemark;
+	    		}
 	    	 document.getElementById('amount').innerHTML = transactionDetails.Amount;
 	    	 document.getElementById('closing-balance').innerHTML = transactionDetails.ClosingBalance;
 	    	 document.getElementById('ifsc').innerHTML = transactionDetails.IFSC;

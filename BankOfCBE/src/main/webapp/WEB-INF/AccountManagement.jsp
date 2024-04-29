@@ -5,7 +5,11 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map.Entry"%>
 <%@ page import="org.json.JSONObject"%>
-
+<%
+response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
+response.setHeader("pragma", "no-cache");
+response.setHeader("Expires", "0");
+%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -392,7 +396,7 @@
 																</div>
 																<div class="modal-body">
 																	Are you sure , Do you want to Block the Account ?<br>
-																	 <p class="message" id="blockMessage"></p> 
+																	<p class="message" id="blockMessage"></p>
 																</div>
 																<div class="modal-footer">
 																	<button type="button" class="btn btn-secondary"
@@ -722,8 +726,8 @@
 										for="accountno">Account Number:</label> <input class="textbox"
 										type="number" id="accountNumber" name="accountno"> <label
 										style="padding-top: 2%;" for="amount">Amount:</label> <input
-										class="textbox" type="number" id="amount" name="amount" max="200000" min="0"
-										placeholder="Enter Amount" required><br>
+										class="textbox" type="number" id="amount" name="amount"
+										max="200000" min="0" placeholder="Enter Amount" required><br>
 									<button type="submit">Deposit</button>
 								</form>
 								<p class="message" id="depositMessage"></p>
@@ -1000,7 +1004,7 @@ buttonContentPairs.forEach(pair => {
                               	(document).getElementById(form.messageId).style.color = 'green';
                           	  }
                           	  else{
-                          		(document).getElementById(form.messageId).innerHTML = 'Something went wrong, Try Again';
+                          		(document).getElementById(form.messageId).innerHTML = response.message;
                             	(document).getElementById(form.messageId).style.color = 'red'; 
                           	  }
                         }

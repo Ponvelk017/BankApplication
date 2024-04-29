@@ -5,7 +5,11 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map.Entry"%>
 <%@ page import="org.json.JSONObject"%>
-
+<%
+response.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
+response.setHeader("pragma", "no-cache");
+response.setHeader("Expires", "0");
+%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -882,16 +886,19 @@
 	    document.querySelectorAll('.view-details').forEach(button => {
 	        button.addEventListener('click', function () {
 	        	 const customerDetails = JSON.parse(this.getAttribute('data-user-id'));
-	        	 document.getElementById('customerName').innerHTML = customerDetails.Name;
+	        	 var name =  customerDetails.Name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	        	 var email =  customerDetails.Name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	        	 var address =  customerDetails.Name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	        	 document.getElementById('customerName').innerHTML =name;
 	        	 document.getElementById('customerMobile').innerHTML = customerDetails.Mobile;
-	        	 document.getElementById('customerEmail').innerHTML = customerDetails.Email;
+	        	 document.getElementById('customerEmail').innerHTML = email;
 	        	 var date =new Date(customerDetails.Dob);
 	  			 var year = date.getFullYear();
 	  			 var month = ('0' + (date.getMonth() + 1)).slice(-2); 
 	  			 var day = ('0' + date.getDate()).slice(-2);
 	  			 var formattedDate = year + '-' + month + '-' + day;
 	             document.getElementById('customerDob').innerHTML = formattedDate;	 
-	        	 document.getElementById('customerAddress').innerHTML = customerDetails.Address;
+	        	 document.getElementById('customerAddress').innerHTML = address;
 	        	 document.getElementById('CustomerAadhar').innerHTML = '********'+(customerDetails.Aadhar).substring(8);
 	        	 document.getElementById('customerPan').innerHTML = '********'+(customerDetails.Pan).substring(6);
 	        	 document.getElementById('customerStatus').innerHTML =((customerDetails.Status)=='1')?'Active':'InActive';

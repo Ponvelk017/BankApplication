@@ -25,15 +25,16 @@ public class APIOperations implements API {
 	}
 
 	@Override
-	public String newAPIKeyGeneration(int userId) throws InvalidInputException {
-		String query = "insert into APIUser(UserId,APIKey,IsValid,CreatedAt) values(?,?,?,?)";
+	public String newAPIKeyGeneration(int userId, int scope) throws InvalidInputException {
+		String query = "insert into APIUser(UserId,APIKey,IsValid,Scope,CreatedAt) values(?,?,?,?,?)";
 		String apiKey = apiKeyGeneration(userId);
 		int affectedRows = 0;
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setInt(1, userId);
 			statement.setString(2, apiKey);
 			statement.setString(3, "1");
-			statement.setLong(4, System.currentTimeMillis());
+			statement.setString(4, (scope == 1) ? "write" : "read");
+			statement.setLong(5, System.currentTimeMillis());
 			affectedRows = statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new InvalidInputException("An Error Occured , Sorry for the Inconvenience", e);
@@ -82,6 +83,7 @@ public class APIOperations implements API {
 					apiDetails.setUserId(record.getInt("UserId"));
 					apiDetails.setApiKey(record.getString("APIKey"));
 					apiDetails.setIsValid(record.getString("IsValid"));
+					apiDetails.setScope(record.getString("Scope").equals("read") ? 1 : 0);
 					apiDetails.setCreatedAt(record.getLong("CreatedAt"));
 				}
 			}
@@ -103,6 +105,7 @@ public class APIOperations implements API {
 					apiDetails.setUserId(record.getInt("UserId"));
 					apiDetails.setApiKey(record.getString("APIKey"));
 					apiDetails.setIsValid(record.getString("IsValid"));
+					apiDetails.setScope(record.getString("Scope").equals("read") ? 1 : 0);
 					apiDetails.setCreatedAt(record.getLong("CreatedAt"));
 					result.add(apiDetails);
 				}

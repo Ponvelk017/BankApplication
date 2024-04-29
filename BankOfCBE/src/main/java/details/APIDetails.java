@@ -6,6 +6,16 @@ public class APIDetails {
 	private int userId;
 	private String apiKey;
 	private String isValid;
+	private int scope;
+
+	public int getScope() {
+		return scope;
+	}
+
+	public void setScope(int scope) {
+		this.scope = scope;
+	}
+
 	private long createdAt;
 
 	public int getId() {

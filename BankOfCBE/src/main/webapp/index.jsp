@@ -44,7 +44,7 @@ body {
 			<form id="sign-in" class="forms"
 				action="<%=request.getContextPath()%>/home" method="post">
 				<input name="formType" value="login" type="hidden"> <label
-					for="email">User Id:</label> <input class="textbox" type="text"
+					for="email">User Id:</label> <input class="textbox" type="number"
 					id="id" name="id" placeholder="Enter User Id" required> <label
 					for="password">Password:</label> <input class="textbox"
 					type="password" id="password" name="password"
